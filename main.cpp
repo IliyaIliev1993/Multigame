@@ -1,7 +1,10 @@
-#include <iostream>
+#include "main_app/MainApp.h"
 
 int main()
 {
-    std::cout << "Hello World !" << std::endl;
+    MainApp::GetInstance().Init();
+    MainApp::GetInstance().Run();
+    MainApp::GetInstance().Deinit();
+
     return 0;
 }
