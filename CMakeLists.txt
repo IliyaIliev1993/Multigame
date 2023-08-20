@@ -41,6 +41,8 @@ message(STATUS "====================================")
 file(GLOB SOURCES
     main_app/*.h
     main_app/*.cpp
+    main_app/app_select/*.h
+    main_app/app_select/*.cpp
     utils/*.h
     utils/*.cpp
     main.cpp)
@@ -56,8 +58,9 @@ set(MULTIGAME_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #set(GL_INCLUDES ${MULTIGAME_ROOT_DIR}/gl_includes)
 set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}
+    ${MULTIGAME_ROOT_DIR}/utils
     ${MULTIGAME_ROOT_DIR}/main_app
-    ${MULTIGAME_ROOT_DIR}/utils)
+    ${MULTIGAME_ROOT_DIR}/main_app/app_select)
 #set(GL_INCLUDE_DIRS
 #    ${GL_INCLUDES}
 #    ${GL_INCLUDES}/glad

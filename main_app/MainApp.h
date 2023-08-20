@@ -20,9 +20,8 @@ public:
         return mainApp;
     }
 
-    MainApp(const MainApp& copyObj) = delete;
-
-    void operator=(const MainApp& copyObj) = delete;
+    MainApp(const MainApp& obj) = delete;
+    void operator= (const MainApp& obj) = delete;
 
     bool Init();
 
