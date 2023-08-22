@@ -43,6 +43,10 @@ file(GLOB SOURCES
     main_app/*.cpp
     main_app/app_select/*.h
     main_app/app_select/*.cpp
+    main_app/applications/*.h
+    main_app/applications/*.cpp
+    main_app/applications/roulette/*.h
+    main_app/applications/roulette/*.cpp
     utils/*.h
     utils/*.cpp
     main.cpp)
@@ -60,7 +64,8 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}
     ${MULTIGAME_ROOT_DIR}/utils
     ${MULTIGAME_ROOT_DIR}/main_app
-    ${MULTIGAME_ROOT_DIR}/main_app/app_select)
+    ${MULTIGAME_ROOT_DIR}/main_app/app_select
+    ${MULTIGAME_ROOT_DIR}/main_app/applications)
 #set(GL_INCLUDE_DIRS
 #    ${GL_INCLUDES}
 #    ${GL_INCLUDES}/glad

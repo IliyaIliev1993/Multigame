@@ -28,6 +28,8 @@ public:
 
     bool Init();
     bool Deinit();
+    void RegisterClient(IApp* client);
+    void UnregisterClient(IApp* client);
 
 
 };

@@ -20,7 +20,7 @@ bool MainApp::Init()
         return false;
     }
 
-    LOGGER("MainApp - Initialized");
+    LOGGER("MainApp - Initialized ...");
     return true;
 }
 
