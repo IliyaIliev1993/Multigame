@@ -1,26 +1,28 @@
 #include "MainApp.h"
-#include "app_select/AppSelect.h"
-#include "utils/Utils.h"
 
-MainApp::MainApp()
-{
-    LOGGER("MainApp - Constructed ...");
-}
+#include <app_select/AppSelect.h>
+#include <debug/Logger.h>
 
-MainApp::~MainApp()
+MainApp::MainApp() : ptrLogger(new Debug::Logger)
 {
-    LOGGER("MainApp - Distrucred ...");
+
 }
 
 bool MainApp::Init()
 {
-    if(!AppSelect::GetInstance().Init())
+    if(!ptrLogger->Init("Multigame"))
     {
-        LOGGER("MainApp - Failed to init AppSelect");
+        std::cout << "MainApp - Failed to initialize Logger !" << std::endl;
         return false;
     }
 
-    LOGGER("MainApp - Initialized ...");
+    if(!AppSelect::GetInstance().Init())
+    {
+        LOG_ERROR("MainApp - Failed to init AppSelect");
+        return false;
+    }
+
+    LOG_INFO("MainApp - Initialized ...");
     return true;
 }
 
@@ -33,10 +35,10 @@ bool MainApp::Deinit()
 {
     if(!AppSelect::GetInstance().Deinit())
     {
-        LOGGER("MainApp - Failed to deinit AppSelect");
+        LOG_ERROR("MainApp - Failed to deinit AppSelect");
         return false;
     }
 
-    LOGGER("MainApp - Deinitialzied ...");
+    LOG_INFO("MainApp - Deinitialzied ...");
     return true;
 }

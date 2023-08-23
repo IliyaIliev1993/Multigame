@@ -1,6 +1,7 @@
 #pragma once
 
-#include "main_app/IApp.h"
+#include <main_app/IApp.h>
+
 #include <vector>
 
 class AppSelect

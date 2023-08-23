@@ -1,8 +1,12 @@
 #pragma once
 
+#include <string>
+
 class IApp
 {
 private:
+
+    std::string m_strAppName = "IApp";
 
 public:
 
@@ -11,6 +15,7 @@ public:
     virtual bool Init() = 0;
     virtual bool Deinit();
     virtual bool OnTouch(unsigned int nX, unsigned int nY);
+    virtual const std::string& GetAppName();
     virtual void OnEnter();
     virtual void OnExit();
     virtual void OnDraw();

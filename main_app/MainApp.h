@@ -1,6 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
+
+namespace Debug
+{
+    class Logger;
+}
 
 /*MainApp class, used for control the flow of the app.*/
 class MainApp
@@ -9,10 +15,9 @@ class MainApp
 private:
 
     MainApp();
+    ~MainApp() = default;
 
 public:
-
-    ~MainApp();
 
     static MainApp& GetInstance()
     {
@@ -20,13 +25,16 @@ public:
         return mainApp;
     }
 
-    MainApp(const MainApp& obj) = delete;
-    void operator= (const MainApp& obj) = delete;
+    /** Delete copyt-constructor, move-constructor and assignment operators */
+    MainApp(MainApp const&) = delete;
+    void operator = (MainApp const&) = delete;
+    MainApp(MainApp &&) = delete;
+    void operator = (MainApp &&) = delete;
+
+    std::unique_ptr<Debug::Logger> ptrLogger;
 
     bool Init();
-
     void Run();
-
     bool Deinit();
 
 };

@@ -47,8 +47,8 @@ file(GLOB SOURCES
     main_app/applications/*.cpp
     main_app/applications/roulette/*.h
     main_app/applications/roulette/*.cpp
-    utils/*.h
-    utils/*.cpp
+    debug/*.h
+    debug/*.cpp
     main.cpp)
 
 # Create executable PROJECT_NAME
@@ -59,25 +59,26 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 
 # Add include directories
 set(MULTIGAME_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-#set(GL_INCLUDES ${MULTIGAME_ROOT_DIR}/gl_includes)
+set(LIBS ${MULTIGAME_ROOT_DIR}/libs)
 set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}
-    ${MULTIGAME_ROOT_DIR}/utils
+    ${MULTIGAME_ROOT_DIR}/debug
     ${MULTIGAME_ROOT_DIR}/main_app
     ${MULTIGAME_ROOT_DIR}/main_app/app_select
-    ${MULTIGAME_ROOT_DIR}/main_app/applications)
-#set(GL_INCLUDE_DIRS
-#    ${GL_INCLUDES}
-#    ${GL_INCLUDES}/glad
-#    ${GL_INCLUDES}/glm
-#    ${GL_INCLUDES}/imgui
-#    ${GL_INCLUDES}/KHR
-#    ${GL_INCLUDEDS}/rapidjson
-#    ${GL_INCLUDES}/shader
-#    ${GL_INCLUDES}/spdlog
-#    ${GL_INCLUDES}/stb_image)
+    ${MULTIGAME_ROOT_DIR}/main_app/applications
+    ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette)
+set(LIBS_INCLUDE_DIRS
+    ${LIBS}
+    ${LIBS}/glad
+    ${LIBS}/glm
+    ${LIBS}/imgui
+    ${LIBS}/KHR
+    ${LIBS}/rapidjson
+    ${LIBS}/shader
+    ${LIBS}/spdlog
+    ${LIBS}/stb_image)
 include_directories(${INTERNAL_DIRS})
-#include_directories(${GL_INCLUDE_DIRS})
+include_directories(${LIBS_INCLUDE_DIRS})
 
 #find required libraries
 set(OpenGL_GL_PREFERENCE LEGACY)
@@ -85,15 +86,12 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 #add library glad
-#add_library(Glad ${GL_INCLUDES}/glad/glad.h ${GL_INCLUDES}/glad.c)
+add_library(Glad ${LIBS}/glad/glad.h ${LIBS}/glad.c)
 
 #add library imgui
-#file(GLOB IMGUI_SOURCES ${GL_INCLUDES}/imgui/*.h ${GL_INCLUDES}/imgui/*.cpp)
-#add_library(ImGui ${IMGUI_SOURCES})
+file(GLOB IMGUI_SOURCES ${LIBS}/imgui/*.h ${LIBS}/imgui/*.cpp)
+add_library(ImGui ${IMGUI_SOURCES})
 
 #link all libraries to executable
-#target_link_libraries(${PROJECT_NAME} glfw GL Glad ImGui X11 pthread Xrandr
-#                        Xi ${CMAKE_DL_LIBS} stdc++fs)
-
-target_link_libraries(${PROJECT_NAME} glfw GL X11 pthread Xrandr
+target_link_libraries(${PROJECT_NAME} glfw GL Glad ImGui X11 pthread Xrandr
                         Xi ${CMAKE_DL_LIBS} stdc++fs)

@@ -1,36 +1,41 @@
 #include "IApp.h"
 
-#include "utils/Utils.h"
+#include <debug/Logger.h>
 
 bool IApp::Init()
 {
-    LOGGER("IApp - Init() ...");
+    LOG_INFO("IApp - Init() ...");
     return true;
 }
 
 bool IApp::Deinit()
 {
-    LOGGER("IApp - Deinit() ...");
+    LOG_INFO("IApp - Deinit() ...");
     return true;
 }
 
 bool IApp::OnTouch(unsigned int nX, unsigned int nY)
 {
-    LOGGER("IApp - OnTouch() ...");
+    LOG_INFO("IApp - OnTouch() ...");
     return false;
+}
+
+const std::string& IApp::GetAppName()
+{
+    return m_strAppName;
 }
 
 void IApp::OnEnter()
 {
-    LOGGER("IApp - OnEnter() ...");
+    LOG_INFO("IApp - OnEnter() ...");
 }
 
 void IApp::OnExit()
 {
-    LOGGER("IApp - OnExit() ...");
+    LOG_INFO("IApp - OnExit() ...");
 }
 
 void IApp::OnDraw()
 {
-    LOGGER("IApp - OnDraw() ...");
+    LOG_INFO("IApp - OnDraw() ...");
 }

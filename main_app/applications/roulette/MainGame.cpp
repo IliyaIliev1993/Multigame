@@ -20,6 +20,11 @@ bool Roulette::OnTouch(unsigned int nX, unsigned int nY)
     return false;
 }
 
+const std::string& Roulette::GetAppName()
+{
+    return m_strAppName;
+}
+
 void Roulette::OnEnter()
 {
 

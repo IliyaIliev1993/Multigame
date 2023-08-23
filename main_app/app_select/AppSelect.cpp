@@ -1,27 +1,27 @@
 #include "AppSelect.h"
 
-#include "utils/Utils.h"
+#include <debug/Logger.h>
 
 AppSelect::AppSelect()
 {
-    LOGGER("AppSelect - Constructed ...");
+
 }
 
 AppSelect::~AppSelect()
 {
-    LOGGER("AppSelect - Distructed ...");
+
 }
 
 bool AppSelect::Init()
 {
 
-    LOGGER("AppSelect - Initialized ...");
+    LOG_INFO("AppSelect - Initialized ...");
     return true;
 }
 
 bool AppSelect::Deinit()
 {
-    LOGGER("AppSelect - Deinitialzied ...");
+    LOG_INFO("AppSelect - Deinitialzied ...");
     return true;
 }
 
@@ -29,10 +29,8 @@ void AppSelect::RegisterClient(IApp *client)
 {
     m_vecAppClients.emplace_back(client);
 
-    LOGGER("Registered client: ");
-    LOGGER(client);
-    LOGGER("AppSelect - Current size of AppClientsContainer: ");
-    LOGGER(m_vecAppClients.size());
+    LOG_INFO("AppSelect - Registered client : \"{0}\"", client->GetAppName());
+    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_vecAppClients.size());
 }
 
 void AppSelect::UnregisterClient(IApp *client)
@@ -41,14 +39,11 @@ void AppSelect::UnregisterClient(IApp *client)
     {
         if(*it == client)
         {
+            LOG_INFO("AppSelect - Unregistered client : \"{0}\"", client->GetAppName());
             m_vecAppClients.erase(it);
-
-            LOGGER("Unregistered client: ");
-            LOGGER(client);
             break;
         }
     }
 
-    LOGGER("AppSelect - Current size of AppClientsContainer: ");
-    LOGGER(m_vecAppClients.size());
+    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_vecAppClients.size());
 }
