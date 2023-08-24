@@ -47,6 +47,10 @@ file(GLOB SOURCES
     main_app/applications/*.cpp
     main_app/applications/roulette/*.h
     main_app/applications/roulette/*.cpp
+    main_app/renderer/*.h
+    main_app/renderer/*.cpp
+    main_app/texture/*.h
+    main_app/texture/*.cpp
     debug/*.h
     debug/*.cpp
     main.cpp)
@@ -66,7 +70,9 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app
     ${MULTIGAME_ROOT_DIR}/main_app/app_select
     ${MULTIGAME_ROOT_DIR}/main_app/applications
-    ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette)
+    ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette
+    ${MULTIGAME_ROOT_DIR}/main_app/renderer
+    ${MULTIGAME_ROOT_DIR}/main_app/texture)
 set(LIBS_INCLUDE_DIRS
     ${LIBS}
     ${LIBS}/glad

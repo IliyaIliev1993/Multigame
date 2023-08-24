@@ -1,12 +1,12 @@
 #pragma once
-
-#include <iostream>
 #include <memory>
 
 namespace Debug
 {
     class Logger;
 }
+class AppSelect;
+class Renderer;
 
 /*MainApp class, used for control the flow of the app.*/
 class MainApp
@@ -14,8 +14,12 @@ class MainApp
 
 private:
 
+    bool m_bShowImguiHelp = true;
+
     MainApp();
-    ~MainApp() = default;
+    ~MainApp();
+
+    void InitImgui();
 
 public:
 
@@ -31,7 +35,10 @@ public:
     MainApp(MainApp &&) = delete;
     void operator = (MainApp &&) = delete;
 
+    /*Unique pointers global objects to main classes*/
     std::unique_ptr<Debug::Logger> ptrLogger;
+    std::unique_ptr<AppSelect> ptrAppSelect;
+    std::unique_ptr<Renderer>ptrRend;
 
     bool Init();
     void Run();

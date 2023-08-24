@@ -2,16 +2,6 @@
 
 #include <debug/Logger.h>
 
-AppSelect::AppSelect()
-{
-
-}
-
-AppSelect::~AppSelect()
-{
-
-}
-
 bool AppSelect::Init()
 {
 
