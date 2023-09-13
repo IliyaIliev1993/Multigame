@@ -68,17 +68,17 @@ void MainApp::Run()
         /* Debug New frame calculation */
         ImGui_ImplGlfwGL3_NewFrame();
 
-        /* Handle Event TODO*/
-        //ptrEventHandler->ProcessInput(ptrRenderer->GetWindow());
+        /* Handle Event */
+        ptrAppSelect->HandleEvent();
 
         /* Clear Color */
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw Here ...
+        /*Main Draw*/
         ptrAppSelect->OnDraw();
 
-        //Help IMGUI
+        /*ImGui HELP*/
         if (m_bShowImguiHelp)
         {
             ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
@@ -89,7 +89,7 @@ void MainApp::Run()
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
-        /* Draw */
+        /* SwapBuffers */
         ptrRend->CallEventsAndSwapBuffers();
     }
 }

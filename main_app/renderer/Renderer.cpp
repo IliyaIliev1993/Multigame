@@ -462,6 +462,6 @@ void Renderer::Send2DGeometry(std::shared_ptr<Texture> ptrTexture)
 
 void Renderer::CallEventsAndSwapBuffers()
 {
-    glfwSwapBuffers(window);
     glfwPollEvents();
+    glfwSwapBuffers(window);
 }
