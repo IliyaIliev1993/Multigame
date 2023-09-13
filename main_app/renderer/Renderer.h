@@ -43,6 +43,9 @@ private:
 
     glm::vec4 m_vColor = glm::vec4(1.0, 1.0f, 1.0f, 1.0f);
 
+    /*Shaders*/
+    Shader m_shaderPicture;
+
     void SetGLFWCallbacks();
 public:
     Renderer();
@@ -66,10 +69,10 @@ public:
     void DrawLine(float fXInitial, float fYInitial, float fXFinal, float fYFinal, float fThickness, Shader& shaderLine);
     void DrawLine(float fXInitial, float fYInitial, float fXFinal, float fYFinal, float fThickness, Shader& shaderLine, std::shared_ptr<Texture> ptrTexture);
     void DrawRect(float fX, float fY, float fWidth, float fHeight, Shader& shaderRect);
-    void DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY, Shader& shaderTexture);
-    void DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor, Shader& shaderTexture);
-    void DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, Shader& shaderTexture);
-    void DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fVertPivotFromCenter, Shader& shaderTexture);
+    void DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY);
+    void DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor);
+    void DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees);
+    void DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fVertPivotFromCenter);
 
 
     /*3D*/

@@ -76,6 +76,7 @@ void MainApp::Run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw Here ...
+        ptrAppSelect->OnDraw();
 
         //Help IMGUI
         if (m_bShowImguiHelp)

@@ -66,6 +66,7 @@ bool Renderer::InitSystem(const std::string& strTitle,
 
     SetGLFWCallbacks();
 
+    m_shaderPicture = Shader("../src/shaders/vertex_2D.vs", "../src/shaders/fragment_2D.fs");
 
     LOG_INFO("Renderer - OpenGL Info:\n Vendor: {0}\n Renderer: {1}\n Version: {2}",
              glGetString(GL_VENDOR), glGetString(GL_RENDERER),
@@ -288,12 +289,12 @@ void Renderer::DrawRect(float fX, float fY, float fWidth, float fHeight, Shader 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY, Shader &shaderTexture)
+void Renderer::DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY)
 {
     /*Bind VertexArrayObject, texture and shader to use*/
     glBindVertexArray(VAO2D);
     ptrTexture->Bind();
-    shaderTexture.use();
+    m_shaderPicture.use();
 
     /*Create transformations*/
     glm::mat4 model         = glm::mat4(1.0f);
@@ -313,8 +314,8 @@ void Renderer::DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float 
     /*The current matrix projeciton will be pushed in the vertex shader*/
     projectionToPush = projection * view * model;
 
-    shaderTexture.setMat4("uProjection", projectionToPush);
-    shaderTexture.setVec4("vColor", m_vColor);
+    m_shaderPicture.setMat4("uProjection", projectionToPush);
+    m_shaderPicture.setVec4("vColor", m_vColor);
 
     /*Current draw call*/
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -346,12 +347,12 @@ void Renderer::DrawPicture3D(std::shared_ptr<Texture> ptrTexture, Shader &shader
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor, Shader &shaderTexture)
+void Renderer::DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor)
 {
     /*Bind VertexArrayObject, texture and shader to use*/
     glBindVertexArray(VAO2D);
     ptrTexture->Bind();
-    shaderTexture.use();
+    m_shaderPicture.use();
 
     /*Create transformations*/
     glm::mat4 model         = glm::mat4(1.0f);
@@ -371,19 +372,19 @@ void Renderer::DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, 
     /*The current matrix projeciton will be pushed in the vertex shader*/
     projectionToPush = projection * view * model;
 
-    shaderTexture.setMat4("uProjection", projectionToPush);
-    shaderTexture.setVec4("vColor", m_vColor);
+    m_shaderPicture.setMat4("uProjection", projectionToPush);
+    m_shaderPicture.setVec4("vColor", m_vColor);
 
     /*Current draw call*/
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, Shader &shaderTexture)
+void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees)
 {
     /*Bind VertexArrayObject, texture and shader to use*/
     glBindVertexArray(VAO2D);
     ptrTexture->Bind();
-    shaderTexture.use();
+    m_shaderPicture.use();
 
     /*Create transformations*/
     glm::mat4 model         = glm::mat4(1.0f);
@@ -409,19 +410,19 @@ void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX,
     /*The current matrix projeciton will be pushed in the vertex shader*/
     projectionToPush = projection * view * model;
 
-    shaderTexture.setMat4("uProjection", projectionToPush);
-    shaderTexture.setVec4("vColor", m_vColor);
+    m_shaderPicture.setMat4("uProjection", projectionToPush);
+    m_shaderPicture.setVec4("vColor", m_vColor);
 
     /*Current draw call*/
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fVertPivotFromCenter, Shader &shaderTexture)
+void Renderer::DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fVertPivotFromCenter)
 {
     /*Bind VertexArrayObject, texture and shader to use*/
     glBindVertexArray(VAO2D);
     ptrTexture->Bind();
-    shaderTexture.use();
+    m_shaderPicture.use();
 
     /*Create transformations*/
     glm::mat4 model         = glm::mat4(1.0f);
@@ -447,8 +448,8 @@ void Renderer::DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float
     /*The current matrix projeciton will be pushed in the vertex shader*/
     projectionToPush = projection * view * model;
 
-    shaderTexture.setMat4("uProjection", projectionToPush);
-    shaderTexture.setVec4("vColor", m_vColor);
+    m_shaderPicture.setMat4("uProjection", projectionToPush);
+    m_shaderPicture.setVec4("vColor", m_vColor);
 
     /*Current draw call*/
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
