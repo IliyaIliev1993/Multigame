@@ -47,6 +47,8 @@ file(GLOB SOURCES
     main_app/applications/*.cpp
     main_app/applications/roulette/*.h
     main_app/applications/roulette/*.cpp
+    main_app/applications/kids_fantasy/*.h
+    main_app/applications/kids_fantasy/*.cpp
     main_app/button/*.h
     main_app/button/*.cpp
     main_app/renderer/*.h

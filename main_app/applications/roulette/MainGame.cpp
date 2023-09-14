@@ -15,7 +15,7 @@ bool Roulette::Deinit()
     return true;
 }
 
-bool Roulette::OnTouch(unsigned int nX, unsigned int nY)
+bool Roulette::HandleEvent()
 {
     return false;
 }

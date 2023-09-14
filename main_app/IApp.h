@@ -14,7 +14,7 @@ public:
 
     virtual bool Init() = 0;
     virtual bool Deinit();
-    virtual bool OnTouch(unsigned int nX, unsigned int nY);
+    virtual bool HandleEvent();
     virtual const std::string& GetAppName();
     virtual void OnEnter();
     virtual void OnExit();

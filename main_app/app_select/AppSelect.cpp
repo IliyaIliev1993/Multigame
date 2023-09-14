@@ -44,6 +44,21 @@ bool AppSelect::Init()
         return false;
     }
 
+    /*Register Client Kids Fantasy*/
+    RegisterClient(EApps::eKidsFantasy, &m_KidsFantasy);
+
+    /*Initalize all the applications*/
+    for(const auto& app : m_mapAppClients)
+    {
+        if(!app.second->Init())
+        {
+            LOG_ERROR("AppSelect - Cannot initialize client : \"{0}\"", app.second->GetAppName());
+            break;
+        }
+    }
+
+    m_eState = EAppSelectStates::eReadyForSelection;
+
     LOG_INFO("AppSelect - Initialized ...");
     return true;
 }
@@ -60,75 +75,119 @@ bool AppSelect::HandleEvent()
     const auto& nXMouse = ImGui::GetMousePos().x;
     const auto& nYMouse = ImGui::GetMousePos().y;
 
-    m_bIsKidsFantasyHovered = m_buttonKidsFantasy.IsHovered(nXMouse, nYMouse);
-    if(m_bIsKidsFantasyHovered)
+    switch (m_eState)
     {
-        return true;
-    }
+    case EAppSelectStates::eReadyForSelection:
+    {
+        m_bIsKidsFantasyHovered = m_buttonKidsFantasy.IsHovered(nXMouse, nYMouse);
+        if(m_bIsKidsFantasyHovered)
+        {
+            /*Select Kids Fantasy*/
+            if(m_buttonKidsFantasy.IsPressed(nXMouse, nYMouse))
+            {
+                m_eCurrentApp = EApps::eKidsFantasy;
+                m_eState = EAppSelectStates::eBusyInGame;
 
-    m_bIsRouletteHovered = m_buttonRoulette.IsHovered(nXMouse, nYMouse);
-    if(m_bIsRouletteHovered)
+                return true;
+            }
+
+            return true;
+        }
+
+        m_bIsRouletteHovered = m_buttonRoulette.IsHovered(nXMouse, nYMouse);
+        if(m_bIsRouletteHovered)
+        {
+            return true;
+        }
+    }
+        break;
+
+    case EAppSelectStates::eBusyInGame:
     {
-        return true;
+        m_mapAppClients[m_eCurrentApp]->HandleEvent();
+    }
+        break;
+    
+    default:
+        break;
     }
 
     return false;
 }
 
-void AppSelect::RegisterClient(IApp *client)
+const EAppSelectStates& AppSelect::GetState()
 {
-    m_vecAppClients.emplace_back(client);
-
-    LOG_INFO("AppSelect - Registered client : \"{0}\"", client->GetAppName());
-    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_vecAppClients.size());
+    return m_eState;
 }
 
-void AppSelect::UnregisterClient(IApp *client)
+void AppSelect::RegisterClient(EApps eApp, IApp* client)
 {
-    for(auto it = m_vecAppClients.begin(); it != m_vecAppClients.end(); ++it)
+    m_mapAppClients.emplace(std::make_pair(eApp, client));
+
+    LOG_INFO("AppSelect - Registered client : \"{0}\"", client->GetAppName());
+    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_mapAppClients.size());
+}
+
+void AppSelect::UnregisterClient(EApps eApp, IApp* client)
+{
+    const auto& it = m_mapAppClients.find(eApp);
+    if(it != m_mapAppClients.end())
     {
-        if(*it == client)
-        {
-            LOG_INFO("AppSelect - Unregistered client : \"{0}\"", client->GetAppName());
-            m_vecAppClients.erase(it);
-            break;
-        }
+        LOG_INFO("AppSelect - Unregistered client : \"{0}\"", it->second->GetAppName());
+        m_mapAppClients.erase(eApp);
     }
 
-    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_vecAppClients.size());
+    LOG_INFO("AppSelect - Current size of AppClientsContainer: \"{0}\"", m_mapAppClients.size());
 }
 
 void AppSelect::OnDraw()
 {
     const auto& rend = MainApp::GetInstance().ptrRend;
+
+    switch (m_eState)
+    {
+    case EAppSelectStates::eReadyForSelection:
+    {
+        /*Draw Background*/
+        rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
+
+        /*Draw Button Kids Fantasy*/
+        if(m_bIsKidsFantasyHovered)
+        {
+            rend->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+
+        rend->DrawPicture(m_buttonKidsFantasy.textureButton, m_buttonKidsFantasy.fX, m_buttonKidsFantasy.fY);
+
+        if(m_bIsKidsFantasyHovered)
+        {
+            rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        /*Draw Button Roulette*/
+        if(m_bIsRouletteHovered)
+        {
+            rend->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+
+        rend->DrawPicture(m_buttonRoulette.textureButton, m_buttonRoulette.fX, m_buttonRoulette.fY);
+
+        if(m_bIsRouletteHovered)
+        {
+            rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
+        break;
+
+    case EAppSelectStates::eBusyInGame:
+    {
+        m_mapAppClients[m_eCurrentApp]->OnDraw();
+    }
+        break;
     
-    /*Draw Background*/
-    rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
-
-    /*Draw Button Kids Fantasy*/
-    if(m_bIsKidsFantasyHovered)
-    {
-        rend->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
+    default:
+        break;
     }
 
-    rend->DrawPicture(m_buttonKidsFantasy.textureButton, m_buttonKidsFantasy.fX, m_buttonKidsFantasy.fY);
-
-    if(m_bIsKidsFantasyHovered)
-    {
-        rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-
-    /*Draw Button Roulette*/
-    if(m_bIsRouletteHovered)
-    {
-        rend->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
-    }
-
-    rend->DrawPicture(m_buttonRoulette.textureButton, m_buttonRoulette.fX, m_buttonRoulette.fY);
-
-    if(m_bIsRouletteHovered)
-    {
-        rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-    }
 
 }

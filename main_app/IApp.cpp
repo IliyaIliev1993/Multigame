@@ -14,9 +14,9 @@ bool IApp::Deinit()
     return true;
 }
 
-bool IApp::OnTouch(unsigned int nX, unsigned int nY)
+bool IApp::HandleEvent()
 {
-    LOG_INFO("IApp - OnTouch() ...");
+    LOG_INFO("IApp - HandleEvent() ...");
     return false;
 }
 
