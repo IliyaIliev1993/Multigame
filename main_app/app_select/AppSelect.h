@@ -1,6 +1,6 @@
 #pragma once
 
-#include <main_app/IApp.h>
+#include <main_app/applications/IApp.h>
 #include <main_app/texture/Texture.h>
 #include <main_app/button/Button.h>
 #include <main_app/applications/kids_fantasy/MainGame.h>

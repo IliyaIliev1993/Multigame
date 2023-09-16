@@ -7,11 +7,13 @@
 #include <debug/Logger.h>
 #include <app_select/AppSelect.h>
 #include <renderer/Renderer.h>
+#include <timer/TimerMgr.h>
 
 
 MainApp::MainApp() : ptrLogger(new Debug::Logger),
                      ptrRend(new Renderer),
-                     ptrAppSelect(new AppSelect)
+                     ptrAppSelect(new AppSelect),
+                     ptrTimer(new TimerMgr)
 {
 
 }
@@ -70,6 +72,9 @@ void MainApp::Run()
 
         /* Handle Event */
         ptrAppSelect->HandleEvent();
+
+        /*Process Timing*/
+        ptrTimer->Process();
 
         /* Clear Color */
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);

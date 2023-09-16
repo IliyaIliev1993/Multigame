@@ -2,10 +2,11 @@
 
 #include <string>
 
-#include <main_app/IApp.h>
+#include <main_app/applications/IApp.h>
 #include <main_app/texture/Texture.h>
+#include <main_app/timer/TimerMgr.h>
 
-class KidsFantasy : public IApp
+class KidsFantasy : public IApp, public ITimer
 {
 
 private:
@@ -14,7 +15,7 @@ private:
 
     /*Texture main background*/
     std::shared_ptr<Texture>m_textureBackground;
-
+    
 public:
 
     KidsFantasy();
@@ -26,4 +27,5 @@ public:
     void OnEnter() override;
     void OnExit() override;
     void OnDraw() override;
+    void OnTick(unsigned int unID, unsigned int unTimes) final;
 };

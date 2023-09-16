@@ -87,6 +87,7 @@ bool AppSelect::HandleEvent()
             {
                 m_eCurrentApp = EApps::eKidsFantasy;
                 m_eState = EAppSelectStates::eBusyInGame;
+                m_mapAppClients[m_eCurrentApp]->OnEnter();
 
                 return true;
             }

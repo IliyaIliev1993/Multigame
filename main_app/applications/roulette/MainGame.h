@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <main_app/IApp.h>
+#include <main_app/applications/IApp.h>
 
 class Roulette : public IApp
 {
