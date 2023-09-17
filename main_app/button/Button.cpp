@@ -20,6 +20,7 @@ bool Button::IsPressed(const int& nXMouse, const int& nYMouse)
 {
     if(IsHovered(nXMouse, nYMouse) && ImGui::IsMouseClicked(0))
     {
+        bIsClicked = true;
         return true;
     }
 
@@ -30,6 +31,7 @@ bool Button::IsPressAndHold(const int& nXMouse, const int& nYMouse)
 {
     if(IsHovered(nXMouse, nYMouse) && ImGui::IsMouseDown(0))
     {
+        bIsClicked = true;
         return true;
     }
 
@@ -38,8 +40,9 @@ bool Button::IsPressAndHold(const int& nXMouse, const int& nYMouse)
 
 bool Button::IsReleased(const int& nXMouse, const int& nYMouse)
 {
-    if(IsHovered(nXMouse, nYMouse) && ImGui::IsMouseReleased(0))
+    if(bIsClicked && ImGui::IsMouseReleased(0))
     {
+        bIsClicked = false;
         return true;
     }
 

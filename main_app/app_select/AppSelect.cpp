@@ -68,6 +68,16 @@ bool AppSelect::Init()
 
 bool AppSelect::Deinit()
 {
+    /*Deinitialize all the applications*/
+    for(const auto& app : m_mapAppClients)
+    {
+        if(!app.second->Deinit())
+        {
+            LOG_ERROR("AppSelect - Cannot Deinitialize client : \"{0}\"", app.second->GetAppName());
+            break;
+        }
+    }
+
     LOG_INFO("AppSelect - Deinitialzied ...");
     return true;
 }

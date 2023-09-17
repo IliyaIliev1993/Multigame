@@ -46,7 +46,7 @@ void Roulette::OnEnter()
 
 void Roulette::OnExit()
 {
-    
+    LOG_INFO("Roulette - Exit from Application");
 }
 
 void Roulette::OnDraw()

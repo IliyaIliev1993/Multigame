@@ -112,6 +112,7 @@ bool MainApp::Deinit()
 {
     ImGui::DestroyContext();
     ptrAppSelect->Deinit();
+    ptrPanel->Deinit();
     ptrRend->Deinit();
 
     LOG_INFO("MainApp - Deinitialzied ...");

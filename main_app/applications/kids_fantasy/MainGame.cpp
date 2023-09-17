@@ -56,7 +56,7 @@ void KidsFantasy::OnEnter()
 
 void KidsFantasy::OnExit()
 {
-    
+    LOG_INFO("Kids Fantasy - Exit from Application");
 }
 
 void KidsFantasy::OnDraw()
