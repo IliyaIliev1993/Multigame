@@ -4,8 +4,8 @@
 #include <imgui/imgui_impl_glfw_gl3.h>
 
 #include <main_app/MainApp.h>
-#include <main_app/app_select/AppSelect.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/panel/Panel.h>
 #include <debug/Logger.h>
 
 #include <iostream>
@@ -41,7 +41,7 @@ const std::string& Roulette::GetAppName()
 
 void Roulette::OnEnter()
 {
-    MainApp::GetInstance().ptrTimer->StartTimer(this, 1, 1000);
+    LOG_INFO("Roulette - Transition to Application succeed");
 }
 
 void Roulette::OnExit()
@@ -52,20 +52,13 @@ void Roulette::OnExit()
 void Roulette::OnDraw()
 {
     const auto& rend = MainApp::GetInstance().ptrRend;
+
+    /*Draw Panel*/
+    MainApp::GetInstance().ptrPanel->OnDraw();
 }
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == 1)
-    {
-        LOG_INFO("ROULETTE Timer ID \"{0}\"", unID);
-        LOG_INFO("ROULETTE Timer TIMES \"{0}\"", unTimes);
 
-        if(unTimes == 5)
-        {
-            MainApp::GetInstance().ptrTimer->StopTimer(this, 1);
-            MainApp::GetInstance().ptrAppSelect->RequestTransition(EApps::eAppSelect);
-        }
-    }
  
 }

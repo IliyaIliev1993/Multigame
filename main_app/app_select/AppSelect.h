@@ -58,6 +58,9 @@ private:
     /*Roulette object;*/
     Roulette m_Roulette;
 
+    /*Enter from App to AppSelect*/
+    void OnEnterInAppSelect();
+
 
 public:
 

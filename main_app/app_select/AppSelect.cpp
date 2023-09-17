@@ -129,47 +129,49 @@ bool AppSelect::RequestTransition(const EApps eAppToTransition)
         /*From App Select to Kids Fantasy*/
         if(eAppToTransition == EApps::eKidsFantasy)
         {
+            LOG_INFO("AppSelect - Requesting Transition to App Kids Fantasy");
             m_eCurrentApp = EApps::eKidsFantasy;
             m_eState = EAppSelectStates::eBusyInGame;
             m_mapAppClients[m_eCurrentApp]->OnEnter();
 
-            LOG_INFO("AppSelect - Requesting Transition to App Kids Fantasy");
             return true;
         }
-        /*From App Select to Kids Fantasy*/
+        /*From App Select to Roulette*/
         else if(eAppToTransition == EApps::eRoulette)
         {
+            LOG_INFO("AppSelect - Requesting Transition to App Roulette");
             m_eCurrentApp = EApps::eRoulette;
             m_eState = EAppSelectStates::eBusyInGame;
             m_mapAppClients[m_eCurrentApp]->OnEnter();
 
-            LOG_INFO("AppSelect - Requesting Transition to App Roulette");
             return true;
         }
     }
-    /*From Game to App Select*/
+    /*From App to App Select*/
     else if(m_eState == EAppSelectStates::eBusyInGame)
     {
         /*From Kids Fantasy to App Select*/
         if(eAppToTransition == EApps::eAppSelect && 
            m_eCurrentApp == EApps::eKidsFantasy)
         {
+            LOG_INFO("AppSelect - Requesting Transition to App Select");
             m_mapAppClients[m_eCurrentApp]->OnExit();
             m_eCurrentApp = EApps::eAppSelect;
             m_eState = EAppSelectStates::eReadyForSelection;
+            OnEnterInAppSelect();
 
-            LOG_INFO("AppSelect - Requesting Transition to App Select");
             return true;
         }
         /*From Roulette to App Select*/
         else if(eAppToTransition == EApps::eAppSelect && 
                 m_eCurrentApp == EApps::eRoulette)
         {
+            LOG_INFO("AppSelect - Requesting Transition to App Select");
             m_mapAppClients[m_eCurrentApp]->OnExit();
             m_eCurrentApp = EApps::eAppSelect;
             m_eState = EAppSelectStates::eReadyForSelection;
+            OnEnterInAppSelect();
 
-            LOG_INFO("AppSelect - Requesting Transition to App Select");
             return true;
         }
     }
@@ -181,6 +183,11 @@ bool AppSelect::RequestTransition(const EApps eAppToTransition)
 const EAppSelectStates& AppSelect::GetState()
 {
     return m_eState;
+}
+
+void AppSelect::OnEnterInAppSelect()
+{
+    LOG_INFO("AppSelect - Transition to App Select succeed");
 }
 
 void AppSelect::RegisterClient(EApps eApp, IApp* client)

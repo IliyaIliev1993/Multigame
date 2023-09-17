@@ -9,4 +9,6 @@
         std::shared_ptr<Texture>textureButton = nullptr;
         bool IsHovered(const int& nXMouse, const int& nYMouse);
         bool IsPressed(const int& nXMouse, const int& nYMouse);
+        bool IsPressAndHold(const int& nXMouse, const int& nYMouse);
+        bool IsReleased(const int& nXMouse, const int& nYMouse);
     };

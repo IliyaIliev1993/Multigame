@@ -57,6 +57,8 @@ file(GLOB SOURCES
     main_app/texture/*.cpp
     main_app/timer/*.h
     main_app/timer/*.cpp
+    main_app/panel/*.h
+    main_app/panel/*.cpp
     debug/*.h
     debug/*.cpp
     main.cpp)
@@ -80,7 +82,8 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app/button
     ${MULTIGAME_ROOT_DIR}/main_app/renderer
     ${MULTIGAME_ROOT_DIR}/main_app/texture
-    ${MULTIGAME_ROOT_DIR}/main_app/timer)
+    ${MULTIGAME_ROOT_DIR}/main_app/timer
+    ${MULTIGAME_ROOT_DIR}/main_app/panel)
 set(LIBS_INCLUDE_DIRS
     ${LIBS}
     ${LIBS}/glad

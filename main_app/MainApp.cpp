@@ -8,12 +8,14 @@
 #include <app_select/AppSelect.h>
 #include <renderer/Renderer.h>
 #include <timer/TimerMgr.h>
+#include <panel/Panel.h>
 
 
 MainApp::MainApp() : ptrLogger(new Debug::Logger),
                      ptrRend(new Renderer),
                      ptrAppSelect(new AppSelect),
-                     ptrTimer(new TimerMgr)
+                     ptrTimer(new TimerMgr),
+                     ptrPanel(new Panel)
 {
 
 }
@@ -50,6 +52,12 @@ bool MainApp::Init()
         return false;
     }
 
+    if(!ptrPanel->Init())
+    {
+        LOG_ERROR("MainApp - Failed to init Panel");
+        return false;
+    }
+
     LOG_INFO("MainApp - Initialized ...");
     return true;
 }
@@ -71,6 +79,7 @@ void MainApp::Run()
         ImGui_ImplGlfwGL3_NewFrame();
 
         /* Handle Event */
+        ptrPanel->HandleEvent();
         ptrAppSelect->HandleEvent();
 
         /*Process Timing*/

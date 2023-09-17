@@ -4,8 +4,8 @@
 #include <imgui/imgui_impl_glfw_gl3.h>
 
 #include <main_app/MainApp.h>
-#include <main_app/app_select/AppSelect.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/panel/Panel.h>
 #include <debug/Logger.h>
 
 #include <iostream>
@@ -51,7 +51,7 @@ const std::string& KidsFantasy::GetAppName()
 
 void KidsFantasy::OnEnter()
 {
-    MainApp::GetInstance().ptrTimer->StartTimer(this, 1, 1000);
+    LOG_INFO("Kids Fantasy - Transition to Application succeed");
 }
 
 void KidsFantasy::OnExit()
@@ -65,20 +65,12 @@ void KidsFantasy::OnDraw()
 
     /*Draw Background*/
     rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
+
+    /*Draw Panel*/
+    MainApp::GetInstance().ptrPanel->OnDraw();
 }
 
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == 1)
-    {
-        LOG_INFO("KIDS FANTASY Timer ID \"{0}\"", unID);
-        LOG_INFO("KIDS FANTASY Timer TIMES \"{0}\"", unTimes);
-
-        if(unTimes == 5)
-        {
-            MainApp::GetInstance().ptrTimer->StopTimer(this, 1);
-            MainApp::GetInstance().ptrAppSelect->RequestTransition(EApps::eAppSelect);
-        }
-    }
  
 }

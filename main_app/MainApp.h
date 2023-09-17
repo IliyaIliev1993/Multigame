@@ -8,6 +8,7 @@ namespace Debug
 class AppSelect;
 class Renderer;
 class TimerMgr;
+class Panel;
 
 /*MainApp class, used for control the flow of the app.*/
 class MainApp
@@ -41,6 +42,7 @@ public:
     std::unique_ptr<AppSelect> ptrAppSelect;
     std::unique_ptr<Renderer>ptrRend;
     std::unique_ptr<TimerMgr>ptrTimer;
+    std::unique_ptr<Panel>ptrPanel;
 
     bool Init();
     void Run();
