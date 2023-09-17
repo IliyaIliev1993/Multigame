@@ -4,6 +4,7 @@
 #include <imgui/imgui_impl_glfw_gl3.h>
 
 #include <main_app/MainApp.h>
+#include <main_app/app_select/AppSelect.h>
 #include <main_app/renderer/Renderer.h>
 #include <debug/Logger.h>
 
@@ -55,7 +56,7 @@ void KidsFantasy::OnEnter()
 
 void KidsFantasy::OnExit()
 {
-
+    
 }
 
 void KidsFantasy::OnDraw()
@@ -70,12 +71,13 @@ void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if(unID == 1)
     {
-        LOG_INFO("Timer ID \"{0}\"", unID);
-        LOG_INFO("Timer TIMES \"{0}\"", unTimes);
+        LOG_INFO("KIDS FANTASY Timer ID \"{0}\"", unID);
+        LOG_INFO("KIDS FANTASY Timer TIMES \"{0}\"", unTimes);
 
-        if(unTimes == 3)
+        if(unTimes == 5)
         {
             MainApp::GetInstance().ptrTimer->StopTimer(this, 1);
+            MainApp::GetInstance().ptrAppSelect->RequestTransition(EApps::eAppSelect);
         }
     }
  

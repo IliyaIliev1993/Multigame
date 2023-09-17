@@ -4,6 +4,7 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/button/Button.h>
 #include <main_app/applications/kids_fantasy/MainGame.h>
+#include <main_app/applications/roulette/MainGame.h>
 
 #include <map>
 
@@ -13,7 +14,7 @@ enum class EApps
     eKidsFantasy,
     eRoulette,
     eTotalAppsCount,
-    eNoAppSelected
+    eAppSelect
 };
 
 enum class EAppSelectStates
@@ -34,7 +35,7 @@ private:
     bool m_bIsRouletteHovered = false;
 
     /*Current active app*/
-    EApps m_eCurrentApp = EApps::eNoAppSelected;
+    EApps m_eCurrentApp = EApps::eAppSelect;
 
     /*Current AppSelect state*/
     EAppSelectStates m_eState = EAppSelectStates::eInactive;
@@ -54,12 +55,16 @@ private:
     /*Kids Fantasy object*/
     KidsFantasy m_KidsFantasy;
 
+    /*Roulette object;*/
+    Roulette m_Roulette;
+
 
 public:
 
     bool Init();
     bool Deinit();
     bool HandleEvent();
+    bool RequestTransition(const EApps eAppToTransition);
     const EAppSelectStates& GetState();
     void RegisterClient(EApps eApp, IApp* client);
     void UnregisterClient(EApps eApp, IApp* client);

@@ -47,6 +47,9 @@ bool AppSelect::Init()
     /*Register Client Kids Fantasy*/
     RegisterClient(EApps::eKidsFantasy, &m_KidsFantasy);
 
+    /*Register Client Roulette*/
+    RegisterClient(EApps::eRoulette, &m_Roulette);
+
     /*Initalize all the applications*/
     for(const auto& app : m_mapAppClients)
     {
@@ -85,10 +88,7 @@ bool AppSelect::HandleEvent()
             /*Select Kids Fantasy*/
             if(m_buttonKidsFantasy.IsPressed(nXMouse, nYMouse))
             {
-                m_eCurrentApp = EApps::eKidsFantasy;
-                m_eState = EAppSelectStates::eBusyInGame;
-                m_mapAppClients[m_eCurrentApp]->OnEnter();
-
+                RequestTransition(EApps::eKidsFantasy);
                 return true;
             }
 
@@ -98,6 +98,12 @@ bool AppSelect::HandleEvent()
         m_bIsRouletteHovered = m_buttonRoulette.IsHovered(nXMouse, nYMouse);
         if(m_bIsRouletteHovered)
         {
+            /*Select Roulette*/
+            if(m_buttonRoulette.IsPressed(nXMouse, nYMouse))
+            {
+                RequestTransition(EApps::eRoulette);
+                return true;
+            }
             return true;
         }
     }
@@ -113,6 +119,62 @@ bool AppSelect::HandleEvent()
         break;
     }
 
+    return false;
+}
+
+bool AppSelect::RequestTransition(const EApps eAppToTransition)
+{
+    if(m_eState == EAppSelectStates::eReadyForSelection)
+    {
+        /*From App Select to Kids Fantasy*/
+        if(eAppToTransition == EApps::eKidsFantasy)
+        {
+            m_eCurrentApp = EApps::eKidsFantasy;
+            m_eState = EAppSelectStates::eBusyInGame;
+            m_mapAppClients[m_eCurrentApp]->OnEnter();
+
+            LOG_INFO("AppSelect - Requesting Transition to App Kids Fantasy");
+            return true;
+        }
+        /*From App Select to Kids Fantasy*/
+        else if(eAppToTransition == EApps::eRoulette)
+        {
+            m_eCurrentApp = EApps::eRoulette;
+            m_eState = EAppSelectStates::eBusyInGame;
+            m_mapAppClients[m_eCurrentApp]->OnEnter();
+
+            LOG_INFO("AppSelect - Requesting Transition to App Roulette");
+            return true;
+        }
+    }
+    /*From Game to App Select*/
+    else if(m_eState == EAppSelectStates::eBusyInGame)
+    {
+        /*From Kids Fantasy to App Select*/
+        if(eAppToTransition == EApps::eAppSelect && 
+           m_eCurrentApp == EApps::eKidsFantasy)
+        {
+            m_mapAppClients[m_eCurrentApp]->OnExit();
+            m_eCurrentApp = EApps::eAppSelect;
+            m_eState = EAppSelectStates::eReadyForSelection;
+
+            LOG_INFO("AppSelect - Requesting Transition to App Select");
+            return true;
+        }
+        /*From Roulette to App Select*/
+        else if(eAppToTransition == EApps::eAppSelect && 
+                m_eCurrentApp == EApps::eRoulette)
+        {
+            m_mapAppClients[m_eCurrentApp]->OnExit();
+            m_eCurrentApp = EApps::eAppSelect;
+            m_eState = EAppSelectStates::eReadyForSelection;
+
+            LOG_INFO("AppSelect - Requesting Transition to App Select");
+            return true;
+        }
+    }
+
+    LOG_ERROR("AppSelect - Impossible Transition to App");
     return false;
 }
 
