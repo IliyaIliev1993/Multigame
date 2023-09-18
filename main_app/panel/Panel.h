@@ -36,6 +36,9 @@ private:
     /*Texture info window*/
     std::shared_ptr<Texture>m_textureInfoWindow;
 
+    /*Texture bet panel*/
+    std::shared_ptr<Texture>m_textureBetPanel;
+
     /*Font Volume*/
     std::shared_ptr<Font>m_fontVolume;
 

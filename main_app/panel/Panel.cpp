@@ -25,6 +25,11 @@ constexpr float g_fYVolumePercentageOffset = 310.0f;
 constexpr float g_fXInfoWindow= 772.0f;
 constexpr float g_fYInfoWindow = 260.0f;
 
+constexpr float g_fXCreditPanel = 270.0f;
+constexpr float g_fXBetPanel = 773.0f;
+constexpr float g_fXWinPanel = 1280.0f;
+constexpr float g_fYBetPanel = 928.0f;
+
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
 bool Panel::Init()
@@ -34,11 +39,12 @@ bool Panel::Init()
     m_textureVolumeButton = Texture::CreateTexture("../src/resources/panel/volume_button.png");
     m_textureVolumeKnob = Texture::CreateTexture("../src/resources/panel/knob_volume.png");
     m_textureInfoWindow = Texture::CreateTexture("../src/resources/panel/info_window.png");
+    m_textureBetPanel = Texture::CreateTexture("../src/resources/panel/field.png");
     m_fontVolume = Font::CreateFont("../src/fonts/Nasa.ttf", 40);
 
     if(!m_textureHomeButton->Load())
     {
-        LOG_ERROR("Panel - Unable to load texture home button !");
+        LOG_ERROR("Panel - Unable to load texture home button!");
         return false;
     }
 
@@ -63,6 +69,12 @@ bool Panel::Init()
     if(!m_textureInfoWindow->Load())
     {
         LOG_ERROR("Panel - Unable to load texture info window!");
+        return false;
+    }
+
+    if(!m_textureBetPanel->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture bet panel!");
         return false;
     }
 
@@ -159,6 +171,15 @@ void Panel::OnDraw()
     /*Volume Button*/
     rend->DrawPicture(m_textureVolumeButton, g_fXVolumeButton, g_fYVolumeButton);
     rend->DrawPictureRotated(m_volumeKnobButton.textureButton, m_volumeKnobButton.fX, m_volumeKnobButton.fY, m_fDegreesVolumeKnob);
+
+    /*Credit Panel*/
+    rend->DrawPicture(m_textureBetPanel, g_fXCreditPanel, g_fYBetPanel);
+
+    /*Bet Panel*/
+    rend->DrawPicture(m_textureBetPanel, g_fXBetPanel, g_fYBetPanel);
+
+    /*Win Panel*/
+    rend->DrawPicture(m_textureBetPanel, g_fXWinPanel, g_fYBetPanel);
 
     /*Info Window*/
     if(m_fAlphaInfoWindow <= 0.0f)
