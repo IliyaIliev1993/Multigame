@@ -1,6 +1,7 @@
 #pragma once
 
 #include <main_app/texture/Texture.h>
+#include <main_app/font/Font.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/button/Button.h>
 
@@ -14,6 +15,9 @@ private:
 
     /*Volume Valume 0.0f - 1.0f*/
     float m_fVolumeValue = 0.0f;
+
+    /*Volume Percentage*/
+    int m_nVolumePercentage = 0;
 
     /*Alpha channel info window*/
     float m_fAlphaInfoWindow = 0.0f;
@@ -31,6 +35,9 @@ private:
 
     /*Texture info window*/
     std::shared_ptr<Texture>m_textureInfoWindow;
+
+    /*Font Volume*/
+    std::shared_ptr<Font>m_fontVolume;
 
     /*Home Button*/
     Button m_homeButton;

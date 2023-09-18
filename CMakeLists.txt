@@ -51,6 +51,8 @@ file(GLOB SOURCES
     main_app/applications/kids_fantasy/*.cpp
     main_app/button/*.h
     main_app/button/*.cpp
+    main_app/font/*.h
+    main_app/font/*.cpp
     main_app/renderer/*.h
     main_app/renderer/*.cpp
     main_app/texture/*.h
@@ -80,12 +82,14 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app/applications
     ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette
     ${MULTIGAME_ROOT_DIR}/main_app/button
+    ${MULTIGAME_ROOT_DIR}/main_app/font
     ${MULTIGAME_ROOT_DIR}/main_app/renderer
     ${MULTIGAME_ROOT_DIR}/main_app/texture
     ${MULTIGAME_ROOT_DIR}/main_app/timer
     ${MULTIGAME_ROOT_DIR}/main_app/panel)
 set(LIBS_INCLUDE_DIRS
     ${LIBS}
+    ${LIBS}/freetype
     ${LIBS}/glad
     ${LIBS}/glm
     ${LIBS}/imgui
@@ -101,6 +105,7 @@ include_directories(${LIBS_INCLUDE_DIRS})
 set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Freetype REQUIRED)
 
 #add library glad
 add_library(Glad ${LIBS}/glad/glad.h ${LIBS}/glad.c)
@@ -110,5 +115,5 @@ file(GLOB IMGUI_SOURCES ${LIBS}/imgui/*.h ${LIBS}/imgui/*.cpp)
 add_library(ImGui ${IMGUI_SOURCES})
 
 #link all libraries to executable
-target_link_libraries(${PROJECT_NAME} glfw GL Glad ImGui X11 pthread Xrandr
+target_link_libraries(${PROJECT_NAME} glfw GL Glad freetype ImGui X11 pthread Xrandr
                         Xi ${CMAKE_DL_LIBS} stdc++fs)

@@ -17,6 +17,10 @@ constexpr float g_fXVolumeButton = 1720.0f;
 constexpr float g_fYVolumeButton = 880.0f;
 constexpr float g_fXVolumeKnobButton = 1765.0f;
 constexpr float g_fYVolumeKnobButton = 925.0f;
+constexpr float g_fXVolumeTextOffset = 105.0f;
+constexpr float g_fYVolumeTextOffset = 45.0f;
+constexpr float g_fXVolumePercentageOffset = 155.0f;
+constexpr float g_fYVolumePercentageOffset = 310.0f;
 
 constexpr float g_fXInfoWindow= 772.0f;
 constexpr float g_fYInfoWindow = 260.0f;
@@ -30,6 +34,7 @@ bool Panel::Init()
     m_textureVolumeButton = Texture::CreateTexture("../src/resources/panel/volume_button.png");
     m_textureVolumeKnob = Texture::CreateTexture("../src/resources/panel/knob_volume.png");
     m_textureInfoWindow = Texture::CreateTexture("../src/resources/panel/info_window.png");
+    m_fontVolume = Font::CreateFont("../src/fonts/Nasa.ttf", 40);
 
     if(!m_textureHomeButton->Load())
     {
@@ -58,6 +63,12 @@ bool Panel::Init()
     if(!m_textureInfoWindow->Load())
     {
         LOG_ERROR("Panel - Unable to load texture info window!");
+        return false;
+    }
+
+    if(!m_fontVolume->LoadFont())
+    {   
+        LOG_ERROR("Panel - Unable to load font volume !");
         return false;
     }
 
@@ -106,6 +117,7 @@ bool Panel::HandleEvent()
         const auto& fVolumeRatio = 1.0f / g_fMaxTresholdVolumeDegrees;
 
         m_fVolumeValue = fVolumeRatio * m_fDegreesVolumeKnob;
+        m_nVolumePercentage = m_fVolumeValue * 100;
         m_fDegreesVolumeKnob = std::abs(nDeltaY);
 
         if(m_fDegreesVolumeKnob >= g_fMaxTresholdVolumeDegrees)
@@ -156,6 +168,10 @@ void Panel::OnDraw()
 
     rend->SetColor(1.0f, 1.0f, 1.0f, m_fAlphaInfoWindow);
     rend->DrawPicture(m_textureInfoWindow, g_fXInfoWindow, g_fYInfoWindow);
+
+    /*Volume Text*/
+    rend->DrawText("VOLUME", m_fontVolume, g_fXInfoWindow + g_fXVolumeTextOffset, g_fYInfoWindow + g_fYVolumeTextOffset);
+    rend->DrawText(std::to_string(m_nVolumePercentage) + " %", m_fontVolume, g_fXInfoWindow + g_fXVolumePercentageOffset, g_fYInfoWindow + g_fYVolumePercentageOffset, 1.3f);
     rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 

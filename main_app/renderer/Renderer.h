@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <main_app/texture/Texture.h>
+#include <main_app/font/Font.h>
 #include <shader/shader_m.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +23,9 @@ private:
     GLuint VBO3D;
     GLuint VAO3D;
     GLuint EBO3D;
+
+    GLuint VBOFont;
+    GLuint VAOFont;
 
     /* TOP LEFT->  *---------------------------------* <-TOP RIGHT
                    |                                 |
@@ -45,9 +49,11 @@ private:
 
     /*Shaders*/
     Shader m_shaderPicture;
+    Shader m_shaderFont;
 
     void SetGLFWCallbacks();
 public:
+
     Renderer();
 
     unsigned int SCREEN_WIDTH = 1920;
@@ -69,6 +75,7 @@ public:
     void DrawLine(float fXInitial, float fYInitial, float fXFinal, float fYFinal, float fThickness, Shader& shaderLine);
     void DrawLine(float fXInitial, float fYInitial, float fXFinal, float fYFinal, float fThickness, Shader& shaderLine, std::shared_ptr<Texture> ptrTexture);
     void DrawRect(float fX, float fY, float fWidth, float fHeight, Shader& shaderRect);
+    void DrawText(std::string strText, std::shared_ptr<Font> ptrFont, float fX, float fY, float fScaleFactor = 1.0f);
     void DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY);
     void DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor);
     void DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees);

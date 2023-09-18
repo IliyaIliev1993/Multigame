@@ -67,6 +67,7 @@ bool Renderer::InitSystem(const std::string& strTitle,
     SetGLFWCallbacks();
 
     m_shaderPicture = Shader("../src/shaders/vertex_2D.vs", "../src/shaders/fragment_2D.fs");
+    m_shaderFont = Shader("../src/shaders/vertex_shader_font.vs", "../src/shaders/fragment_shader_font.fs");
 
     LOG_INFO("Renderer - OpenGL Info:\n Vendor: {0}\n Renderer: {1}\n Version: {2}",
              glGetString(GL_VENDOR), glGetString(GL_RENDERER),
@@ -125,6 +126,20 @@ void Renderer::CreateAndFill2DBuffers()
     /*Enable Blending*/
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+
+    /*Font*/
+    glGenVertexArrays(1, &VAOFont);
+    glGenBuffers(1, &VBOFont);
+
+    glBindVertexArray(VAOFont);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOFont);
+    
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void Renderer::CreateAndFill3DBuffers()
@@ -287,6 +302,55 @@ void Renderer::DrawRect(float fX, float fY, float fWidth, float fHeight, Shader 
 
     /*Current draw call*/
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void Renderer::DrawText(std::string strText, std::shared_ptr<Font> ptrFont, float fX, float fY, float fScaleFactor)
+{
+    glm::mat4 projection    = glm::mat4(1.0f);
+    /*Transformations of Projection, in this case is Orthographic projection*/
+    projection = glm::ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
+
+    m_shaderFont.use();
+    m_shaderFont.setMat4("uProjection", projection);
+    m_shaderFont.setVec4("vColor", m_vColor);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(VAOFont);
+    
+    std::string::const_iterator it;
+    
+    for(it = strText.begin(); it != strText.end(); it++)
+    {
+        Character ch = ptrFont->Characters[*it];
+
+        GLfloat xpos = fX + ch.Bearing.x * fScaleFactor;
+        GLfloat ypos = fY - (ch.Size.y - ch.Bearing.y) * fScaleFactor;
+
+        GLfloat w = ch.Size.x * fScaleFactor;
+        GLfloat h = ch.Size.y * fScaleFactor;
+        
+        GLfloat vertices[6][4] =
+        {
+            { xpos,     ypos - h,   0.0, 0.0 },
+            { xpos,     ypos,       0.0, 1.0 },
+            { xpos + w, ypos,       1.0, 1.0 },
+
+            { xpos,     ypos - h,   0.0, 0.0 },
+            { xpos + w, ypos,       1.0, 1.0 },
+            { xpos + w, ypos - h,   1.0, 0.0 }
+        };
+        
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOFont);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        fX += (ch.Advance >> 6) * fScaleFactor;
+    }
+    
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Renderer::DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY)
