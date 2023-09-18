@@ -1,9 +1,10 @@
 #pragma once
 
 #include <main_app/texture/Texture.h>
+#include <main_app/timer/TimerMgr.h>
 #include <main_app/button/Button.h>
 
-class Panel
+class Panel : public ITimer
 {
 
 private:
@@ -13,6 +14,9 @@ private:
 
     /*Volume Valume 0.0f - 1.0f*/
     float m_fVolumeValue = 0.0f;
+
+    /*Alpha channel info window*/
+    float m_fAlphaInfoWindow = 0.0f;
 
     /*Flag modification Volume Knob*/
     bool m_bVolumeKnobModify = false;
@@ -24,6 +28,9 @@ private:
     /*Textures Volume Button, knob volume*/
     std::shared_ptr<Texture>m_textureVolumeButton;
     std::shared_ptr<Texture>m_textureVolumeKnob;
+
+    /*Texture info window*/
+    std::shared_ptr<Texture>m_textureInfoWindow;
 
     /*Home Button*/
     Button m_homeButton;
@@ -37,4 +44,5 @@ public:
     bool Deinit();
     bool HandleEvent();
     void OnDraw();
+    void OnTick(unsigned int unID, unsigned int unTimes) final;
 };

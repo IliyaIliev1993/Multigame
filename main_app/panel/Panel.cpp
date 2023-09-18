@@ -8,6 +8,8 @@
 #include <main_app/renderer/Renderer.h>
 #include <debug/Logger.h>
 
+constexpr unsigned int g_unTimerFadeMainWindow = 1;
+
 constexpr float g_fXHomeButton = 0.0f;
 constexpr float g_fYHomeButton = 920.0f;
 
@@ -15,6 +17,9 @@ constexpr float g_fXVolumeButton = 1720.0f;
 constexpr float g_fYVolumeButton = 880.0f;
 constexpr float g_fXVolumeKnobButton = 1765.0f;
 constexpr float g_fYVolumeKnobButton = 925.0f;
+
+constexpr float g_fXInfoWindow= 772.0f;
+constexpr float g_fYInfoWindow = 260.0f;
 
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
@@ -24,6 +29,7 @@ bool Panel::Init()
     m_textureHomeButtonPressed = Texture::CreateTexture("../src/resources/panel/home_button_pressed.png");
     m_textureVolumeButton = Texture::CreateTexture("../src/resources/panel/volume_button.png");
     m_textureVolumeKnob = Texture::CreateTexture("../src/resources/panel/knob_volume.png");
+    m_textureInfoWindow = Texture::CreateTexture("../src/resources/panel/info_window.png");
 
     if(!m_textureHomeButton->Load())
     {
@@ -46,6 +52,12 @@ bool Panel::Init()
     if(!m_textureVolumeKnob->Load())
     {
         LOG_ERROR("Panel - Unable to load texture volume knob!");
+        return false;
+    }
+
+    if(!m_textureInfoWindow->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture info window!");
         return false;
     }
 
@@ -76,10 +88,15 @@ bool Panel::HandleEvent()
     if(m_volumeKnobButton.IsPressed(nXMouse, nYMouse))
     {
         m_bVolumeKnobModify = true;
+        m_fAlphaInfoWindow = 1.0f;
     }
     if(m_volumeKnobButton.IsReleased(nXMouse, nYMouse))
     {
         m_bVolumeKnobModify = false;
+
+        /*Start Timer effect fade info window*/
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerFadeMainWindow, 30);
+
         LOG_INFO("Panel - Volume Value %: \"{0}\"", m_fVolumeValue * 100.0f);
     }
 
@@ -130,4 +147,28 @@ void Panel::OnDraw()
     /*Volume Button*/
     rend->DrawPicture(m_textureVolumeButton, g_fXVolumeButton, g_fYVolumeButton);
     rend->DrawPictureRotated(m_volumeKnobButton.textureButton, m_volumeKnobButton.fX, m_volumeKnobButton.fY, m_fDegreesVolumeKnob);
+
+    /*Info Window*/
+    if(m_fAlphaInfoWindow <= 0.0f)
+    {
+        return;
+    }
+
+    rend->SetColor(1.0f, 1.0f, 1.0f, m_fAlphaInfoWindow);
+    rend->DrawPicture(m_textureInfoWindow, g_fXInfoWindow, g_fYInfoWindow);
+    rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void Panel::OnTick(unsigned int unID, unsigned int unTimes)
+{
+    if(unID == g_unTimerFadeMainWindow)
+    {
+        const float fStepDecrement = 0.1;
+        m_fAlphaInfoWindow -= fStepDecrement;
+        if(m_fAlphaInfoWindow <= 0.0f)
+        {
+            m_fAlphaInfoWindow = 0.0f;
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerFadeMainWindow);
+        }
+    }
 }
