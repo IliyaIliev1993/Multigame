@@ -5,6 +5,13 @@
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/button/Button.h>
 
+enum class EPanelInfoScenes
+{
+    eNoInfoScene = 0,
+    eVolumeScene,
+    eCreditScene
+};
+
 class Panel : public ITimer
 {
 
@@ -22,9 +29,6 @@ private:
     /*Alpha channel info window*/
     float m_fAlphaInfoWindow = 0.0f;
 
-    /*Flag modification Volume Knob*/
-    bool m_bVolumeKnobModify = false;
-
     /*Textures Home Button pressed, released*/
     std::shared_ptr<Texture>m_textureHomeButton;
     std::shared_ptr<Texture>m_textureHomeButtonPressed;
@@ -37,7 +41,12 @@ private:
     std::shared_ptr<Texture>m_textureInfoWindow;
 
     /*Texture bet panel*/
-    std::shared_ptr<Texture>m_textureBetPanel;
+    std::shared_ptr<Texture>m_texturePanel;
+    std::shared_ptr<Texture>m_texturePanelPressed;
+
+    /*Texture Exit Calculator Button*/
+    std::shared_ptr<Texture>m_textureExitCalculator;
+    std::shared_ptr<Texture>m_textureExitCalculatorPressed;
 
     /*Font Volume*/
     std::shared_ptr<Font>m_fontVolume;
@@ -47,6 +56,15 @@ private:
 
     /*Volume Knob Button*/
     Button m_volumeKnobButton;
+
+    /*Credit Button - Field*/
+    Button m_creditButton;
+
+    /*Exit Calculator Button*/
+    Button m_exitCalculatorButton;
+
+    /*Holding the current Info scene drawed*/
+    EPanelInfoScenes m_eInfoScene = EPanelInfoScenes::eNoInfoScene;
 
 public:
 
