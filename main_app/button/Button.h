@@ -8,6 +8,7 @@
     {
         float fX = 0.0f;
         float fY = 0.0f;
+        float fValue = 0.0f;
         bool bIsClicked = false;
         std::string strText = "";
         std::shared_ptr<Texture>textureButton = nullptr;
