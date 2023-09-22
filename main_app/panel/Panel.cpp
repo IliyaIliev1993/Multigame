@@ -30,6 +30,13 @@ constexpr float g_fXBetPanel = 773.0f;
 constexpr float g_fXWinPanel = 1280.0f;
 constexpr float g_fYBetPanel = 928.0f;
 
+constexpr float g_fXCreditPanelTextTen = 395.0f;
+constexpr float g_fXCreditPanelTextHundred = 385.0f;
+constexpr float g_fXCreditPanelTextThousend = 370.0f;
+constexpr float g_fXCreditPanelTextHundredThousend = 355.0f;
+constexpr float g_fXCreditPanelTextMaxOffset = 345.0f;
+constexpr float g_fYCreditPanelText = 1030.0f;
+
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
 constexpr float g_fXAddCreditTextOffset = 80.0f;
@@ -187,6 +194,9 @@ bool Panel::Init()
     {
         return false;
     }
+
+    std::string strFloatToString = std::to_string(m_fCreditAvailable);
+    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 
     LOG_INFO("Panel - Initialized ...");
     return true;
@@ -484,6 +494,7 @@ void Panel::OnDraw()
 
     /*Credit Button - Panel*/
     rend->DrawPicture(m_creditButton.textureButton, m_creditButton.fX, m_creditButton.fY);
+    DrawDynamicTextCredit();
 
     /*Bet Panel*/
     rend->DrawPicture(m_textureBetPanel, g_fXBetPanel, g_fYBetPanel);
@@ -526,6 +537,39 @@ void Panel::OnDraw()
     }
 }
 
+void Panel::DrawDynamicTextCredit()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+
+    const auto& nLenghtOfString = m_strCreditAvailable.length();
+    float fXDynamic = g_fXCreditPanelTextTen;
+    /*0 - 9*/
+    if(nLenghtOfString <= 4)
+    {
+        fXDynamic = g_fXCreditPanelTextTen;
+    }
+    /*10 - 99*/
+    else if(nLenghtOfString == 5)
+    {
+        fXDynamic = g_fXCreditPanelTextHundred;
+    }
+    /*100 - 999*/
+    else if(nLenghtOfString == 6)
+    {
+        fXDynamic = g_fXCreditPanelTextThousend;
+    }
+    else if(nLenghtOfString == 7)
+    {
+        fXDynamic = g_fXCreditPanelTextHundredThousend;
+    }
+    else if(nLenghtOfString >= 8)
+    {
+        fXDynamic = g_fXCreditPanelTextMaxOffset;
+    }
+
+    rend->DrawText(m_strCreditAvailable, m_fontVolume, fXDynamic, g_fYCreditPanelText, 1.5f);
+}
+
 void Panel::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if (unID == g_unTimerFadeMainWindow)
@@ -555,6 +599,9 @@ void Panel::AddCredit(float fCreditToAdd)
     m_fCreditAvailable += fCreditToAdd;
 
     LOG_INFO("Panel - Credit AFTER adding -> \"{0}\"", m_fCreditAvailable);
+
+    std::string strFloatToString = std::to_string(m_fCreditAvailable);
+    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 }
 
 void Panel::RemoveCredit(float fCreditToBeRemoved)
@@ -571,6 +618,9 @@ void Panel::RemoveCredit(float fCreditToBeRemoved)
     m_fCreditAvailable -= fCreditToBeRemoved;
 
     LOG_INFO("Panel - Credit AFTER remove -> \"{0}\"", m_fCreditAvailable);
+
+    std::string strFloatToString = std::to_string(m_fCreditAvailable);
+    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 }
 
 void Panel::ResetCredit()
@@ -578,4 +628,7 @@ void Panel::ResetCredit()
     m_fCreditAvailable = 0.0f;
 
     LOG_INFO("Panel - Credit reset to -> \"{0}\"", m_fCreditAvailable);
+
+    std::string strFloatToString = std::to_string(m_fCreditAvailable);
+    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iomanip>
+
 #include <main_app/texture/Texture.h>
 #include <main_app/font/Font.h>
 #include <main_app/timer/TimerMgr.h>
@@ -44,6 +46,9 @@ private:
 
     /*Alpha channel info window*/
     float m_fAlphaInfoWindow = 0.0f;
+
+    /*String Credit Available*/
+    std::string m_strCreditAvailable;
 
     /*Textures Home Button pressed, released*/
     std::shared_ptr<Texture> m_textureHomeButton;
@@ -100,6 +105,9 @@ private:
 
     /*Method called when loading buttons, inserts elements in containers*/
     bool LoadCalculatorButtons();
+
+    /*Method Draw Credit in base of lenght of digits*/
+    void DrawDynamicTextCredit();
 
 public:
     bool Init();
