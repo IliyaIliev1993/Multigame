@@ -49,6 +49,8 @@ file(GLOB SOURCES
     main_app/applications/roulette/*.cpp
     main_app/applications/kids_fantasy/*.h
     main_app/applications/kids_fantasy/*.cpp
+    main_app/applications/kids_fantasy/reels_area/*.h
+    main_app/applications/kids_fantasy/reels_area/*.cpp
     main_app/button/*.h
     main_app/button/*.cpp
     main_app/font/*.h
@@ -80,6 +82,7 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app
     ${MULTIGAME_ROOT_DIR}/main_app/app_select
     ${MULTIGAME_ROOT_DIR}/main_app/applications
+    ${MULTIGAME_ROOT_DIR}/main_app/applications/kids_fantasy
     ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette
     ${MULTIGAME_ROOT_DIR}/main_app/button
     ${MULTIGAME_ROOT_DIR}/main_app/font

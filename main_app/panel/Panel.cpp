@@ -432,7 +432,7 @@ bool Panel::HandleEvent()
     else if (m_volumeKnobButton.IsReleased(nXMouse, nYMouse))
     {
         /*Start Timer effect fade info window*/
-        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerFadeMainWindow, 30);
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerFadeMainWindow, 1);
         LOG_INFO("Panel - Volume Value %: \"{0}\"", m_fVolumeValue * 100.0f);
     }
 
@@ -574,7 +574,7 @@ void Panel::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if (unID == g_unTimerFadeMainWindow)
     {
-        const float fStepDecrement = 0.1;
+        const float fStepDecrement = 0.05;
         m_fAlphaInfoWindow -= fStepDecrement;
         if (m_fAlphaInfoWindow <= 0.0f)
         {

@@ -1,5 +1,7 @@
 #include "MainGame.h"
 
+#include <iostream>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw_gl3.h>
 
@@ -8,7 +10,6 @@
 #include <main_app/panel/Panel.h>
 #include <debug/Logger.h>
 
-#include <iostream>
 
 KidsFantasy::KidsFantasy()
 {
@@ -27,12 +28,23 @@ bool KidsFantasy::Init()
         return false;
     }
 
+    /*Reels Area Init*/
+    if(!m_reelsArea.Init())
+    {
+        LOG_ERROR("Unable to init Reels Area !");
+        return false;
+    }
+
     LOG_INFO("Kids Fantasy - Initialized ...");
     return true;
 }
 
 bool KidsFantasy::Deinit()
 {
+    /*Reels Area Deinit*/
+    m_reelsArea.Deinit();
+
+    LOG_INFO("Kids Fantasy - Deinitialized ...");
     return true;
 }
 
@@ -40,6 +52,9 @@ bool KidsFantasy::HandleEvent()
 {
     const auto& nXMouse = ImGui::GetMousePos().x;
     const auto& nYMouse = ImGui::GetMousePos().y;
+
+    /*Reels Area Handle Event*/
+    m_reelsArea.HandleEvent();
 
     return false;
 }
@@ -65,6 +80,9 @@ void KidsFantasy::OnDraw()
 
     /*Draw Background*/
     rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
+
+    /*Draw ReelsArea*/
+    m_reelsArea.Draw();
 
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();

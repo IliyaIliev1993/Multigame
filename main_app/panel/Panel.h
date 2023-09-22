@@ -35,6 +35,12 @@ private:
     /*Credit Available*/
     float m_fCreditAvailable = 0.0f;
 
+    /*Current bet bet line*/
+    float m_fCurrentBet = 0.0f;
+
+    /*Current win from line*/
+    float m_fCurrentWin = 0.0f;
+
     /*Degrees Rotation Volume Knob*/
     float m_fDegreesVolumeKnob = 0.0f;
 
