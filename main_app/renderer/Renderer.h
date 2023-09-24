@@ -49,6 +49,8 @@ private:
 
     /*Shaders*/
     Shader m_shaderPicture;
+    Shader m_shaderCrop;
+    Shader m_currentPictureShader;
     Shader m_shaderFont;
 
     void SetGLFWCallbacks();
@@ -69,6 +71,9 @@ public:
     void CreateAndFill3DBuffers();
     void CallEventsAndSwapBuffers();
 
+    void UseShaderPicture();
+    void UseShaderCrop(glm::vec4 vec4RectCrop);
+    
     void SetColor(float fRed = 1.0f, float fGreen = 1.0f, float fBlue = 1.0f, float fAlpha = 1.0f);
 
     /*2D*/

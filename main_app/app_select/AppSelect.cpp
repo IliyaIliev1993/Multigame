@@ -56,7 +56,7 @@ bool AppSelect::Init()
         if(!app.second->Init())
         {
             LOG_ERROR("AppSelect - Cannot initialize client : \"{0}\"", app.second->GetAppName());
-            break;
+            return false;
         }
     }
 

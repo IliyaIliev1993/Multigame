@@ -395,7 +395,7 @@ bool Panel::HandleEvent()
             if (m_exitCalculatorButton.IsReleased(nXMouse, nYMouse))
             {
                 /*Start Timer effect fade info window*/
-                MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerFadeMainWindow, 20);
+                MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerFadeMainWindow, 1);
                 return true;
             }
         }

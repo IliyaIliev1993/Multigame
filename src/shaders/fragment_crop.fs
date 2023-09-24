@@ -10,8 +10,8 @@ uniform vec4 vecCrop;
 
 void main()
 {
-    if(gl_FragCoord.x > vecCrop.x && gl_FragCoord.x < (vecCrop.x + vecCrop.w) &&
-       gl_FragCoord.y > vecCrop.y && gl_FragCoord.y < (vecCrop.y + vecCrop.z))
+    if(gl_FragCoord.x > vecCrop.x && gl_FragCoord.x < (vecCrop.x + vecCrop.z) &&
+       gl_FragCoord.y > vecCrop.y && gl_FragCoord.y < (vecCrop.y + vecCrop.w))
     {
         FragColor = texture(iTexture, oTexCoord) * vec4(vColor.xyz, 1.0);
         return;

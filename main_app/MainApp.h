@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <chrono>
 
 namespace Debug
 {
@@ -17,6 +18,11 @@ class MainApp
 private:
 
     bool m_bShowImguiHelp = true;
+
+    /*Delta Time measure*/
+    std::chrono::time_point<std::chrono::system_clock> m_frameBeginTime;
+    std::chrono::time_point<std::chrono::system_clock> m_frameEndTime;
+    int64_t m_nDeltaTime = 0;
 
     MainApp();
     ~MainApp();
@@ -47,5 +53,7 @@ public:
     bool Init();
     void Run();
     bool Deinit();
+
+    const int64_t& GetDeltaTime();
 
 };

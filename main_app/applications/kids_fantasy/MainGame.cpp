@@ -31,7 +31,7 @@ bool KidsFantasy::Init()
     /*Reels Area Init*/
     if(!m_reelsArea.Init())
     {
-        LOG_ERROR("Unable to init Reels Area !");
+        LOG_ERROR("Unable to Init Reels Area !");
         return false;
     }
 

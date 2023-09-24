@@ -75,6 +75,9 @@ void MainApp::Run()
 {
     while(!glfwWindowShouldClose(ptrRend->GetWindow()))
     {
+        /*Delta Time Measure*/
+        m_frameBeginTime = std::chrono::system_clock::now();
+
         /* Debug New frame calculation */
         ImGui_ImplGlfwGL3_NewFrame();
 
@@ -105,6 +108,9 @@ void MainApp::Run()
 
         /* SwapBuffers */
         ptrRend->CallEventsAndSwapBuffers();
+
+        m_frameEndTime = std::chrono::system_clock::now();
+        m_nDeltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(m_frameEndTime - m_frameBeginTime).count();
     }
 }
 
@@ -117,4 +123,9 @@ bool MainApp::Deinit()
 
     LOG_INFO("MainApp - Deinitialzied ...");
     return true;
+}
+
+const int64_t& MainApp::GetDeltaTime()
+{
+    return m_nDeltaTime;
 }
