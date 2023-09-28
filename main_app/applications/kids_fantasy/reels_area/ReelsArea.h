@@ -9,21 +9,21 @@ class ReelsArea
 {
 
 private:
-
     /*Texture Reels Area*/
-    std::shared_ptr<Texture>m_textureReelsArea;
+    std::shared_ptr<Texture> m_textureReelsArea;
+
+    /*Texture Hearth*/
+    std::shared_ptr<Texture> m_textureHearth;
 
     /*Container with reels*/
-    std::array<Reel, GameDefs::eTotalReelCount>m_arrReels;
+    std::array<Reel, GameDefs::eTotalReelCount> m_arrReels;
 
     /*Container with figure textures*/
-    std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount>m_arrFiguresTexture;
+    std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> m_arrFiguresTexture;
 
 public:
-
     bool Init();
     bool Deinit();
     bool HandleEvent();
     void Draw();
-
 };

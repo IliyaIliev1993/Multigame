@@ -36,6 +36,7 @@ long MathLogic::GenerateRandomNuber(long nLowerBound, long nUpperBound)
 
 void MathLogic::GenerateResults()
 {
+    /*Generate random numbers with rand()*/
     for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
     {
         for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)

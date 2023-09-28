@@ -9,6 +9,7 @@
 #include <debug/Logger.h>
 
 constexpr float g_fXReelsArea = 25.0;
+constexpr float g_fXHearth = 673.0;
 constexpr float g_fYReelsArea = 0.0f;
 
 constexpr float g_fXOrgPosReel1 = 316.0f;
@@ -24,10 +25,17 @@ bool ReelsArea::Init()
 
     /*Load textures*/
     m_textureReelsArea = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/reels_area_clean.png");
+    m_textureHearth = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/hearth.png");
 
     if (!m_textureReelsArea->Load())
     {
         LOG_ERROR("Reels Area - Unable to load texture reels area !");
+        return false;
+    }
+
+    if (!m_textureHearth->Load())
+    {
+        LOG_ERROR("Reels Area - Unable to load texture hearth !");
         return false;
     }
 
@@ -123,7 +131,7 @@ bool ReelsArea::HandleEvent()
         {
             /*Generate New Results*/
             MathLogic::GetInstance().GenerateResults();
-            
+
             for (auto &reel : m_arrReels)
             {
                 reel.StartReeling();
@@ -142,11 +150,14 @@ void ReelsArea::Draw()
     const auto &rend = MainApp::GetInstance().ptrRend;
 
     /*Draw Reels Area*/
-    rend->DrawPicture(m_textureReelsArea, 25.0f, 0.0f);
+    rend->DrawPicture(m_textureReelsArea, g_fXReelsArea, g_fYReelsArea);
 
     /*Draw Reels*/
     for (auto &reel : m_arrReels)
     {
         reel.Draw();
     }
+
+    /*Draw hearth*/
+    rend->DrawPicture(m_textureHearth, g_fXReelsArea + g_fXHearth, g_fYReelsArea);
 }

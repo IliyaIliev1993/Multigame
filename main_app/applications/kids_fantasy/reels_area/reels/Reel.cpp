@@ -13,7 +13,7 @@ constexpr unsigned int g_unPeriodReeling = 1;
 constexpr unsigned int g_unReelingCyclesBeforeBounce = 1;
 constexpr float g_fAccelerationStep = 0.25f;
 constexpr float g_fBouncingStep = -1.2f;
-constexpr float g_fReelingMaxSpeed = 15.0f;
+constexpr float g_fReelingMaxSpeed = 17.0f;
 
 bool Reel::Init(GameDefs::EReels eIDReel,
                 float fXOrgPos,
