@@ -51,6 +51,8 @@ file(GLOB SOURCES
     main_app/applications/kids_fantasy/*.cpp
     main_app/applications/kids_fantasy/reels_area/*.h
     main_app/applications/kids_fantasy/reels_area/*.cpp
+    main_app/applications/kids_fantasy/math_logic/*.h
+    main_app/applications/kids_fantasy/math_logic/*.cpp
     main_app/applications/kids_fantasy/reels_area/reels/*.h
     main_app/applications/kids_fantasy/reels_area/reels/*.cpp
     main_app/button/*.h

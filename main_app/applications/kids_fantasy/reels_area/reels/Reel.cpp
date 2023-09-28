@@ -5,36 +5,34 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
 constexpr unsigned int g_unTimerReeling = 1;
 constexpr unsigned int g_unPeriodReeling = 1;
 constexpr unsigned int g_unReelingCyclesBeforeBounce = 1;
 constexpr float g_fAccelerationStep = 0.25f;
-constexpr float g_fBouncingStep = -1.0f;
+constexpr float g_fBouncingStep = -1.2f;
 constexpr float g_fReelingMaxSpeed = 15.0f;
-const std::string g_strFigurePath = "../src/resources/kids_fantasy/reels_area/reel_figures/";
 
-bool Reel::Init(GameDefs::EReels eIDReel, float fXOrgPos, float fYOrgPos)
+bool Reel::Init(GameDefs::EReels eIDReel,
+                float fXOrgPos,
+                float fYOrgPos,
+                const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture)
 {
     m_eIDReel = eIDReel;
     m_fXOrgPos = fXOrgPos;
     m_fYOrgPos = fYOrgPos;
+    m_arrFiguresTexture = arrFiguresTexture;
+    m_nReelingCyclesBeforeBounce = g_unReelingCyclesBeforeBounce + m_eIDReel;
 
     m_fYMinTresholdReelingFigure = m_fYOrgPos - GameDefs::g_fHeightFigurePicture;
     m_fYMaxTresholdReelingFigure = m_fYOrgPos + (GameDefs::g_fHeightFigurePicture * GameDefs::g_unVisibleFiguresPerReel);
 
     for (unsigned int i = GameDefs::eFirstPositionNONVisible; i < GameDefs::eTotalFigurePositionsPerReel; ++i)
     {
-        std::string strFigureID = g_strFigurePath + "figure_" + std::to_string(i + 1) + ".png";
         Figure figureObject;
-        figureObject.textureFigure = Texture::CreateTexture(strFigureID);
-        if (!figureObject.textureFigure->Load())
-        {
-            LOG_ERROR("Reel - Failed to load texture figure - \"{0}\"", strFigureID);
-            return false;
-        }
-
+        figureObject.textureFigure = m_arrFiguresTexture.at(i);
         figureObject.fXPos = m_fXOrgPos;
         figureObject.fYPos = m_fYOrgPos + (figureObject.textureFigure->GetHeight() * (i - 1));
         if (i == GameDefs::eFirstPositionNONVisible)
@@ -56,8 +54,6 @@ bool Reel::Init(GameDefs::EReels eIDReel, float fXOrgPos, float fYOrgPos)
 
 void Reel::ProcessReeling()
 {
-    int nIndexFigure = 0;
-
     if (m_eState == EReelState::eAccelerating)
     {
         m_fReelingStep += g_fAccelerationStep;
@@ -72,7 +68,7 @@ void Reel::ProcessReeling()
     else if (m_eState == EReelState::eReeling)
     {
         /*If reeling cycled reached (every reel should stop after the previous reel) or fastStopEnabled*/
-        if ((m_nCounterCycles >= (g_unReelingCyclesBeforeBounce + m_eIDReel)) || m_bNeedToFastStop)
+        if (m_nCounterCycles >= m_nReelingCyclesBeforeBounce)
         {
             /*If main Y reached initial position, change state to Bouncing*/
             if (m_fYFirstVisibleFigure >= m_fYOrgPos)
@@ -103,6 +99,7 @@ void Reel::ProcessReeling()
         }
     }
 
+    int nIndexFigure = 0;
     for (auto &figure : m_arrReelFigures)
     {
         if (figure.fYPos > m_fYMaxTresholdReelingFigure)
@@ -117,6 +114,17 @@ void Reel::ProcessReeling()
             }
 
             figure.fYPos = m_arrReelFigures.at(nIndexToBeInsertedAbove).fYPos - GameDefs::g_fHeightFigurePicture;
+
+            /*Generate Fake Reel*/
+            const auto &nGeneratedNumber = MathLogic::GetInstance().GenerateRandomNuber(GameDefs::eGameFigureOne, GameDefs::eTotalGameFiguresCount);
+            figure.textureFigure = m_arrFiguresTexture.at(nGeneratedNumber);
+
+            /*Insert Results, 1 cycle before stopping*/
+            if (m_nCounterCycles >= (m_nReelingCyclesBeforeBounce - 1))
+            {
+                const auto& nCurrentFigure = MathLogic::GetInstance().GetResults().at(m_eIDReel).at(nIndexFigure);
+                figure.textureFigure = m_arrFiguresTexture.at(nCurrentFigure);
+            }
         }
 
         figure.fYPos += m_fReelingStep;
@@ -174,7 +182,7 @@ void Reel::OnTick(unsigned int unID, unsigned int unTimes)
     }
 }
 
-const EReelState& Reel::GetReelState()
+const EReelState &Reel::GetReelState()
 {
     return m_eState;
 }

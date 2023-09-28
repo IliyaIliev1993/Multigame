@@ -53,11 +53,17 @@ private:
     /*Cycles counter, how many times actual reels*/
     int m_nCounterCycles = 0;
 
+    /*Reeling counter cycles before make the bounce effect and stop*/
+    int m_nReelingCyclesBeforeBounce = 0;
+
     /*Fast Stop Key*/
     bool m_bNeedToFastStop = false;
 
     /*Array holding reel figures*/
     std::array<Figure, GameDefs::g_unTotalFiguresPerReel>m_arrReelFigures;
+
+    /*Container with figure textures*/
+    std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount>m_arrFiguresTexture;
 
     /*Method called every tick of reeling timer*/
     void ProcessReeling();
@@ -65,7 +71,10 @@ private:
 public:
 
     const EReelState& GetReelState();
-    bool Init(GameDefs::EReels eIDReel, float fXOrgPos, float fYOrgPos);
+    bool Init(GameDefs::EReels eIDReel, 
+              float fXOrgPos, 
+              float fYOrgPos,
+              const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount>& arrFiguresTexture);
     void Draw();
     void StartReeling();
     void NeedToFastStop();

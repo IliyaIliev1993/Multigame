@@ -8,6 +8,7 @@
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
 #include <main_app/panel/Panel.h>
+#include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
 
@@ -28,10 +29,17 @@ bool KidsFantasy::Init()
         return false;
     }
 
+    /*MathLogic Init*/
+    if(!MathLogic::GetInstance().Init())
+    {
+        LOG_ERROR("Kids Fantasy - Unable to Init Math Logic !");
+        return false;
+    }
+
     /*Reels Area Init*/
     if(!m_reelsArea.Init())
     {
-        LOG_ERROR("Unable to Init Reels Area !");
+        LOG_ERROR("Kids Fantasy - Unable to Init Reels Area !");
         return false;
     }
 
@@ -43,6 +51,9 @@ bool KidsFantasy::Deinit()
 {
     /*Reels Area Deinit*/
     m_reelsArea.Deinit();
+
+    /*Math Logic Deinit*/
+    MathLogic::GetInstance().Deinit();
 
     LOG_INFO("Kids Fantasy - Deinitialized ...");
     return true;

@@ -16,6 +16,9 @@ private:
     /*Container with reels*/
     std::array<Reel, GameDefs::eTotalReelCount>m_arrReels;
 
+    /*Container with figure textures*/
+    std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount>m_arrFiguresTexture;
+
 public:
 
     bool Init();

@@ -53,8 +53,8 @@ void TimerMgr::StartTimer(ITimer* client, unsigned int unID, unsigned int unPeri
     }
     
     // LOG_INFO("TimerMgr - StartTimer - Client - \"{0}\"", client);
-    LOG_INFO("TimerMgr - StartTimer - ID - \"{0}\"", unID);
-    LOG_INFO("TimerMgr - StartTimer - PERIOD - \"{0}\"", unPeriod);
+    // LOG_INFO("TimerMgr - StartTimer - ID - \"{0}\"", unID);
+    // LOG_INFO("TimerMgr - StartTimer - PERIOD - \"{0}\"", unPeriod);
 }
 
 void TimerMgr::StopTimer(ITimer* client, unsigned int unID)
@@ -69,7 +69,7 @@ void TimerMgr::StopTimer(ITimer* client, unsigned int unID)
                 if(timer.unID == unID)
                 {
                     timer.bNeedToDeleteTimer = true;
-                    LOG_INFO("TimerMgr - StopTimer - ID - \"{0}\"", unID);
+                    //LOG_INFO("TimerMgr - StopTimer - ID - \"{0}\"", unID);
                 }
             }
         }
@@ -88,7 +88,7 @@ void TimerMgr::Process()
         {
             if(it->bNeedToDeleteTimer)
             {
-                LOG_INFO("TimerMgr - Remove timer from container - ID - \"{0}\"", it->unID);
+                //LOG_INFO("TimerMgr - Remove timer from container - ID - \"{0}\"", it->unID);
                 it = client->m_vecTimers.erase(it);
             }
             else
