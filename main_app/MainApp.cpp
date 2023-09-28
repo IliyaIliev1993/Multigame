@@ -110,7 +110,7 @@ void MainApp::Run()
         ptrRend->CallEventsAndSwapBuffers();
 
         m_frameEndTime = std::chrono::system_clock::now();
-        m_nDeltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(m_frameEndTime - m_frameBeginTime).count();
+        m_fDeltaTimeInMicroSeconds = std::chrono::duration_cast<std::chrono::microseconds>(m_frameEndTime - m_frameBeginTime).count();
     }
 }
 
@@ -125,7 +125,8 @@ bool MainApp::Deinit()
     return true;
 }
 
-const int64_t& MainApp::GetDeltaTime()
+const float& MainApp::GetDeltaTime()
 {
-    return m_nDeltaTime;
+    m_fDeltaTimeInMilliSeconds = m_fDeltaTimeInMicroSeconds / 1000.0f;
+    return m_fDeltaTimeInMilliSeconds;
 }

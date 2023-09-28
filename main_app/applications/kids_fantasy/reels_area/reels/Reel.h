@@ -4,6 +4,14 @@
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/applications/kids_fantasy/GameDefinitions.h>
 
+enum class EReelState
+{
+    eStopped,
+    eAccelerating,
+    eReeling,
+    eBouncing
+};
+
 struct Figure
 {
     float fXPos = 0.0f;
@@ -18,6 +26,9 @@ class Reel : public ITimer
 
 private:
 
+    /*Reel State*/
+    EReelState m_eState = EReelState::eStopped;
+
     /*ID current reel*/
     GameDefs::EReels m_eIDReel = GameDefs::EReels::eFirstReel;
 
@@ -27,11 +38,23 @@ private:
     /*Y Position reel*/
     float m_fYOrgPos = 0;
 
+    /*Leading Y of first visible figure*/
+    float m_fYFirstVisibleFigure = 0.0f;
+
     /*Min Y Figure value while reeling*/
     float m_fYMinTresholdReelingFigure = 0;
 
     /*Max Y Figure value while reeling*/
     float m_fYMaxTresholdReelingFigure = 0;
+
+    /*Current reeling step, in base of state will be changed*/
+    float m_fReelingStep = 0.0f;
+
+    /*Cycles counter, how many times actual reels*/
+    int m_nCounterCycles = 0;
+
+    /*Fast Stop Key*/
+    bool m_bNeedToFastStop = false;
 
     /*Array holding reel figures*/
     std::array<Figure, GameDefs::g_unTotalFiguresPerReel>m_arrReelFigures;
@@ -41,8 +64,11 @@ private:
 
 public:
 
+    const EReelState& GetReelState();
     bool Init(GameDefs::EReels eIDReel, float fXOrgPos, float fYOrgPos);
     void Draw();
+    void StartReeling();
+    void NeedToFastStop();
     virtual void OnTick(unsigned int unID, unsigned int unTimes) final;
 
 };

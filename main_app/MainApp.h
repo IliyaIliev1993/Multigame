@@ -22,7 +22,8 @@ private:
     /*Delta Time measure*/
     std::chrono::time_point<std::chrono::system_clock> m_frameBeginTime;
     std::chrono::time_point<std::chrono::system_clock> m_frameEndTime;
-    int64_t m_nDeltaTime = 0;
+    float m_fDeltaTimeInMicroSeconds = 0.0f;
+    float m_fDeltaTimeInMilliSeconds = 0.0f;
 
     MainApp();
     ~MainApp();
@@ -54,6 +55,6 @@ public:
     void Run();
     bool Deinit();
 
-    const int64_t& GetDeltaTime();
+    const float& GetDeltaTime();
 
 };

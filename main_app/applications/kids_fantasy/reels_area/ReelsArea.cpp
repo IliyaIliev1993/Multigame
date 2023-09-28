@@ -12,11 +12,11 @@ constexpr float g_fYReelsArea = 0.0f;
 
 constexpr float g_fXOrgPosReel1 = 316.0f;
 constexpr float g_fXOrgPosReel2 = 566.0f;
-constexpr float g_fXOrgPosReel3 = 816.0f;
-constexpr float g_fXOrgPosReel4 = 1066.0f;
-constexpr float g_fXOrgPosReel5 = 1316.0f;
+constexpr float g_fXOrgPosReel3 = 815.0f;
+constexpr float g_fXOrgPosReel4 = 1063.0f;
+constexpr float g_fXOrgPosReel5 = 1312.0f;
 
-constexpr float g_fYOrgPosReels = 164.0f;
+constexpr float g_fYOrgPosReels = 165.0f;
 
 bool ReelsArea::Init()
 {
@@ -24,37 +24,37 @@ bool ReelsArea::Init()
     /*Load textures*/
     m_textureReelsArea = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/reels_area_clean.png");
 
-    if(!m_textureReelsArea->Load())
+    if (!m_textureReelsArea->Load())
     {
         LOG_ERROR("Reels Area - Unable to load texture reels area !");
         return false;
     }
 
     /*Initialize Reels*/
-    if(!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, g_fXReelsArea + g_fXOrgPosReel1, g_fYReelsArea + g_fYOrgPosReels))
+    if (!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, g_fXReelsArea + g_fXOrgPosReel1, g_fYReelsArea + g_fYOrgPosReels))
     {
         LOG_ERROR("Reels Area - Unable to load reel 1!");
-        return false;        
+        return false;
     }
-    if(!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, g_fXReelsArea + g_fXOrgPosReel2, g_fYReelsArea + g_fYOrgPosReels))
+    if (!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, g_fXReelsArea + g_fXOrgPosReel2, g_fYReelsArea + g_fYOrgPosReels))
     {
         LOG_ERROR("Reels Area - Unable to load reel 2!");
-        return false;        
+        return false;
     }
-    if(!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, g_fXReelsArea + g_fXOrgPosReel3, g_fYReelsArea + g_fYOrgPosReels))
+    if (!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, g_fXReelsArea + g_fXOrgPosReel3, g_fYReelsArea + g_fYOrgPosReels))
     {
         LOG_ERROR("Reels Area - Unable to load reel 3 !");
-        return false;        
+        return false;
     }
-    if(!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, g_fXReelsArea + g_fXOrgPosReel4, g_fYReelsArea + g_fYOrgPosReels))
+    if (!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, g_fXReelsArea + g_fXOrgPosReel4, g_fYReelsArea + g_fYOrgPosReels))
     {
         LOG_ERROR("Reels Area - Unable to load reel 4 !");
-        return false;        
+        return false;
     }
-    if(!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, g_fXReelsArea + g_fXOrgPosReel5, g_fYReelsArea + g_fYOrgPosReels))
+    if (!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, g_fXReelsArea + g_fXOrgPosReel5, g_fYReelsArea + g_fYOrgPosReels))
     {
         LOG_ERROR("Reels Area - Unable to load reel 5!");
-        return false;        
+        return false;
     }
 
     LOG_INFO("Reels Area - Initialized ...");
@@ -69,21 +69,47 @@ bool ReelsArea::Deinit()
 
 bool ReelsArea::HandleEvent()
 {
-    const auto& nXMouse = ImGui::GetMousePos().x;
-    const auto& nYMouse = ImGui::GetMousePos().y;
+    const auto &nXMouse = ImGui::GetMousePos().x;
+    const auto &nYMouse = ImGui::GetMousePos().y;
+
+    /*Enter Button*/
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
+    {
+        /*Start Reeling when ENTER pressed*/
+        bool bIAreAllReelsStopped = true;
+        for (auto &reel : m_arrReels)
+        {
+            if (reel.GetReelState() != EReelState::eStopped)
+            {
+                bIAreAllReelsStopped = false;
+                break;
+            }
+        }
+
+        if (bIAreAllReelsStopped)
+        {
+            for (auto &reel : m_arrReels)
+            {
+                reel.StartReeling();
+            }
+        }
+
+        LOG_INFO("Reels Area - ENTER Pressed");
+        return true;
+    }
 
     return false;
 }
 
 void ReelsArea::Draw()
 {
-    const auto& rend = MainApp::GetInstance().ptrRend;
+    const auto &rend = MainApp::GetInstance().ptrRend;
 
     /*Draw Reels Area*/
     rend->DrawPicture(m_textureReelsArea, 25.0f, 0.0f);
 
     /*Draw Reels*/
-    for(auto& reel : m_arrReels)
+    for (auto &reel : m_arrReels)
     {
         reel.Draw();
     }
