@@ -1,8 +1,15 @@
 #pragma once
-#include <array>
+#include <vector>
 #include <main_app/applications/kids_fantasy/GameDefinitions.h>
 
 typedef std::array<std::array<GameDefs::EGameFigure, GameDefs::eTotalFigurePositionsPerReel>, GameDefs::eTotalReelCount> Matrix2DResults;
+
+struct WinElement
+{
+    GameDefs::ELines eLine;
+    GameDefs::EGameFigure eGameFigure;
+    unsigned int unFigureCount;
+};
 
 class MathLogic
 {
@@ -14,6 +21,15 @@ private:
 
     /*2D matrix 5x5 holding game results*/
     Matrix2DResults m_arrResults;
+
+    /*Container holding win elements from current game*/
+    std::vector<WinElement>m_vectorWins;
+
+    /*Pushes Current win element in m_vectorWins*/
+    void PushWinElementInContainer(const GameDefs::ELines eLine, const GameDefs::EGameFigure eGameFigure, const unsigned int unFigureCount);
+
+    /*Method check for wins AFTER results has been generated*/
+    void CheckForWins();
 
 public:
 

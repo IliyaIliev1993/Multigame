@@ -1,7 +1,18 @@
 #pragma once
+#include <array>
 
 namespace GameDefs
 {
+    constexpr unsigned int g_unVisibleFiguresPerReel = 3;
+    constexpr unsigned int g_unTotalFiguresPerReel = 5;
+    constexpr unsigned int g_unMinFiguresNeededToFormWin = 3;
+
+    constexpr float g_fMinBet = 0.50f;
+    constexpr float g_fMaxBet = 2.50;
+
+    constexpr float g_fWidthFigurePicture = 240.0f;
+    constexpr float g_fHeightFigurePicture = 220.0f;
+
     enum EGameFigure
     {
         eGameFigureOne,
@@ -32,13 +43,75 @@ namespace GameDefs
         eFifthPositionNONVisible,
         eTotalFigurePositionsPerReel
     };
-    
-    constexpr unsigned int g_unVisibleFiguresPerReel = 3;
-    constexpr unsigned int g_unTotalFiguresPerReel = 5;
 
-    constexpr float g_fMinBet = 0.50f;
-    constexpr float g_fMaxBet = 2.50;
+    enum ELines
+    {
+        eLine1 = 0,
+        eLine2,
+        eLine3,
+        eLine4,
+        eLine5,
+        eLine6,
+        eLine7,
+        eLine8,
+        eLine9,
+        eLine10,
+        eLine11,
+        eLine12,
+        eLine13,
+        eLine14,
+        eLine15,
+        eLine16,
+        eLine17,
+        eLine18,
+        eLine19,
+        eLine20,
+        eLine21,
+        eLine22,
+        eLine23,
+        eLine24,
+        eLine25,
+        eLine26,
+        eLine27,
+        eLine28,
+        eLine29,
+        eLine30,
+        eTotalLinesCount
+    };
 
-    constexpr float g_fWidthFigurePicture = 240.0f;
-    constexpr float g_fHeightFigurePicture = 220.0f;
+    const std::array<std::array<int, eTotalReelCount>, eTotalLinesCount> g_arrLines =
+        {
+            {
+                {2, 2, 2, 2, 2}, // Line 1
+                {1, 1, 1, 1, 1}, // Line 2
+                {3, 3, 3, 3, 3}, // Line 3
+                {1, 2, 3, 2, 1}, // Line 4
+                {3, 2, 1, 2, 3}, // Line 5
+                {1, 1, 2, 3, 3}, // Line 6
+                {3, 3, 2, 1, 1}, // Line 7
+                {2, 1, 2, 3 ,2}, // Line 8
+                {2, 3, 2, 1, 2}, // Line 9
+                {1, 2, 2, 2, 3}, // Line 10
+                {3, 2, 2, 2, 1}, // Line 11
+                {2, 1, 1, 2, 3}, // Line 12
+                {2, 3, 3, 2, 1}, // Line 13
+                {2, 2, 1, 2, 3}, // Line 14
+                {2, 2, 3, 2, 1}, // Line 15
+                {1, 1, 2, 3, 2}, // Line 16
+                {3, 3, 2, 1, 2}, // Line 17
+                {2, 1, 2, 3, 3}, // Line 18
+                {2, 3, 2, 1, 1}, // Line 19
+                {1, 1, 1, 2, 3}, // Line 20
+                {3, 3, 3, 2, 1}, // Line 21
+                {1, 2, 3, 3, 3}, // Line 22
+                {3, 2, 1, 1, 1}, // Line 23
+                {1, 2, 1, 2, 1}, // Line 24
+                {3, 2, 3, 2, 3}, // Line 25
+                {1, 2, 2, 2, 1}, // Line 26
+                {3, 2, 2, 2, 3}, // Line 27
+                {2, 1, 1, 1, 2}, // Line 28
+                {2, 3, 3, 3, 2}, // Line 29
+                {1, 2, 1, 2, 3}, // Line 30
+            }
+        };
 }

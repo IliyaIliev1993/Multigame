@@ -36,7 +36,7 @@ private:
     float m_fCreditAvailable = 0.0f;
 
     /*Current bet bet line*/
-    float m_fCurrentBet = 1.00f;
+    float m_fCurrentBet = 0.50f;
 
     /*Current win from line*/
     float m_fCurrentWin = 0.0f;

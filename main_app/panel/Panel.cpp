@@ -609,7 +609,7 @@ bool Panel::CanStartNewGame()
         return true;
     }
 
-    LOG_INFO("Panel - Cannot Start New Game! Insufficient credit !");
+    LOG_ERROR("Panel - Cannot Start New Game! Insufficient credit !");
 
     return false;
 }
