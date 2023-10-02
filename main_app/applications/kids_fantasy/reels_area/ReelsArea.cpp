@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/panel/Panel.h>
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
@@ -47,9 +48,9 @@ bool ReelsArea::Init()
     m_arrFiguresTexture.at(GameDefs::eGameFigureFive) = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/reel_figures/figure_5.png");
     m_arrFiguresTexture.at(GameDefs::eGameFigureSix) = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/reel_figures/figure_6.png");
 
-    for(auto& texture : m_arrFiguresTexture)
+    for (auto &texture : m_arrFiguresTexture)
     {
-        if(!texture->Load())
+        if (!texture->Load())
         {
             LOG_ERROR("Reels Area - Unable to load texture figure \"{0}\"", texture->GetPath());
             return false;
@@ -57,42 +58,27 @@ bool ReelsArea::Init()
     }
 
     /*Initialize Reels*/
-    if (!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, 
-                                                    g_fXReelsArea + g_fXOrgPosReel1, 
-                                                    g_fYReelsArea + g_fYOrgPosReels,
-                                                    m_arrFiguresTexture))
+    if (!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, g_fXReelsArea + g_fXOrgPosReel1, g_fYReelsArea + g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 1!");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, 
-                                                    g_fXReelsArea + g_fXOrgPosReel2, 
-                                                    g_fYReelsArea + g_fYOrgPosReels,
-                                                    m_arrFiguresTexture))
+    if (!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, g_fXReelsArea + g_fXOrgPosReel2, g_fYReelsArea + g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 2!");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, 
-                                                    g_fXReelsArea + g_fXOrgPosReel3, 
-                                                    g_fYReelsArea + g_fYOrgPosReels,
-                                                    m_arrFiguresTexture))
+    if (!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, g_fXReelsArea + g_fXOrgPosReel3, g_fYReelsArea + g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 3 !");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, 
-                                                    g_fXReelsArea + g_fXOrgPosReel4, 
-                                                    g_fYReelsArea + g_fYOrgPosReels,
-                                                    m_arrFiguresTexture))
+    if (!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, g_fXReelsArea + g_fXOrgPosReel4, g_fYReelsArea + g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 4 !");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, 
-                                                    g_fXReelsArea + g_fXOrgPosReel5, 
-                                                    g_fYReelsArea + g_fYOrgPosReels,
-                                                    m_arrFiguresTexture))
+    if (!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, g_fXReelsArea + g_fXOrgPosReel5, g_fYReelsArea + g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 5!");
         return false;
@@ -116,33 +102,47 @@ bool ReelsArea::HandleEvent()
     /*Enter Button*/
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
     {
-        /*Start Reeling when ENTER pressed*/
-        bool bCanStartReeling = true;
-        for (auto &reel : m_arrReels)
-        {
-            if (reel.GetReelState() != EReelState::eStopped)
-            {
-                bCanStartReeling = false;
-                break;
-            }
-        }
-
-        if (bCanStartReeling)
-        {
-            /*Generate New Results*/
-            MathLogic::GetInstance().GenerateResults();
-
-            for (auto &reel : m_arrReels)
-            {
-                reel.StartReeling();
-            }
-        }
+        StartNewGame();
 
         LOG_INFO("Reels Area - ENTER Pressed");
         return true;
     }
 
     return false;
+}
+
+void ReelsArea::StartNewGame()
+{
+    /*Check if all reels stopped*/
+    bool bCanStartReeling = true;
+    for (auto &reel : m_arrReels)
+    {
+        if (reel.GetReelState() != EReelState::eStopped)
+        {
+            bCanStartReeling = false;
+            break;
+        }
+    }
+
+    if (bCanStartReeling)
+    {
+        /*Check if credit sufficient*/
+        if(!MainApp::GetInstance().ptrPanel->CanStartNewGame())
+        {
+            return;
+        }
+
+        /*Decrement bet from total credit*/
+        MainApp::GetInstance().ptrPanel->DecrementCreditWithBet();
+
+        /*Generate New Results*/
+        MathLogic::GetInstance().GenerateResults();
+
+        for (auto &reel : m_arrReels)
+        {
+            reel.StartReeling();
+        }
+    }
 }
 
 void ReelsArea::Draw()

@@ -37,11 +37,11 @@ long MathLogic::GenerateRandomNuber(long nLowerBound, long nUpperBound)
 void MathLogic::GenerateResults()
 {
     /*Generate random numbers with rand()*/
-    for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
+    for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)
     {
-        for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)
+        for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
         {
-            m_arrResults[reel][figure] = (GameDefs::EGameFigure)GenerateRandomNuber(GameDefs::eGameFigureOne, GameDefs::eTotalGameFiguresCount);
+            m_arrResults[figure][reel] = (GameDefs::EGameFigure)GenerateRandomNuber(GameDefs::eGameFigureOne, GameDefs::eTotalGameFiguresCount);
         }
     }
 
@@ -51,7 +51,7 @@ void MathLogic::GenerateResults()
     {
         for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
         {
-            std::cout << m_arrResults[reel][figure] + 1 << "   ";
+            std::cout << m_arrResults[figure][reel] + 1 << "   ";
         }
 
         std::cout << std::endl;

@@ -36,7 +36,7 @@ private:
     float m_fCreditAvailable = 0.0f;
 
     /*Current bet bet line*/
-    float m_fCurrentBet = 0.0f;
+    float m_fCurrentBet = 1.00f;
 
     /*Current win from line*/
     float m_fCurrentWin = 0.0f;
@@ -47,14 +47,20 @@ private:
     /*Volume Valume 0.0f - 1.0f*/
     float m_fVolumeValue = 0.0f;
 
-    /*Volume Percentage*/
-    int m_nVolumePercentage = 0;
-
     /*Alpha channel info window*/
     float m_fAlphaInfoWindow = 0.0f;
 
+    /*Alpha channel bet buttons*/
+    float m_fAlphaBetButtons = 0.0f;
+
+    /*Volume Percentage*/
+    int m_nVolumePercentage = 0;
+
     /*String Credit Available*/
     std::string m_strCreditAvailable;
+
+    /*String Current Bet*/
+    std::string m_strCurrentBet;
 
     /*Textures Home Button pressed, released*/
     std::shared_ptr<Texture> m_textureHomeButton;
@@ -70,7 +76,12 @@ private:
     /*Texture panel*/
     std::shared_ptr<Texture> m_textureCreditPanel;
     std::shared_ptr<Texture> m_textureCreditPanelPressed;
+    std::shared_ptr<Texture> m_textureCreditPanelPressToAdd;
     std::shared_ptr<Texture> m_textureBetPanel;
+    std::shared_ptr<Texture> m_textureBetPanelIncrement;
+    std::shared_ptr<Texture> m_textureBetPanelIncrementPressed;
+    std::shared_ptr<Texture> m_textureBetPanelDecrement;
+    std::shared_ptr<Texture> m_textureBetPanelDecrementPressed;
     std::shared_ptr<Texture> m_textureWinPanel;
 
     /*Texture Exit Calculator Button*/
@@ -97,6 +108,15 @@ private:
     /*Credit Button - Field*/
     Button m_creditButton;
 
+    /*Bet Button - Field*/
+    Button m_betButton;
+
+    /*Decrement Bet Button*/
+    Button m_decrementBetButton;
+
+    /*Increment Bet Button*/
+    Button m_incrementBetButton;
+
     /*Exit Calculator Button*/
     Button m_exitCalculatorButton;
 
@@ -115,13 +135,22 @@ private:
     /*Method Draw Credit in base of lenght of digits*/
     void DrawDynamicTextCredit();
 
+    /*Method Draw Credit Panel*/
+    void DrawCreditPanelButton();
+
+    /*Mehtod Draw Bet Panel*/
+    void DrawBetPanel();
+
 public:
+
     bool Init();
     bool Deinit();
     bool HandleEvent();
+    bool CanStartNewGame();
     void OnDraw();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void AddCredit(float fCreditToAdd);
     void RemoveCredit(float fCreditToRemove);
+    void DecrementCreditWithBet();
     void ResetCredit();
 };

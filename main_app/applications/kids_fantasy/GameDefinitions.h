@@ -36,6 +36,9 @@ namespace GameDefs
     constexpr unsigned int g_unVisibleFiguresPerReel = 3;
     constexpr unsigned int g_unTotalFiguresPerReel = 5;
 
+    constexpr float g_fMinBet = 0.50f;
+    constexpr float g_fMaxBet = 2.50;
+
     constexpr float g_fWidthFigurePicture = 240.0f;
     constexpr float g_fHeightFigurePicture = 220.0f;
 }

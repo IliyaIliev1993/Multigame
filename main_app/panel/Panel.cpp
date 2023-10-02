@@ -27,6 +27,8 @@ constexpr float g_fYInfoWindow = 260.0f;
 
 constexpr float g_fXCreditPanel = 270.0f;
 constexpr float g_fXBetPanel = 773.0f;
+constexpr float g_fXBetPanelDecrementButtonOffset = 0.0f;
+constexpr float g_fXBetPanelIncrementButtonOffset = 272.0f;
 constexpr float g_fXWinPanel = 1280.0f;
 constexpr float g_fYBetPanel = 928.0f;
 
@@ -36,6 +38,8 @@ constexpr float g_fXCreditPanelTextThousend = 370.0f;
 constexpr float g_fXCreditPanelTextHundredThousend = 355.0f;
 constexpr float g_fXCreditPanelTextMaxOffset = 345.0f;
 constexpr float g_fYCreditPanelText = 1030.0f;
+
+constexpr float g_fXBetPanelTextOffset = 135.0f;
 
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
@@ -76,7 +80,12 @@ bool Panel::Init()
     m_textureInfoWindow = Texture::CreateTexture("../src/resources/panel/info_window.png");
     m_textureCreditPanel = Texture::CreateTexture("../src/resources/panel/credit_field.png");
     m_textureCreditPanelPressed = Texture::CreateTexture("../src/resources/panel/credit_field_pressed.png");
+    m_textureCreditPanelPressToAdd = Texture::CreateTexture("../src/resources/panel/credit_field_press_to_add.png");
     m_textureBetPanel = Texture::CreateTexture("../src/resources/panel/bet_field.png");
+    m_textureBetPanelIncrement = Texture::CreateTexture("../src/resources/panel/increment.png");
+    m_textureBetPanelIncrementPressed = Texture::CreateTexture("../src/resources/panel/increment_pressed.png");
+    m_textureBetPanelDecrement = Texture::CreateTexture("../src/resources/panel/decrement.png");
+    m_textureBetPanelDecrementPressed = Texture::CreateTexture("../src/resources/panel/decrement_pressed.png");
     m_textureWinPanel = Texture::CreateTexture("../src/resources/panel/win_field.png");
     m_textureExitCalculator = Texture::CreateTexture("../src/resources/panel/calculator/exit.png");
     m_textureExitCalculatorPressed = Texture::CreateTexture("../src/resources/panel/calculator/exit_pressed.png");
@@ -127,9 +136,39 @@ bool Panel::Init()
         return false;
     }
 
+    if (!m_textureCreditPanelPressToAdd->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture credit panel press to add!");
+        return false;
+    }
+
     if (!m_textureBetPanel->Load())
     {
         LOG_ERROR("Panel - Unable to load texture bet panel!");
+        return false;
+    }
+
+    if (!m_textureBetPanelIncrement->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture bet panel increment!");
+        return false;
+    }
+
+    if (!m_textureBetPanelIncrementPressed->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture bet panel increment pressed!");
+        return false;
+    }
+
+    if (!m_textureBetPanelDecrement->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture bet panel decrement!");
+        return false;
+    }
+
+    if (!m_textureBetPanelDecrementPressed->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture bet panel decrement pressed!");
         return false;
     }
 
@@ -182,6 +221,18 @@ bool Panel::Init()
     m_creditButton.fY = g_fYBetPanel;
     m_creditButton.fontButton = m_fontVolume;
 
+    m_betButton.textureButton = m_textureBetPanel;
+    m_betButton.fX = g_fXBetPanel;
+    m_betButton.fY = g_fYBetPanel;
+
+    m_decrementBetButton.textureButton = m_textureBetPanelDecrement;
+    m_decrementBetButton.fX = g_fXBetPanel + g_fXBetPanelDecrementButtonOffset;
+    m_decrementBetButton.fY = g_fYBetPanel;
+
+    m_incrementBetButton.textureButton = m_textureBetPanelIncrement;
+    m_incrementBetButton.fX = g_fXBetPanel + g_fXBetPanelIncrementButtonOffset;
+    m_incrementBetButton.fY = g_fYBetPanel;
+
     m_exitCalculatorButton.textureButton = m_textureExitCalculator;
     m_exitCalculatorButton.fX = g_fXOffsetExitCalculatorButton + g_fXInfoWindow;
     m_exitCalculatorButton.fY = g_fYOffsetExitCalculatorButton + g_fYInfoWindow;
@@ -197,6 +248,9 @@ bool Panel::Init()
 
     std::string strFloatToString = std::to_string(m_fCreditAvailable);
     m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+
+    strFloatToString = std::to_string(m_fCurrentBet);
+    m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 
     LOG_INFO("Panel - Initialized ...");
     return true;
@@ -374,7 +428,7 @@ bool Panel::HandleEvent()
         else
         {
             m_resetCreditButton.textureButton = m_textureResetButton;
-            if(m_resetCreditButton.IsReleased(nXMouse, nYMouse))
+            if (m_resetCreditButton.IsReleased(nXMouse, nYMouse))
             {
                 ResetCredit();
                 return true;
@@ -411,7 +465,6 @@ bool Panel::HandleEvent()
     }
     else
     {
-        m_creditButton.textureButton = m_textureCreditPanel;
 
         /*When button relaesed, activate calculator scene*/
         if (m_creditButton.IsReleased(nXMouse, nYMouse))
@@ -420,6 +473,76 @@ bool Panel::HandleEvent()
             m_fAlphaInfoWindow = 1.0f;
 
             return true;
+        }
+
+        /*Hover Effect*/
+        if (m_eInfoScene == EPanelInfoScenes::eNoInfoScene &&
+            m_creditButton.IsHovered(nXMouse, nYMouse))
+        {
+            m_creditButton.textureButton = m_textureCreditPanelPressToAdd;
+        }
+        else
+        {
+            m_creditButton.textureButton = m_textureCreditPanel;
+        }
+    }
+
+    /*Bet Button - Field*/
+    if (m_betButton.IsHovered(nXMouse, nYMouse))
+    {
+        /*Bet increment/decrement*/
+        const float fBetModifier = 0.50f;
+
+        /*Decremenet Button*/
+        if (m_decrementBetButton.IsPressAndHold(nXMouse, nYMouse))
+        {
+            m_decrementBetButton.textureButton = m_textureBetPanelDecrementPressed;
+            return true;
+        }
+        else
+        {
+            m_decrementBetButton.textureButton = m_textureBetPanelDecrement;
+
+            /*When button relaesed, decrement bet*/
+            if (m_decrementBetButton.IsReleased(nXMouse, nYMouse))
+            {
+                m_fCurrentBet -= fBetModifier;
+                if (m_fCurrentBet <= GameDefs::g_fMinBet)
+                {
+                    m_fCurrentBet = GameDefs::g_fMinBet;
+                }
+
+                std::string strFloatToString = std::to_string(m_fCurrentBet);
+                m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+
+                return true;
+            }
+        }
+
+        /*Increment Button*/
+        if (m_incrementBetButton.IsPressAndHold(nXMouse, nYMouse))
+        {
+            m_incrementBetButton.textureButton = m_textureBetPanelIncrementPressed;
+            return true;
+        }
+        else
+        {
+            m_incrementBetButton.textureButton = m_textureBetPanelIncrement;
+
+            /*When button relaesed, increment bet*/
+            if (m_incrementBetButton.IsReleased(nXMouse, nYMouse))
+            {
+                m_fCurrentBet += fBetModifier;
+                if (m_fCurrentBet >= GameDefs::g_fMaxBet)
+                {
+                    m_fCurrentBet = GameDefs::g_fMaxBet;
+                }
+
+                std::string strFloatToString = std::to_string(m_fCurrentBet);
+                m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+
+                return true;
+            }
         }
     }
 
@@ -479,7 +602,39 @@ bool Panel::HandleEvent()
     return false;
 }
 
-float fDegrees = 0.0f;
+bool Panel::CanStartNewGame()
+{
+    if((m_fCreditAvailable + m_fCurrentWin) >= m_fCurrentBet)
+    {
+        return true;
+    }
+
+    LOG_INFO("Panel - Cannot Start New Game! Insufficient credit !");
+
+    return false;
+}
+
+void Panel::DrawCreditPanelButton()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+
+    rend->DrawPicture(m_creditButton.textureButton, m_creditButton.fX, m_creditButton.fY);
+    DrawDynamicTextCredit();
+}
+
+void Panel::DrawBetPanel()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+
+    rend->DrawPicture(m_betButton.textureButton, m_betButton.fX, m_betButton.fY);
+    rend->DrawText(m_strCurrentBet, m_fontVolume, g_fXBetPanel + g_fXBetPanelTextOffset, g_fYCreditPanelText, 1.5f);
+
+    if (m_betButton.bIsHovered)
+    {
+        rend->DrawPicture(m_decrementBetButton.textureButton, m_decrementBetButton.fX, m_decrementBetButton.fY);
+        rend->DrawPicture(m_incrementBetButton.textureButton, m_incrementBetButton.fX, m_incrementBetButton.fY);
+    }
+}
 
 void Panel::OnDraw()
 {
@@ -493,11 +648,10 @@ void Panel::OnDraw()
     rend->DrawPictureRotated(m_volumeKnobButton.textureButton, m_volumeKnobButton.fX, m_volumeKnobButton.fY, m_fDegreesVolumeKnob);
 
     /*Credit Button - Panel*/
-    rend->DrawPicture(m_creditButton.textureButton, m_creditButton.fX, m_creditButton.fY);
-    DrawDynamicTextCredit();
+    DrawCreditPanelButton();
 
     /*Bet Panel*/
-    rend->DrawPicture(m_textureBetPanel, g_fXBetPanel, g_fYBetPanel);
+    DrawBetPanel();
 
     /*Win Panel*/
     rend->DrawPicture(m_textureWinPanel, g_fXWinPanel, g_fYBetPanel);
@@ -541,32 +695,37 @@ void Panel::DrawDynamicTextCredit()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
-    const auto& nLenghtOfString = m_strCreditAvailable.length();
+    const auto &nLenghtOfString = m_strCreditAvailable.length();
     float fXDynamic = g_fXCreditPanelTextTen;
     /*0 - 9*/
-    if(nLenghtOfString <= 4)
+    if (nLenghtOfString <= 4)
     {
         fXDynamic = g_fXCreditPanelTextTen;
     }
     /*10 - 99*/
-    else if(nLenghtOfString == 5)
+    else if (nLenghtOfString == 5)
     {
         fXDynamic = g_fXCreditPanelTextHundred;
     }
     /*100 - 999*/
-    else if(nLenghtOfString == 6)
+    else if (nLenghtOfString == 6)
     {
         fXDynamic = g_fXCreditPanelTextThousend;
     }
-    else if(nLenghtOfString == 7)
+    else if (nLenghtOfString == 7)
     {
         fXDynamic = g_fXCreditPanelTextHundredThousend;
     }
-    else if(nLenghtOfString >= 8)
+    else if (nLenghtOfString >= 8)
     {
         fXDynamic = g_fXCreditPanelTextMaxOffset;
     }
 
+    /*When Hovered no need to draw credit available*/
+    if (m_creditButton.bIsHovered)
+    {
+        return;
+    }
     rend->DrawText(m_strCreditAvailable, m_fontVolume, fXDynamic, g_fYCreditPanelText, 1.5f);
 }
 
@@ -621,6 +780,11 @@ void Panel::RemoveCredit(float fCreditToBeRemoved)
 
     std::string strFloatToString = std::to_string(m_fCreditAvailable);
     m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+}
+
+void Panel::DecrementCreditWithBet()
+{
+    RemoveCredit(m_fCurrentBet);
 }
 
 void Panel::ResetCredit()

@@ -10,6 +10,7 @@
         float fY = 0.0f;
         float fValue = 0.0f;
         bool bIsClicked = false;
+        bool bIsHovered = false;
         std::string strText = "";
         std::shared_ptr<Texture>textureButton = nullptr;
         std::shared_ptr<Font>fontButton = nullptr;

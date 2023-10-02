@@ -122,7 +122,7 @@ void Reel::ProcessReeling()
             /*Insert Results, 1 cycle before stopping*/
             if (m_nCounterCycles >= (m_nReelingCyclesBeforeBounce - 1))
             {
-                const auto& nCurrentFigure = MathLogic::GetInstance().GetResults().at(m_eIDReel).at(nIndexFigure);
+                const auto& nCurrentFigure = MathLogic::GetInstance().GetResults().at(nIndexFigure).at(m_eIDReel);
                 figure.textureFigure = m_arrFiguresTexture.at(nCurrentFigure);
             }
         }
