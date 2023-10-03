@@ -31,6 +31,9 @@ bool Roulette::HandleEvent()
     const auto& nXMouse = ImGui::GetMousePos().x;
     const auto& nYMouse = ImGui::GetMousePos().y;
 
+    /*Panel Handle Event*/
+    MainApp::GetInstance().ptrPanel->HandleEvent();
+
     return false;
 }
 

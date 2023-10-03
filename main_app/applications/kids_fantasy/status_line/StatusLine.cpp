@@ -17,7 +17,7 @@ constexpr float g_fXInsetCredit = 830.0f;
 const std::string g_strPressStart = "PRESS START TO RUN NEW GAME";
 constexpr float g_fXPressStart = 660.0f;
 
-const std::string g_strPlayAtMaxBet = "PLAY AT MAX BET";
+const std::string g_strPlayAtMaxBet = "PLAY ON MAX BET";
 constexpr float g_fXPlayAtMaxBet = 795.0f;
 
 const std::string g_strWinTheMaxAmout = "WIN THE MAX AMOUNT";
@@ -100,6 +100,8 @@ void StatusLine::Draw()
 void StatusLine::StartScenario()
 {
     m_fAlphaScenario = 1.0f;
+    m_eCurrentScenario = eInsertCredit;
+    NextScenario();
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unStatusLineScenarioTimer, g_unStatusLineScenarioTimerPeriod);
     LOG_INFO("StatusLine - Scenario Started");
 }

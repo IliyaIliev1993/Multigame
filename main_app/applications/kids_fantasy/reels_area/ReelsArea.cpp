@@ -9,6 +9,8 @@
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
+constexpr unsigned int g_unReelingListenerTimer = 1;
+
 constexpr float g_fXReelsArea = 25.0;
 constexpr float g_fXHearth = 673.0;
 constexpr float g_fYReelsArea = 0.0f;
@@ -98,11 +100,11 @@ bool ReelsArea::HandleEvent()
 {
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
-    
+
     return false;
 }
 
-void ReelsArea::StartNewGame()
+bool ReelsArea::StartNewGame()
 {
     /*Check if all reels stopped*/
     bool bCanStartReeling = true;
@@ -111,7 +113,7 @@ void ReelsArea::StartNewGame()
         if (reel.GetReelState() != EReelState::eStopped)
         {
             bCanStartReeling = false;
-            break;
+            return bCanStartReeling;
         }
     }
 
@@ -121,7 +123,8 @@ void ReelsArea::StartNewGame()
         if(!MainApp::GetInstance().ptrPanel->CanStartNewGame())
         {
             LOG_ERROR("ReelsArea - Cannot Start New Game! Insufficient credit !");
-            return;
+            bCanStartReeling = false;
+            return bCanStartReeling;
         }
 
         /*Decrement bet from total credit*/
@@ -134,9 +137,18 @@ void ReelsArea::StartNewGame()
         {
             reel.StartReeling();
         }
+
+        /*Start listener timer to check if all reels stopped*/
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unReelingListenerTimer, 1);
     }
 
     LOG_INFO("Reels Area - New Game Started");
+    return bCanStartReeling;
+}
+
+void ReelsArea::SetAfterReelingStoppedCallback(std::function<void()>& afterReelingStoppedCallback)
+{
+    m_afterReelingStoppedCallback = afterReelingStoppedCallback;
 }
 
 void ReelsArea::Draw()
@@ -154,4 +166,30 @@ void ReelsArea::Draw()
 
     /*Draw hearth*/
     rend->DrawPicture(m_textureHearth, g_fXReelsArea + g_fXHearth, g_fYReelsArea);
+}
+
+void ReelsArea::OnTick(unsigned int unID, unsigned int unTimes)
+{
+    if(unID == g_unReelingListenerTimer)
+    {
+        bool bReelsStopped = true;
+        for(auto& reel : m_arrReels)
+        {
+            if(reel.GetReelState() != EReelState::eStopped)
+            {
+                bReelsStopped = false;
+                return;
+            }
+        }
+
+        if(bReelsStopped)
+        {
+            /*After all reels stopped, call the callback*/
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unReelingListenerTimer);
+            if(m_afterReelingStoppedCallback)
+            {
+                m_afterReelingStoppedCallback();
+            }
+        }
+    }
 }

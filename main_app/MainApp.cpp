@@ -82,7 +82,6 @@ void MainApp::Run()
         ImGui_ImplGlfwGL3_NewFrame();
 
         /* Handle Event */
-        ptrPanel->HandleEvent();
         ptrAppSelect->HandleEvent();
 
         /*Process Timing*/

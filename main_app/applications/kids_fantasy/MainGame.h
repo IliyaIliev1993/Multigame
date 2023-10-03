@@ -13,7 +13,20 @@ class KidsFantasy : public IApp, public ITimer
 
 private:
 
+    enum class EKidsFantasyStates
+    {
+        eInactive,
+        eReadyForGame,
+        eReeling,
+        eAfterReelingStopped,
+        eWinFromGame,
+        eTotalStatesCount
+    };
+
     std::string m_strAppName = "Kids Fantasy";
+
+    /*KidsFantasy current state*/
+    EKidsFantasyStates m_eState = EKidsFantasyStates::eInactive;
 
     /*Reels Area object*/
     ReelsArea m_reelsArea;
@@ -23,7 +36,12 @@ private:
 
     /*Texture main background*/
     std::shared_ptr<Texture>m_textureBackground;
+
+    /*After reeling stopped method, called when all reels stopped after game started*/
+    void AfterReelingStopped();
     
+    /*Game State Request*/
+    void RequestState(EKidsFantasyStates eStateToRequest);
 public:
 
     KidsFantasy();

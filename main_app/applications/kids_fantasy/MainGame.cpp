@@ -15,7 +15,6 @@ constexpr unsigned int g_unTimerGameCycle = 1;
 
 KidsFantasy::KidsFantasy()
 {
-
 }
 
 bool KidsFantasy::Init()
@@ -24,31 +23,38 @@ bool KidsFantasy::Init()
     /*Load textures*/
     m_textureBackground = Texture::CreateTexture("../src/resources/kids_fantasy/kids_fantasy_background.png");
 
-    if(!m_textureBackground->Load())
+    if (!m_textureBackground->Load())
     {
         LOG_ERROR("KidsFantasy - Unable to load texture background !");
         return false;
     }
 
     /*MathLogic Init*/
-    if(!MathLogic::GetInstance().Init())
+    if (!MathLogic::GetInstance().Init())
     {
         LOG_ERROR("Kids Fantasy - Unable to Init Math Logic !");
         return false;
     }
 
     /*Reels Area Init*/
-    if(!m_reelsArea.Init())
+    if (!m_reelsArea.Init())
     {
         LOG_ERROR("Kids Fantasy - Unable to Init Reels Area !");
         return false;
     }
 
-    if(!m_statusLine.Init())
+    if (!m_statusLine.Init())
     {
         LOG_ERROR("Kids Fantasy - Unable to Init StatusLine !");
         return false;
     }
+
+    /*Set after reeling stopped callback*/
+    std::function<void()> afterReelingStopped = [this]()
+    {
+        AfterReelingStopped();
+    };
+    m_reelsArea.SetAfterReelingStoppedCallback(afterReelingStopped);
 
     LOG_INFO("Kids Fantasy - Initialized ...");
     return true;
@@ -71,17 +77,28 @@ bool KidsFantasy::Deinit()
 
 bool KidsFantasy::HandleEvent()
 {
-    const auto& nXMouse = ImGui::GetMousePos().x;
-    const auto& nYMouse = ImGui::GetMousePos().y;
+    const auto &nXMouse = ImGui::GetMousePos().x;
+    const auto &nYMouse = ImGui::GetMousePos().y;
+
+    /*Panel Handle Event*/
+    if (m_eState == EKidsFantasyStates::eReadyForGame)
+    {
+        MainApp::GetInstance().ptrPanel->HandleEvent();
+    }
 
     /*Enter Button*/
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
     {
-        m_reelsArea.StartNewGame();
-        m_statusLine.NeedToShowGoodLuck();
+        LOG_INFO("Kids Fantasy - ENTER Button Pressed");
+
+        if (m_reelsArea.StartNewGame())
+        {
+            RequestState(EKidsFantasyStates::eReeling);
+            m_statusLine.NeedToShowGoodLuck();
+        }
+
         return true;
     }
-
 
     /*Reels Area Handle Event*/
     m_reelsArea.HandleEvent();
@@ -89,15 +106,148 @@ bool KidsFantasy::HandleEvent()
     return false;
 }
 
-const std::string& KidsFantasy::GetAppName()
+const std::string &KidsFantasy::GetAppName()
 {
     return m_strAppName;
+}
+
+void KidsFantasy::RequestState(EKidsFantasyStates eStateToRequest)
+{
+    std::string strStateToRequest = "N/A";
+    std::string strCurrentState = "N/A";
+
+    /*Current State*/
+    switch (m_eState)
+    {
+    case EKidsFantasyStates::eInactive:
+    {
+        strCurrentState = "eInactive";
+    }
+    break;
+
+    case EKidsFantasyStates::eReadyForGame:
+    {
+        strCurrentState = "eReadyForGame";
+    }
+    break;
+
+    case EKidsFantasyStates::eReeling:
+    {
+        strCurrentState = "eReeling";
+    }
+    break;
+
+    case EKidsFantasyStates::eAfterReelingStopped:
+    {
+        strCurrentState = "eAfterReelingStopped";
+    }
+    break;
+
+    case EKidsFantasyStates::eWinFromGame:
+    {
+        strCurrentState = "eWinFromGame";
+    }
+    break;
+
+    default:
+        break;
+    }
+
+    /*State to Request*/
+    switch (eStateToRequest)
+    {
+    case EKidsFantasyStates::eInactive:
+    {
+        strStateToRequest = "eInactive";
+
+        if (m_eState == EKidsFantasyStates::eReadyForGame)
+        {
+            LOG_INFO("Kids Fantasy - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Kids Fantasy - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case EKidsFantasyStates::eReadyForGame:
+    {
+        strStateToRequest = "eReadyForGame";
+
+        if (m_eState == EKidsFantasyStates::eInactive ||
+            m_eState == EKidsFantasyStates::eAfterReelingStopped ||
+            m_eState == EKidsFantasyStates::eWinFromGame)
+        {
+            LOG_INFO("Kids Fantasy - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Kids Fantasy - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case EKidsFantasyStates::eReeling:
+    {
+        strStateToRequest = "eReeling";
+
+        if (m_eState == EKidsFantasyStates::eReadyForGame)
+        {
+            LOG_INFO("Kids Fantasy - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Kids Fantasy - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case EKidsFantasyStates::eAfterReelingStopped:
+    {
+        strStateToRequest = "eAfterReelingStopped";
+
+        if (m_eState == EKidsFantasyStates::eReeling)
+        {
+            LOG_INFO("Kids Fantasy - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Kids Fantasy - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case EKidsFantasyStates::eWinFromGame:
+    {
+        strStateToRequest = "eWinFromGame";
+
+        if (m_eState == EKidsFantasyStates::eAfterReelingStopped)
+        {
+            LOG_INFO("Kids Fantasy - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Kids Fantasy - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    default:
+        break;
+    }
 }
 
 void KidsFantasy::OnEnter()
 {
     LOG_INFO("Kids Fantasy - Transition to Application succeed");
 
+    RequestState(EKidsFantasyStates::eReadyForGame);
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerGameCycle, 1);
     m_statusLine.StartScenario();
 }
@@ -106,13 +256,14 @@ void KidsFantasy::OnExit()
 {
     m_statusLine.StopScenario();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerGameCycle);
+    RequestState(EKidsFantasyStates::eInactive);
 
     LOG_INFO("Kids Fantasy - Exit from Application");
 }
 
 void KidsFantasy::OnDraw()
 {
-    const auto& rend = MainApp::GetInstance().ptrRend;
+    const auto &rend = MainApp::GetInstance().ptrRend;
 
     /*Draw Background*/
     rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
@@ -127,10 +278,16 @@ void KidsFantasy::OnDraw()
     MainApp::GetInstance().ptrPanel->OnDraw();
 }
 
+void KidsFantasy::AfterReelingStopped()
+{
+    RequestState(EKidsFantasyStates::eAfterReelingStopped);
+    RequestState(EKidsFantasyStates::eReadyForGame);
+    m_statusLine.StartScenario();
+}
+
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == g_unTimerGameCycle)
+    if (unID == g_unTimerGameCycle)
     {
-        
     }
 }
