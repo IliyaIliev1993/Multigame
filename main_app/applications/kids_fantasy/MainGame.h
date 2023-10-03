@@ -6,6 +6,7 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/applications/kids_fantasy/reels_area/ReelsArea.h>
+#include <main_app/applications/kids_fantasy/status_line/StatusLine.h>
 
 class KidsFantasy : public IApp, public ITimer
 {
@@ -16,6 +17,9 @@ private:
 
     /*Reels Area object*/
     ReelsArea m_reelsArea;
+
+    /*StatusLine object*/
+    StatusLine m_statusLine;
 
     /*Texture main background*/
     std::shared_ptr<Texture>m_textureBackground;

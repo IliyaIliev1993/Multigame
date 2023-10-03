@@ -78,6 +78,6 @@ public:
     void Draw();
     void StartReeling();
     void NeedToFastStop();
-    virtual void OnTick(unsigned int unID, unsigned int unTimes) final;
+    void OnTick(unsigned int unID, unsigned int unTimes) final;
 
 };

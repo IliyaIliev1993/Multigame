@@ -21,12 +21,12 @@ private:
     /*Container with figure textures*/
     std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> m_arrFiguresTexture;
 
-    /*Start new game method, when ENTER pressed will be executed*/
-    void StartNewGame();
-
 public:
     bool Init();
     bool Deinit();
     bool HandleEvent();
     void Draw();
+
+    /*Start new game method, when ENTER pressed will be executed*/
+    void StartNewGame();
 };

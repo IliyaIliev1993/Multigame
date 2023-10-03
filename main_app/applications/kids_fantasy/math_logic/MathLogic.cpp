@@ -27,6 +27,8 @@ bool MathLogic::Deinit()
 
 long MathLogic::GenerateRandomNuber(long nLowerBound, long nUpperBound)
 {
+    unsigned int unSeed = std::chrono::system_clock::now().time_since_epoch().count();
+    srand(unSeed);
     long nNumberToReturn = rand() % nUpperBound + nLowerBound;
 
     // LOG_INFO("MathLogic - Generated Random Number - \"{0}\"", nNumberToReturn);

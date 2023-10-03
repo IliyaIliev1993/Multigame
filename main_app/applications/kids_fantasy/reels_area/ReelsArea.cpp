@@ -98,16 +98,7 @@ bool ReelsArea::HandleEvent()
 {
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
-
-    /*Enter Button*/
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
-    {
-        StartNewGame();
-
-        LOG_INFO("Reels Area - ENTER Pressed");
-        return true;
-    }
-
+    
     return false;
 }
 
@@ -129,6 +120,7 @@ void ReelsArea::StartNewGame()
         /*Check if credit sufficient*/
         if(!MainApp::GetInstance().ptrPanel->CanStartNewGame())
         {
+            LOG_ERROR("ReelsArea - Cannot Start New Game! Insufficient credit !");
             return;
         }
 
@@ -143,6 +135,8 @@ void ReelsArea::StartNewGame()
             reel.StartReeling();
         }
     }
+
+    LOG_INFO("Reels Area - New Game Started");
 }
 
 void ReelsArea::Draw()

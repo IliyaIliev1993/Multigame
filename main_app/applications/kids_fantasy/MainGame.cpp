@@ -11,6 +11,7 @@
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
+constexpr unsigned int g_unTimerGameCycle = 1;
 
 KidsFantasy::KidsFantasy()
 {
@@ -43,6 +44,12 @@ bool KidsFantasy::Init()
         return false;
     }
 
+    if(!m_statusLine.Init())
+    {
+        LOG_ERROR("Kids Fantasy - Unable to Init StatusLine !");
+        return false;
+    }
+
     LOG_INFO("Kids Fantasy - Initialized ...");
     return true;
 }
@@ -51,6 +58,9 @@ bool KidsFantasy::Deinit()
 {
     /*Reels Area Deinit*/
     m_reelsArea.Deinit();
+
+    /*StatusLine Deinit*/
+    m_statusLine.Deinit();
 
     /*Math Logic Deinit*/
     MathLogic::GetInstance().Deinit();
@@ -63,6 +73,15 @@ bool KidsFantasy::HandleEvent()
 {
     const auto& nXMouse = ImGui::GetMousePos().x;
     const auto& nYMouse = ImGui::GetMousePos().y;
+
+    /*Enter Button*/
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
+    {
+        m_reelsArea.StartNewGame();
+        m_statusLine.NeedToShowGoodLuck();
+        return true;
+    }
+
 
     /*Reels Area Handle Event*/
     m_reelsArea.HandleEvent();
@@ -78,10 +97,16 @@ const std::string& KidsFantasy::GetAppName()
 void KidsFantasy::OnEnter()
 {
     LOG_INFO("Kids Fantasy - Transition to Application succeed");
+
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerGameCycle, 1);
+    m_statusLine.StartScenario();
 }
 
 void KidsFantasy::OnExit()
 {
+    m_statusLine.StopScenario();
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerGameCycle);
+
     LOG_INFO("Kids Fantasy - Exit from Application");
 }
 
@@ -95,11 +120,17 @@ void KidsFantasy::OnDraw()
     /*Draw ReelsArea*/
     m_reelsArea.Draw();
 
+    /*Draw StatusLine*/
+    m_statusLine.Draw();
+
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();
 }
 
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
- 
+    if(unID == g_unTimerGameCycle)
+    {
+        
+    }
 }
