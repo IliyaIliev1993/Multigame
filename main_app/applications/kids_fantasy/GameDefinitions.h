@@ -7,8 +7,8 @@ namespace GameDefs
     constexpr unsigned int g_unTotalFiguresPerReel = 5;
     constexpr unsigned int g_unMinFiguresNeededToFormWin = 3;
 
-    constexpr float g_fMinBet = 0.50f;
-    constexpr float g_fMaxBet = 2.50;
+    constexpr float g_fMinBet = 1.00f;
+    constexpr float g_fMaxBet = 5.00f;
 
     constexpr float g_fWidthFigurePicture = 240.0f;
     constexpr float g_fHeightFigurePicture = 220.0f;
@@ -43,6 +43,18 @@ namespace GameDefs
         eFifthPositionNONVisible,
         eTotalFigurePositionsPerReel
     };
+
+    const std::array<std::array<float, eTotalReelCount>, eTotalGameFiguresCount> g_arrWinFiguresPay =
+        {
+            {
+                {0.0f, 0.0f, 0.05f, 0.10f, 0.15f}, // Figure 1
+                {0.0f, 0.0f, 0.10f, 0.20f, 0.30f}, // Figure 2
+                {0.0f, 0.0f, 0.15f, 0.30f, 0.60f}, // Figure 3
+                {0.0f, 0.0f, 0.20f, 0.40f, 0.90f}, // Figure 4
+                {0.0f, 0.0f, 0.25f, 0.50f, 1.20f}, // Figure 5
+                {0.0f, 0.0f, 0.30f, 0.60f, 1.50f}  // Figure 6
+            }   
+        };
 
     enum ELines
     {
@@ -89,7 +101,7 @@ namespace GameDefs
                 {3, 2, 1, 2, 3}, // Line 5
                 {1, 1, 2, 3, 3}, // Line 6
                 {3, 3, 2, 1, 1}, // Line 7
-                {2, 1, 2, 3 ,2}, // Line 8
+                {2, 1, 2, 3, 2}, // Line 8
                 {2, 3, 2, 1, 2}, // Line 9
                 {1, 2, 2, 2, 3}, // Line 10
                 {3, 2, 2, 2, 1}, // Line 11

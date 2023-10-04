@@ -91,10 +91,19 @@ bool KidsFantasy::HandleEvent()
     {
         LOG_INFO("Kids Fantasy - ENTER Button Pressed");
 
-        if (m_reelsArea.StartNewGame())
+        /*Take money counting and request ready for game*/
+        if(m_eState == EKidsFantasyStates::eWinFromGame)
+        {
+            m_statusLine.StopWinScenario();
+            RequestState(EKidsFantasyStates::eReadyForGame);
+        }
+
+        /*Start new Game*/
+        if (m_eState == EKidsFantasyStates::eReadyForGame &&
+            m_reelsArea.StartNewGame())
         {
             RequestState(EKidsFantasyStates::eReeling);
-            m_statusLine.NeedToShowGoodLuck();
+            m_statusLine.NeedToShowGoodLuckScenario();
         }
 
         return true;
@@ -249,12 +258,12 @@ void KidsFantasy::OnEnter()
 
     RequestState(EKidsFantasyStates::eReadyForGame);
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerGameCycle, 1);
-    m_statusLine.StartScenario();
+    m_statusLine.StartNormalScenario();
 }
 
 void KidsFantasy::OnExit()
 {
-    m_statusLine.StopScenario();
+    m_statusLine.StopNormalScenario();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerGameCycle);
     RequestState(EKidsFantasyStates::eInactive);
 
@@ -281,8 +290,18 @@ void KidsFantasy::OnDraw()
 void KidsFantasy::AfterReelingStopped()
 {
     RequestState(EKidsFantasyStates::eAfterReelingStopped);
-    RequestState(EKidsFantasyStates::eReadyForGame);
-    m_statusLine.StartScenario();
+
+    /*After the reeling stops, check if there is a win*/
+    if(MathLogic::GetInstance().ThereIsAWin())
+    {
+        RequestState(EKidsFantasyStates::eWinFromGame);
+        m_statusLine.StartWinScenario();
+    }
+    else
+    {
+        RequestState(EKidsFantasyStates::eReadyForGame);
+        m_statusLine.StartNormalScenario();
+    }
 }
 
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)

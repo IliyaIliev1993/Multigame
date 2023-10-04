@@ -249,6 +249,7 @@ bool Panel::Init()
     std::string strFloatToString = std::to_string(m_fCreditAvailable);
     m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 
+    m_fCurrentBet = GameDefs::g_fMinBet;
     strFloatToString = std::to_string(m_fCurrentBet);
     m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 
@@ -610,6 +611,11 @@ bool Panel::CanStartNewGame()
     }
 
     return false;
+}
+
+const float& Panel::GetCurrentBet()
+{
+    return m_fCurrentBet;
 }
 
 void Panel::DrawCreditPanelButton()

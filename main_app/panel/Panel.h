@@ -36,7 +36,7 @@ private:
     float m_fCreditAvailable = 0.0f;
 
     /*Current bet bet line*/
-    float m_fCurrentBet = 0.50f;
+    float m_fCurrentBet = 0.0f;
 
     /*Current win from line*/
     float m_fCurrentWin = 0.0f;
@@ -147,6 +147,7 @@ public:
     bool Deinit();
     bool HandleEvent();
     bool CanStartNewGame();
+    const float& GetCurrentBet();
     void OnDraw();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void AddCredit(float fCreditToAdd);

@@ -9,6 +9,7 @@ struct WinElement
     GameDefs::ELines eLine;
     GameDefs::EGameFigure eGameFigure;
     unsigned int unFigureCount;
+    float fWin = 0.0f;
 };
 
 class MathLogic
@@ -26,7 +27,7 @@ private:
     std::vector<WinElement>m_vectorWins;
 
     /*Pushes Current win element in m_vectorWins*/
-    void PushWinElementInContainer(const GameDefs::ELines eLine, const GameDefs::EGameFigure eGameFigure, const unsigned int unFigureCount);
+    void PushWinElementInContainer(const GameDefs::ELines eLine, const GameDefs::EGameFigure eGameFigure, const unsigned int unFigureCount, const float fWinFromFigure);
 
     /*Method check for wins AFTER results has been generated*/
     void CheckForWins();
@@ -49,11 +50,17 @@ public:
     bool Init();
     bool Deinit();
 
+    /*Returns true, if there is a win*/
+    bool ThereIsAWin();
+
     /*Method that generates results in the current game*/
     void GenerateResults();
 
     /*Returns m_arrResults matrix, DO NOT FORGET TO CALL GenerateResults() !*/
     const Matrix2DResults& GetResults();
+
+    /*Returns m_vectorWins container*/
+    const std::vector<WinElement>& GetWinElements();
 
     /*Returns a random number in the interval (0, 10]*/
     long GenerateRandomNuber(long nLowerBoundOpenInterval, long nUpperBoundClosedInterval);
