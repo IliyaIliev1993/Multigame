@@ -94,6 +94,7 @@ bool KidsFantasy::HandleEvent()
         /*Take money counting and request ready for game*/
         if(m_eState == EKidsFantasyStates::eWinFromGame)
         {
+            MainApp::GetInstance().ptrPanel->FastCollectCounting();
             m_statusLine.StopWinScenario();
             RequestState(EKidsFantasyStates::eReadyForGame);
         }
@@ -294,13 +295,19 @@ void KidsFantasy::AfterReelingStopped()
     /*After the reeling stops, check if there is a win*/
     if(MathLogic::GetInstance().ThereIsAWin())
     {
+        const auto& fWinToReach = MathLogic::GetInstance().GetWinFromCurrentGame();
+
         RequestState(EKidsFantasyStates::eWinFromGame);
         m_statusLine.StartWinScenario();
+        MainApp::GetInstance().ptrPanel->ResetWin();
+        MainApp::GetInstance().ptrPanel->StartWinCounting(fWinToReach);
+        
     }
     else
     {
         RequestState(EKidsFantasyStates::eReadyForGame);
         m_statusLine.StartNormalScenario();
+        MainApp::GetInstance().ptrPanel->ResetWin();
     }
 }
 

@@ -56,5 +56,6 @@ public:
     bool Deinit();
 
     const float& GetDeltaTime();
+    const float& GetDeltaTimeInMicroSeconds();
 
 };

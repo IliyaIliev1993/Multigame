@@ -62,6 +62,9 @@ public:
     /*Returns m_vectorWins container*/
     const std::vector<WinElement>& GetWinElements();
 
+    /*Returns total win from current game*/
+    const float GetWinFromCurrentGame();
+
     /*Returns a random number in the interval (0, 10]*/
     long GenerateRandomNuber(long nLowerBoundOpenInterval, long nUpperBoundClosedInterval);
 

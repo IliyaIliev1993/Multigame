@@ -129,3 +129,8 @@ const float& MainApp::GetDeltaTime()
     m_fDeltaTimeInMilliSeconds = m_fDeltaTimeInMicroSeconds / 1000.0f;
     return m_fDeltaTimeInMilliSeconds;
 }
+
+const float& MainApp::GetDeltaTimeInMicroSeconds()
+{
+    return m_fDeltaTimeInMicroSeconds;
+}

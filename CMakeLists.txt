@@ -61,6 +61,8 @@ file(GLOB SOURCES
     main_app/button/*.cpp
     main_app/font/*.h
     main_app/font/*.cpp
+    main_app/interpolator/*.h
+    main_app/interpolator/*.cpp
     main_app/renderer/*.h
     main_app/renderer/*.cpp
     main_app/texture/*.h
@@ -92,6 +94,7 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette
     ${MULTIGAME_ROOT_DIR}/main_app/button
     ${MULTIGAME_ROOT_DIR}/main_app/font
+    ${MULTIGAME_ROOT_DIR}/main_app/interpolator
     ${MULTIGAME_ROOT_DIR}/main_app/renderer
     ${MULTIGAME_ROOT_DIR}/main_app/texture
     ${MULTIGAME_ROOT_DIR}/main_app/timer

@@ -78,7 +78,7 @@ void MathLogic::GenerateResults()
         LOG_WARN("MathLogic - Win Element BEGIN ");
         for (const auto &element : m_vectorWins)
         {
-            std::cout << "Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << std::endl;
+            std::cout << "Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << " Win -> " << element.fWin << std::endl;
         }
         LOG_WARN("MathLogic - Win Element END ");
     }
@@ -139,4 +139,19 @@ const Matrix2DResults& MathLogic::GetResults()
 const std::vector<WinElement>& MathLogic::GetWinElements()
 {
     return m_vectorWins;
+}
+
+const float MathLogic::GetWinFromCurrentGame()
+{
+    float fWinFromGame = 0.0f;
+
+    if(ThereIsAWin())
+    {
+        for(auto& winElement : m_vectorWins)
+        {
+            fWinFromGame += winElement.fWin;
+        }
+    }
+
+    return fWinFromGame;
 }

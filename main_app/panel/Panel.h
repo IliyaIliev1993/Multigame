@@ -6,6 +6,7 @@
 #include <main_app/font/Font.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/button/Button.h>
+#include <main_app/interpolator/Interpolator.h>
 
 enum class EPanelInfoScenes
 {
@@ -41,6 +42,9 @@ private:
     /*Current win from line*/
     float m_fCurrentWin = 0.0f;
 
+    /*Current win to be reached*/
+    float m_fWinToBeReached = 0.0f;
+
     /*Degrees Rotation Volume Knob*/
     float m_fDegreesVolumeKnob = 0.0f;
 
@@ -61,6 +65,9 @@ private:
 
     /*String Current Bet*/
     std::string m_strCurrentBet;
+
+    /*String Current Win*/
+    std::string m_strCurrentWin;
 
     /*Textures Home Button pressed, released*/
     std::shared_ptr<Texture> m_textureHomeButton;
@@ -129,6 +136,9 @@ private:
     /*Holding the current Info scene drawed*/
     EPanelInfoScenes m_eInfoScene = EPanelInfoScenes::eNoInfoScene;
 
+    /*Interpolator money counting*/
+    Interpolator m_interpolatorCounting;
+
     /*Method called when loading buttons, inserts elements in containers*/
     bool LoadCalculatorButtons();
 
@@ -141,6 +151,9 @@ private:
     /*Mehtod Draw Bet Panel*/
     void DrawBetPanel();
 
+    /*Mehtod Draw Win Panel*/
+    void DrawWinPanel();
+
 public:
 
     bool Init();
@@ -150,8 +163,11 @@ public:
     const float& GetCurrentBet();
     void OnDraw();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
+    void StartWinCounting(float fWinToReach);
+    void FastCollectCounting();
     void AddCredit(float fCreditToAdd);
     void RemoveCredit(float fCreditToRemove);
     void DecrementCreditWithBet();
+    void ResetWin();
     void ResetCredit();
 };

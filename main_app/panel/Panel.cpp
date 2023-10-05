@@ -10,6 +10,11 @@
 
 constexpr unsigned int g_unTimerFadeMainWindow = 1;
 
+constexpr unsigned int g_unTimerWinCounting = 2;
+constexpr unsigned int g_unTimerWinCountingPeriod = 300;
+
+constexpr unsigned int g_unDurationMilliSecondsCounting = 5000;
+
 constexpr float g_fXHomeButton = 0.0f;
 constexpr float g_fYHomeButton = 920.0f;
 
@@ -40,6 +45,8 @@ constexpr float g_fXCreditPanelTextMaxOffset = 345.0f;
 constexpr float g_fYCreditPanelText = 1030.0f;
 
 constexpr float g_fXBetPanelTextOffset = 135.0f;
+
+constexpr float g_fXWinPanelTextOffset = 135.0f;
 
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
@@ -252,6 +259,9 @@ bool Panel::Init()
     m_fCurrentBet = GameDefs::g_fMinBet;
     strFloatToString = std::to_string(m_fCurrentBet);
     m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+
+    strFloatToString = std::to_string(m_fCurrentWin);
+    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 
     LOG_INFO("Panel - Initialized ...");
     return true;
@@ -605,7 +615,7 @@ bool Panel::HandleEvent()
 
 bool Panel::CanStartNewGame()
 {
-    if((m_fCreditAvailable + m_fCurrentWin) >= m_fCurrentBet)
+    if ((m_fCreditAvailable + m_fCurrentWin) >= m_fCurrentBet)
     {
         return true;
     }
@@ -613,7 +623,7 @@ bool Panel::CanStartNewGame()
     return false;
 }
 
-const float& Panel::GetCurrentBet()
+const float &Panel::GetCurrentBet()
 {
     return m_fCurrentBet;
 }
@@ -640,6 +650,14 @@ void Panel::DrawBetPanel()
     }
 }
 
+void Panel::DrawWinPanel()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+
+    rend->DrawPicture(m_textureWinPanel, g_fXWinPanel, g_fYBetPanel);
+    rend->DrawText(m_strCurrentWin, m_fontVolume, g_fXWinPanel + g_fXWinPanelTextOffset, g_fYCreditPanelText, 1.5f);
+}
+
 void Panel::OnDraw()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
@@ -658,7 +676,7 @@ void Panel::OnDraw()
     DrawBetPanel();
 
     /*Win Panel*/
-    rend->DrawPicture(m_textureWinPanel, g_fXWinPanel, g_fYBetPanel);
+    DrawWinPanel();
 
     /*Info Calculator Window*/
     if (m_eInfoScene == EPanelInfoScenes::eCreditScene)
@@ -746,6 +764,34 @@ void Panel::OnTick(unsigned int unID, unsigned int unTimes)
             MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerFadeMainWindow);
         }
     }
+
+    if (unID == g_unTimerWinCounting)
+    {
+        if (m_interpolatorCounting.GetProgress() == 1.0f)
+        {
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
+        }
+
+        std::string strFloatToString = std::to_string(m_fCurrentWin);
+        m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    }
+}
+
+void Panel::StartWinCounting(float fWinToReach)
+{
+    m_fWinToBeReached = fWinToReach;
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerWinCounting, g_unTimerWinCountingPeriod);
+    m_interpolatorCounting.Start(m_fCurrentWin, 0.0f, m_fWinToBeReached, Ease::SineIn, g_unDurationMilliSecondsCounting);
+}
+
+void Panel::FastCollectCounting()
+{
+    m_fCurrentWin = m_fWinToBeReached;
+    AddCredit(m_fCurrentWin);
+    std::string strFloatToString = std::to_string(m_fCurrentWin);
+    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_interpolatorCounting.Stop();
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
 }
 
 void Panel::AddCredit(float fCreditToAdd)
@@ -799,4 +845,13 @@ void Panel::ResetCredit()
 
     std::string strFloatToString = std::to_string(m_fCreditAvailable);
     m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+}
+
+void Panel::ResetWin()
+{
+    m_fCurrentWin = 0.0f;
+    m_fWinToBeReached = 0.0f;
+
+    std::string strFloatToString = std::to_string(m_fCurrentWin);
+    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
 }
