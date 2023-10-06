@@ -6,6 +6,7 @@
 #include <main_app/font/Font.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/button/Button.h>
+#include <main_app/particle_system/ParticleSystem.h>
 #include <main_app/interpolator/Interpolator.h>
 
 enum class EPanelInfoScenes
@@ -103,6 +104,10 @@ private:
     std::shared_ptr<Texture> m_textureResetButton;
     std::shared_ptr<Texture> m_textureResetButtonPressed;
 
+    /*Textures Particle*/
+    std::shared_ptr<Texture> m_textureFlowerParticle;
+    std::shared_ptr<Texture> m_textureStarParticle;
+
     /*Font Volume*/
     std::shared_ptr<Font> m_fontVolume;
 
@@ -139,6 +144,11 @@ private:
     /*Interpolator money counting*/
     Interpolator m_interpolatorCounting;
 
+    /*Effect win field*/
+    ParticleSystem m_particleFlower;
+    ParticleSystem m_particleStar;
+    /*****************/
+
     /*Method called when loading buttons, inserts elements in containers*/
     bool LoadCalculatorButtons();
 
@@ -153,6 +163,11 @@ private:
 
     /*Mehtod Draw Win Panel*/
     void DrawWinPanel();
+
+    /*Effect particle win panel*/
+    void StartEffectParticleWinPanel();
+    void StopEffectParticleWinPanel();
+
 
 public:
 

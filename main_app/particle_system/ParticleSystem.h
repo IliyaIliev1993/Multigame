@@ -5,6 +5,8 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
 
+#include "Random.h"
+
 struct Particle
 {
     glm::vec2 vec2Position;

@@ -45,6 +45,7 @@ private:
     void RequestState(EKidsFantasyStates eStateToRequest);
 
 
+    /*Particle test*/
     ParticleSystem m_particle;
 public:
 

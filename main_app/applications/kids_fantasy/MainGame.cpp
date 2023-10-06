@@ -56,7 +56,7 @@ bool KidsFantasy::Init()
     };
     m_reelsArea.SetAfterReelingStoppedCallback(afterReelingStopped);
 
-    auto textureParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/particle_sun.png");
+    auto textureParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/flower_particle.png");
 
     textureParticle->Load();
 

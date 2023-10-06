@@ -13,7 +13,12 @@ constexpr unsigned int g_unTimerFadeMainWindow = 1;
 constexpr unsigned int g_unTimerWinCounting = 2;
 constexpr unsigned int g_unTimerWinCountingPeriod = 300;
 
+constexpr unsigned int g_unTimerParticlesChange = 3;
+constexpr unsigned int g_unTimerParticlesChangePeriod = 300;
+
 constexpr unsigned int g_unDurationMilliSecondsCounting = 5000;
+
+constexpr unsigned int g_unDurationMilliSecondsEffectParticles = 500;
 
 constexpr float g_fXHomeButton = 0.0f;
 constexpr float g_fYHomeButton = 920.0f;
@@ -98,6 +103,8 @@ bool Panel::Init()
     m_textureExitCalculatorPressed = Texture::CreateTexture("../src/resources/panel/calculator/exit_pressed.png");
     m_textureResetButton = Texture::CreateTexture("../src/resources/panel/calculator/reset_button.png");
     m_textureResetButtonPressed = Texture::CreateTexture("../src/resources/panel/calculator/reset_button_pressed.png");
+    m_textureFlowerParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/flower_particle.png");
+    m_textureStarParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/particle_sun.png");
 
     m_fontVolume = Font::CreateFont("../src/fonts/Nasa.ttf", 40);
 
@@ -209,6 +216,18 @@ bool Panel::Init()
         return false;
     }
 
+    if (!m_textureFlowerParticle->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture flower particle!");
+        return false;
+    }
+
+    if (!m_textureStarParticle->Load())
+    {
+        LOG_ERROR("Panel - Unable to load texture star particle!");
+        return false;
+    }
+
     if (!m_fontVolume->LoadFont())
     {
         LOG_ERROR("Panel - Unable to load font volume !");
@@ -247,6 +266,12 @@ bool Panel::Init()
     m_resetCreditButton.textureButton = m_textureResetButton;
     m_resetCreditButton.fX = g_fXInfoWindow + g_fXResetOffset;
     m_resetCreditButton.fY = g_fYInfoWindow + g_fYResetOffset;
+
+    m_particleFlower.Init(m_textureFlowerParticle, {0.0f, 0.0f});
+    m_particleStar.Init(m_textureStarParticle, {0.0f, 0.0f});
+
+    m_particleFlower.SetPosition({g_fXWinPanel + (m_textureWinPanel->GetWidth() / 2.0f), g_fYBetPanel + (m_textureWinPanel->GetHeight() / 2.0f)});
+    m_particleStar.SetPosition({g_fXWinPanel + (m_textureWinPanel->GetWidth() / 2.0f), g_fYBetPanel + (m_textureWinPanel->GetHeight() / 2.0f)});
 
     if (!LoadCalculatorButtons())
     {
@@ -654,6 +679,9 @@ void Panel::DrawWinPanel()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
+    m_particleFlower.Draw();
+    m_particleStar.Draw();
+
     rend->DrawPicture(m_textureWinPanel, g_fXWinPanel, g_fYBetPanel);
     rend->DrawText(m_strCurrentWin, m_fontVolume, g_fXWinPanel + g_fXWinPanelTextOffset, g_fYCreditPanelText, 1.5f);
 }
@@ -775,6 +803,29 @@ void Panel::OnTick(unsigned int unID, unsigned int unTimes)
         std::string strFloatToString = std::to_string(m_fCurrentWin);
         m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
     }
+
+    if (unID == g_unTimerParticlesChange)
+    {
+        float fRandomXFlower = Random::GetRandomNumber(-1.0f, 1.0f);
+        float fRandomXStart = Random::GetRandomNumber(-1.0f, 1.0f);
+
+        m_particleFlower.SetVelocity({fRandomXFlower, -1.0f});
+        m_particleStar.SetVelocity({fRandomXStart, -1.0f});
+    }
+}
+
+void Panel::StartEffectParticleWinPanel()
+{
+    m_particleFlower.StartEmitting();
+    m_particleStar.StartEmitting();
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerParticlesChange, g_unTimerParticlesChangePeriod);
+}
+
+void Panel::StopEffectParticleWinPanel()
+{
+    m_particleFlower.StopEmitting();
+    m_particleStar.StopEmitting();
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerParticlesChange);
 }
 
 void Panel::StartWinCounting(float fWinToReach)
@@ -782,6 +833,9 @@ void Panel::StartWinCounting(float fWinToReach)
     m_fWinToBeReached = fWinToReach;
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerWinCounting, g_unTimerWinCountingPeriod);
     m_interpolatorCounting.Start(m_fCurrentWin, 0.0f, m_fWinToBeReached, Ease::SineIn, g_unDurationMilliSecondsCounting);
+
+    /*Particle Effect*/
+    StartEffectParticleWinPanel();
 }
 
 void Panel::FastCollectCounting()
@@ -792,6 +846,7 @@ void Panel::FastCollectCounting()
     m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
     m_interpolatorCounting.Stop();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
+    StopEffectParticleWinPanel();
 }
 
 void Panel::AddCredit(float fCreditToAdd)

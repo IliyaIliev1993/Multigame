@@ -147,8 +147,18 @@ void Interpolator::Progress()
 
     if (*m_fCurrentValue >= m_fDestValue)
     {
+        if(m_endCallback)
+        {
+            m_endCallback();
+        }
+        
         Stop();
     }
+}
+
+void Interpolator::SetEndCallback(std::function<void()>& endCallback)
+{
+    m_endCallback = endCallback;
 }
 
 const float &Interpolator::GetProgress()

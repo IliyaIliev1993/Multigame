@@ -1,6 +1,8 @@
 #pragma once
 #include "Easing.h"
 
+#include <functional>
+
 #include <main_app/timer/TimerMgr.h>
 
 class Interpolator : public ITimer
@@ -14,6 +16,7 @@ private:
     Ease m_easingFunction;
     float m_fProgress;
     unsigned int m_unDurationInMilliSeconds;
+    std::function<void()>m_endCallback;
 
     void Progress();
 
@@ -22,6 +25,7 @@ public:
     void Start(float& fCurrentValue, float fInitialValue, float fDestValue, Ease easingFunction, unsigned int unDurationInMilliSeconds);
     void Stop(bool bReachDestValue = true);
     void OnTick(unsigned int unID, unsigned int unTimes) final;
+    void SetEndCallback(std::function<void()>& endCallback);
     const float& GetProgress();
     
 };
