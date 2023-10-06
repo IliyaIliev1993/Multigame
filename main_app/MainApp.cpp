@@ -134,3 +134,8 @@ const float& MainApp::GetDeltaTimeInMicroSeconds()
 {
     return m_fDeltaTimeInMicroSeconds;
 }
+
+const unsigned int MainApp::GeTimeStampInMicroSeconds()
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(m_frameBeginTime.time_since_epoch()).count();
+}

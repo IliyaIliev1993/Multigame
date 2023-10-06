@@ -57,5 +57,6 @@ public:
 
     const float& GetDeltaTime();
     const float& GetDeltaTimeInMicroSeconds();
+    const unsigned int GeTimeStampInMicroSeconds();
 
 };

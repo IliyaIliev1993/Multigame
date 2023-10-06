@@ -56,6 +56,12 @@ bool KidsFantasy::Init()
     };
     m_reelsArea.SetAfterReelingStoppedCallback(afterReelingStopped);
 
+    auto textureParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/particle_sun.png");
+
+    textureParticle->Load();
+
+    m_particle.Init(textureParticle, {500.0f, 500.0f });
+
     LOG_INFO("Kids Fantasy - Initialized ...");
     return true;
 }
@@ -79,6 +85,17 @@ bool KidsFantasy::HandleEvent()
 {
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
+
+    m_particle.SetPosition({nXMouse, nYMouse});
+
+    if (ImGui::IsMouseDown(0))
+    {
+        m_particle.StartEmitting();
+    }
+    else
+    {
+        m_particle.StopEmitting();
+    }
 
     /*Panel Handle Event*/
     if (m_eState == EKidsFantasyStates::eReadyForGame)
@@ -286,6 +303,8 @@ void KidsFantasy::OnDraw()
 
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();
+
+    m_particle.Draw();
 }
 
 void KidsFantasy::AfterReelingStopped()

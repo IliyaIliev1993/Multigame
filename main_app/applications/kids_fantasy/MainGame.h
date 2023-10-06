@@ -5,6 +5,7 @@
 #include <main_app/applications/IApp.h>
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
+#include <main_app/particle_system/ParticleSystem.h>
 #include <main_app/applications/kids_fantasy/reels_area/ReelsArea.h>
 #include <main_app/applications/kids_fantasy/status_line/StatusLine.h>
 
@@ -42,6 +43,9 @@ private:
     
     /*Game State Request*/
     void RequestState(EKidsFantasyStates eStateToRequest);
+
+
+    ParticleSystem m_particle;
 public:
 
     KidsFantasy();
