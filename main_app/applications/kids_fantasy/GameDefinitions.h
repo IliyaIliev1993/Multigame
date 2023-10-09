@@ -11,7 +11,19 @@ namespace GameDefs
     constexpr float g_fMaxBet = 5.00f;
 
     constexpr float g_fWidthFigurePicture = 240.0f;
+    constexpr float g_fWidthFigurePictureWithFrameOffset = 250.0f;
     constexpr float g_fHeightFigurePicture = 220.0f;
+
+    constexpr float g_fXReelsArea = 25.0;
+    constexpr float g_fYReelsArea = 0.0f;
+
+    constexpr float g_fXOrgPosReel1 = 316.0f;
+    constexpr float g_fXOrgPosReel2 = 566.0f;
+    constexpr float g_fXOrgPosReel3 = 815.0f;
+    constexpr float g_fXOrgPosReel4 = 1063.0f;
+    constexpr float g_fXOrgPosReel5 = 1312.0f;
+
+    constexpr float g_fYOrgPosReels = 165.0f;
 
     enum EGameFigure
     {
@@ -53,8 +65,7 @@ namespace GameDefs
                 {0.0f, 0.0f, 0.20f, 0.40f, 0.90f}, // Figure 4
                 {0.0f, 0.0f, 0.25f, 0.50f, 1.20f}, // Figure 5
                 {0.0f, 0.0f, 0.30f, 0.60f, 1.50f}  // Figure 6
-            }   
-        };
+            }};
 
     enum ELines
     {
@@ -124,6 +135,5 @@ namespace GameDefs
                 {2, 1, 1, 1, 2}, // Line 28
                 {2, 3, 3, 3, 2}, // Line 29
                 {1, 2, 1, 2, 3}, // Line 30
-            }
-        };
+            }};
 }

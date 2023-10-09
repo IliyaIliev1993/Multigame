@@ -273,6 +273,9 @@ bool Panel::Init()
     m_particleFlower.SetPosition({g_fXWinPanel + (m_textureWinPanel->GetWidth() / 2.0f), g_fYBetPanel + (m_textureWinPanel->GetHeight() / 2.0f)});
     m_particleStar.SetPosition({g_fXWinPanel + (m_textureWinPanel->GetWidth() / 2.0f), g_fYBetPanel + (m_textureWinPanel->GetHeight() / 2.0f)});
 
+    m_particleFlower.SetLifeTime(50);
+    m_particleStar.SetLifeTime(70);
+
     if (!LoadCalculatorButtons())
     {
         return false;

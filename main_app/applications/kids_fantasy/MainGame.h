@@ -6,6 +6,7 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/particle_system/ParticleSystem.h>
+#include <main_app/applications/kids_fantasy/lines/LinesMgr.h>
 #include <main_app/applications/kids_fantasy/reels_area/ReelsArea.h>
 #include <main_app/applications/kids_fantasy/status_line/StatusLine.h>
 
@@ -34,6 +35,9 @@ private:
 
     /*StatusLine object*/
     StatusLine m_statusLine;
+
+    /*LinesMgr object*/
+    LinesMgr m_lines;
 
     /*Texture main background*/
     std::shared_ptr<Texture>m_textureBackground;

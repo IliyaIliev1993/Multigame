@@ -49,6 +49,12 @@ bool KidsFantasy::Init()
         return false;
     }
 
+    if (!m_lines.Init())
+    {
+        LOG_ERROR("Kids Fantasy - Unable to Init LinesMgr !");
+        return false;
+    }
+
     /*Set after reeling stopped callback*/
     std::function<void()> afterReelingStopped = [this]()
     {
@@ -56,11 +62,11 @@ bool KidsFantasy::Init()
     };
     m_reelsArea.SetAfterReelingStoppedCallback(afterReelingStopped);
 
-    auto textureParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/flower_particle.png");
+    auto textureParticle = Texture::CreateTexture("../src/resources/kids_fantasy/reels_area/particle_sun.png");
 
     textureParticle->Load();
 
-    m_particle.Init(textureParticle, {500.0f, 500.0f });
+    m_particle.Init(textureParticle, {500.0f, 500.0f});
 
     LOG_INFO("Kids Fantasy - Initialized ...");
     return true;
@@ -73,6 +79,9 @@ bool KidsFantasy::Deinit()
 
     /*StatusLine Deinit*/
     m_statusLine.Deinit();
+
+    /*LinesMgr Deinit*/
+    m_lines.Deinit();
 
     /*Math Logic Deinit*/
     MathLogic::GetInstance().Deinit();
@@ -109,10 +118,11 @@ bool KidsFantasy::HandleEvent()
         LOG_INFO("Kids Fantasy - ENTER Button Pressed");
 
         /*Take money counting and request ready for game*/
-        if(m_eState == EKidsFantasyStates::eWinFromGame)
+        if (m_eState == EKidsFantasyStates::eWinFromGame)
         {
             MainApp::GetInstance().ptrPanel->FastCollectCounting();
             m_statusLine.StopWinScenario();
+            m_lines.Stop();
             RequestState(EKidsFantasyStates::eReadyForGame);
         }
 
@@ -301,6 +311,9 @@ void KidsFantasy::OnDraw()
     /*Draw StatusLine*/
     m_statusLine.Draw();
 
+    /*Draw LinesMgr*/
+    m_lines.Draw();
+
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();
 
@@ -312,15 +325,15 @@ void KidsFantasy::AfterReelingStopped()
     RequestState(EKidsFantasyStates::eAfterReelingStopped);
 
     /*After the reeling stops, check if there is a win*/
-    if(MathLogic::GetInstance().ThereIsAWin())
+    if (MathLogic::GetInstance().ThereIsAWin())
     {
-        const auto& fWinToReach = MathLogic::GetInstance().GetWinFromCurrentGame();
+        const auto &fWinToReach = MathLogic::GetInstance().GetWinFromCurrentGame();
 
         RequestState(EKidsFantasyStates::eWinFromGame);
         m_statusLine.StartWinScenario();
+        m_lines.Start();
         MainApp::GetInstance().ptrPanel->ResetWin();
         MainApp::GetInstance().ptrPanel->StartWinCounting(fWinToReach);
-        
     }
     else
     {

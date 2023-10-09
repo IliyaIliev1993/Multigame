@@ -12,10 +12,10 @@ constexpr unsigned int g_unFadeNormalScenario = 2;
 constexpr unsigned int g_unFadeNormalScenarioPeriod = 1;
 
 constexpr unsigned int g_unWinScenarioTimerFast = 3;
-constexpr unsigned int g_unWinScenarioTimerFastPeriod = 250;
+constexpr unsigned int g_unWinScenarioTimerFastPeriod = 1100;
 
 constexpr unsigned int g_unWinScenarioTimerSlow = 4;
-constexpr unsigned int g_unWinScenarioTimerSlowPeriod = 1000;
+constexpr unsigned int g_unWinScenarioTimerSlowPeriod = 1100;
 
 const std::string g_strInsertCredit = "INSERT CREDIT";
 constexpr float g_fXInsetCredit = 830.0f;

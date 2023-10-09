@@ -37,7 +37,7 @@ namespace Easing
     template <typename T>
     static T LinearEasing(float position, T start, T end)
     {
-        return static_cast<T>(((end - start) * position + start));
+        return static_cast<T>((end - start) * position + start);
     }
 
     template <typename T>

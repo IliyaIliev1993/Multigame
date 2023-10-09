@@ -145,18 +145,18 @@ void Interpolator::Progress()
         break;
     }
 
-    if (*m_fCurrentValue >= m_fDestValue)
+    if (m_fProgress == 1.0f)
     {
-        if(m_endCallback)
+        Stop();
+
+        if (m_endCallback)
         {
             m_endCallback();
         }
-        
-        Stop();
     }
 }
 
-void Interpolator::SetEndCallback(std::function<void()>& endCallback)
+void Interpolator::SetEndCallback(std::function<void()> &endCallback)
 {
     m_endCallback = endCallback;
 }

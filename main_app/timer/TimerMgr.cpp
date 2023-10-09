@@ -15,7 +15,7 @@ void TimerMgr::StartTimer(ITimer* client, unsigned int unID, unsigned int unPeri
                 timer.bNeedToDeleteTimer = false;
                 timer.unTimes = 0;
                 timer.unPeriod = unPeriod;
-                LOG_INFO("TimerMgr - Restarted timer with ID \"{0}\"", unID);
+                //LOG_INFO("TimerMgr - Restarted timer with ID \"{0}\"", unID);
                 return;
             }
             else
