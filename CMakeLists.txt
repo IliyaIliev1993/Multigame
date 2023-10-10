@@ -41,6 +41,8 @@ message(STATUS "====================================")
 file(GLOB SOURCES
     main_app/*.h
     main_app/*.cpp
+    main_app/anim_player/*.h
+    main_app/anim_player/*.cpp
     main_app/app_select/*.h
     main_app/app_select/*.cpp
     main_app/applications/*.h
@@ -82,8 +84,8 @@ file(GLOB SOURCES
 # Create executable PROJECT_NAME
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Specify C++14 as the standard
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
+# Specify C++17 as the standard
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
 # Add include directories
 set(MULTIGAME_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -92,6 +94,7 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}
     ${MULTIGAME_ROOT_DIR}/debug
     ${MULTIGAME_ROOT_DIR}/main_app
+    ${MULTIGAME_ROOT_DIR}/main_app/anim_player
     ${MULTIGAME_ROOT_DIR}/main_app/app_select
     ${MULTIGAME_ROOT_DIR}/main_app/applications
     ${MULTIGAME_ROOT_DIR}/main_app/applications/kids_fantasy
