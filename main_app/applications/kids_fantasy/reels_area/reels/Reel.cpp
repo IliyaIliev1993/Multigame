@@ -18,12 +18,14 @@ constexpr float g_fReelingMaxSpeed = 17.0f;
 bool Reel::Init(GameDefs::EReels eIDReel,
                 float fXOrgPos,
                 float fYOrgPos,
-                const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture)
+                const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture,
+                const std::array<AnimPlayer, GameDefs::eTotalGameFiguresCount> &arrFiguresAnimations)
 {
     m_eIDReel = eIDReel;
     m_fXOrgPos = fXOrgPos;
     m_fYOrgPos = fYOrgPos;
     m_arrFiguresTexture = arrFiguresTexture;
+    m_arrFiguresAnimations = arrFiguresAnimations;
     m_nReelingCyclesBeforeBounce = g_unReelingCyclesBeforeBounce + m_eIDReel;
 
     m_fYMinTresholdReelingFigure = m_fYOrgPos - GameDefs::g_fHeightFigurePicture;
@@ -32,6 +34,7 @@ bool Reel::Init(GameDefs::EReels eIDReel,
     for (unsigned int i = GameDefs::eFirstPositionNONVisible; i < GameDefs::eTotalFigurePositionsPerReel; ++i)
     {
         Figure figureObject;
+        figureObject.bWinFigure = false;
         figureObject.textureFigure = m_arrFiguresTexture.at(i);
         figureObject.fXPos = m_fXOrgPos;
         figureObject.fYPos = m_fYOrgPos + (figureObject.textureFigure->GetHeight() * (i - 1));
@@ -118,12 +121,14 @@ void Reel::ProcessReeling()
             /*Generate Fake Reel*/
             const auto &nGeneratedNumber = MathLogic::GetInstance().GenerateRandomNuber(GameDefs::eGameFigureOne, GameDefs::eTotalGameFiguresCount);
             figure.textureFigure = m_arrFiguresTexture.at(nGeneratedNumber);
+            figure.eGameFigure = (GameDefs::EGameFigure)nGeneratedNumber;
 
             /*Insert Results, 1 cycle before stopping*/
             if (m_nCounterCycles >= (m_nReelingCyclesBeforeBounce - 1))
             {
-                const auto& nCurrentFigure = MathLogic::GetInstance().GetResults().at(nIndexFigure).at(m_eIDReel);
+                const auto &nCurrentFigure = MathLogic::GetInstance().GetResults().at(nIndexFigure).at(m_eIDReel);
                 figure.textureFigure = m_arrFiguresTexture.at(nCurrentFigure);
+                figure.eGameFigure = (GameDefs::EGameFigure)nGeneratedNumber;
             }
         }
 
@@ -150,9 +155,16 @@ void Reel::Draw()
                                   GameDefs::g_fWidthFigurePicture,
                                   GameDefs::g_fHeightFigurePicture * GameDefs::g_unVisibleFiguresPerReel));
 
-    for (const auto &figure : m_arrReelFigures)
+    for (auto &figure : m_arrReelFigures)
     {
-        rend->DrawPicture(figure.textureFigure, figure.fXPos, figure.fYPos);
+        if (figure.bWinFigure)
+        {
+            figure.animFigure.Draw(figure.fXPos, figure.fYPos);
+        }
+        else
+        {
+            rend->DrawPicture(figure.textureFigure, figure.fXPos, figure.fYPos);
+        }
     }
 
     rend->UseShaderPicture();
@@ -161,6 +173,7 @@ void Reel::Draw()
 void Reel::StartReeling()
 {
     /*Set the state to accelerate and start the timer reeling*/
+    StopAnimation();
     m_nCounterCycles = -1;
     m_fReelingStep = 0.0f;
     m_fYFirstVisibleFigure = 0.0f;
@@ -172,6 +185,24 @@ void Reel::StartReeling()
 void Reel::NeedToFastStop()
 {
     m_bNeedToFastStop = true;
+}
+
+void Reel::StartAnimation(int nFigurePosition, GameDefs::EGameFigure eWinFigure)
+{
+    auto& winFigure = m_arrReelFigures.at(nFigurePosition);
+    winFigure.eGameFigure = eWinFigure;
+    winFigure.bWinFigure = true;
+    winFigure.animFigure = m_arrFiguresAnimations.at(eWinFigure);
+    winFigure.animFigure.Start();
+}
+
+void Reel::StopAnimation()
+{
+    for (auto &figure : m_arrReelFigures)
+    {
+        figure.bWinFigure = false;
+        figure.animFigure.Stop();
+    }
 }
 
 void Reel::OnTick(unsigned int unID, unsigned int unTimes)

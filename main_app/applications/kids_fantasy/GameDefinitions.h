@@ -18,10 +18,10 @@ namespace GameDefs
     constexpr float g_fYReelsArea = 0.0f;
 
     constexpr float g_fXOrgPosReel1 = 316.0f;
-    constexpr float g_fXOrgPosReel2 = 566.0f;
-    constexpr float g_fXOrgPosReel3 = 815.0f;
-    constexpr float g_fXOrgPosReel4 = 1063.0f;
-    constexpr float g_fXOrgPosReel5 = 1312.0f;
+    constexpr float g_fXOrgPosReel2 = 565.0f;
+    constexpr float g_fXOrgPosReel3 = 814.0f;
+    constexpr float g_fXOrgPosReel4 = 1062.0f;
+    constexpr float g_fXOrgPosReel5 = 1311.0f;
 
     constexpr float g_fYOrgPosReels = 165.0f;
 
