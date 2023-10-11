@@ -27,6 +27,13 @@ private:
 
     std::string m_strAppName = "Kids Fantasy";
 
+    /*Flag Demo Menu*/
+    bool m_bDemoMenu = false;
+
+    /*Flag Demo Mode Active*/
+    bool m_bDemoModeActive = false;
+    int m_unCounterSecondsDemoMode = 0;
+
     /*KidsFantasy current state*/
     EKidsFantasyStates m_eState = EKidsFantasyStates::eInactive;
 
@@ -42,12 +49,17 @@ private:
     /*Texture main background*/
     std::shared_ptr<Texture>m_textureBackground;
 
+    /*Method called when start button pressed*/
+    void InvokeStartButton(bool bDemoMode = false);
+
     /*After reeling stopped method, called when all reels stopped after game started*/
     void AfterReelingStopped();
     
     /*Game State Request*/
     void RequestState(EKidsFantasyStates eStateToRequest);
 
+    /*Game Demo*/
+    void DrawDemo();
 
     /*Particle test*/
     ParticleSystem m_particle;

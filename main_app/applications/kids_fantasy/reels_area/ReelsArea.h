@@ -44,5 +44,5 @@ public:
     void SetAfterReelingStoppedCallback(std::function<void()> &afterReelingStoppedCallback);
 
     /*Start new game method, when ENTER pressed will be executed*/
-    bool StartNewGame();
+    bool StartNewGame(bool bDemoMode = false);
 };

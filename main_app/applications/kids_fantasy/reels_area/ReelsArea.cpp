@@ -102,7 +102,7 @@ bool ReelsArea::HandleEvent()
     return false;
 }
 
-bool ReelsArea::StartNewGame()
+bool ReelsArea::StartNewGame(bool bDemoMode)
 {
     /*Check if all reels stopped*/
     bool bCanStartReeling = true;
@@ -129,7 +129,10 @@ bool ReelsArea::StartNewGame()
         MainApp::GetInstance().ptrPanel->DecrementCreditWithBet();
 
         /*Generate New Results*/
-        MathLogic::GetInstance().GenerateResults();
+        if (!bDemoMode)
+        {
+            MathLogic::GetInstance().GenerateResults();
+        }
 
         for (auto &reel : m_arrReels)
         {

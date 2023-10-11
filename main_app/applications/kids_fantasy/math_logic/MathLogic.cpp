@@ -84,6 +84,42 @@ void MathLogic::GenerateResults()
     }
 }
 
+void MathLogic::GenerateDemoResults(Matrix2DResults &arrResults)
+{
+    /*Clear container with wins*/
+    m_vectorWins.clear();
+
+    /*Get Given Results*/
+    m_arrResults = arrResults;
+
+    /*Here is just a print logic*/
+    LOG_WARN("MathLogic - Generated Results BEGIN ");
+    for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)
+    {
+        for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
+        {
+            std::cout << m_arrResults[figure][reel] + 1 << "   ";
+        }
+
+        std::cout << std::endl;
+    }
+    LOG_WARN("MathLogic - Generated Results END ");
+
+    /*Check for Lines win*/
+    CheckForWins();
+
+    /*Here is just a print logic of the lines*/
+    if (!m_vectorWins.empty())
+    {
+        LOG_WARN("MathLogic - Win Element BEGIN ");
+        for (const auto &element : m_vectorWins)
+        {
+            std::cout << "Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << " Win -> " << element.fWin << std::endl;
+        }
+        LOG_WARN("MathLogic - Win Element END ");
+    }
+}
+
 void MathLogic::PushWinElementInContainer(const GameDefs::ELines eLine, const GameDefs::EGameFigure eGameFigure, const unsigned int unFigureCount, const float fWinFromFigure)
 {
     m_vectorWins.emplace_back(WinElement{eLine, eGameFigure, unFigureCount, fWinFromFigure});
@@ -113,7 +149,7 @@ void MathLogic::CheckForWins()
 
                 if (unWinFiguresCount == GameDefs::eTotalReelCount)
                 {
-                    const float fWinFromFigures = GameDefs::g_arrWinFiguresPay.at(eCurrentFigure).at(unWinFiguresCount-1) * MainApp::GetInstance().ptrPanel->GetCurrentBet();
+                    const float fWinFromFigures = GameDefs::g_arrWinFiguresPay.at(eCurrentFigure).at(unWinFiguresCount - 1) * MainApp::GetInstance().ptrPanel->GetCurrentBet();
                     PushWinElementInContainer((GameDefs::ELines)currentLine, eCurrentFigure, unWinFiguresCount, fWinFromFigures);
                 }
             }
@@ -121,7 +157,7 @@ void MathLogic::CheckForWins()
             {
                 if (unWinFiguresCount >= GameDefs::g_unMinFiguresNeededToFormWin)
                 {
-                    const float fWinFromFigures = GameDefs::g_arrWinFiguresPay.at(eCurrentFigure).at(unWinFiguresCount-1) * MainApp::GetInstance().ptrPanel->GetCurrentBet();
+                    const float fWinFromFigures = GameDefs::g_arrWinFiguresPay.at(eCurrentFigure).at(unWinFiguresCount - 1) * MainApp::GetInstance().ptrPanel->GetCurrentBet();
                     PushWinElementInContainer((GameDefs::ELines)currentLine, eCurrentFigure, unWinFiguresCount, fWinFromFigures);
                 }
 
@@ -131,12 +167,12 @@ void MathLogic::CheckForWins()
     }
 }
 
-const Matrix2DResults& MathLogic::GetResults()
+const Matrix2DResults &MathLogic::GetResults()
 {
     return m_arrResults;
 }
 
-const std::vector<WinElement>& MathLogic::GetWinElements()
+const std::vector<WinElement> &MathLogic::GetWinElements()
 {
     return m_vectorWins;
 }
@@ -145,9 +181,9 @@ const float MathLogic::GetWinFromCurrentGame()
 {
     float fWinFromGame = 0.0f;
 
-    if(ThereIsAWin())
+    if (ThereIsAWin())
     {
-        for(auto& winElement : m_vectorWins)
+        for (auto &winElement : m_vectorWins)
         {
             fWinFromGame += winElement.fWin;
         }

@@ -95,11 +95,11 @@ void MainApp::Run()
         ptrAppSelect->OnDraw();
 
         /*ImGui HELP*/
-        if (m_bShowImguiHelp)
-        {
-            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-            ImGui::ShowDemoWindow(&m_bShowImguiHelp);
-        }
+        // if (m_bShowImguiHelp)
+        // {
+        //     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+        //     ImGui::ShowDemoWindow(&m_bShowImguiHelp);
+        // }
 
         /*Draw Imgui*/
         ImGui::Render();

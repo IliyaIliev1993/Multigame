@@ -56,6 +56,9 @@ public:
     /*Method that generates results in the current game*/
     void GenerateResults();
 
+    /*Method used in Demo Mode*/
+    void GenerateDemoResults(Matrix2DResults& arrResults);
+
     /*Returns m_arrResults matrix, DO NOT FORGET TO CALL GenerateResults() !*/
     const Matrix2DResults& GetResults();
 

@@ -11,7 +11,8 @@
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
-constexpr unsigned int g_unTimerGameCycle = 1;
+constexpr unsigned int g_unTimerDemoMode = 1;
+constexpr unsigned int g_unTimerDemoModePeriod = 1000;
 
 KidsFantasy::KidsFantasy()
 {
@@ -95,16 +96,16 @@ bool KidsFantasy::HandleEvent()
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
 
-    m_particle.SetPosition({nXMouse, nYMouse});
+    // m_particle.SetPosition({nXMouse, nYMouse});
 
-    if (ImGui::IsMouseDown(0))
-    {
-        m_particle.StartEmitting();
-    }
-    else
-    {
-        m_particle.StopEmitting();
-    }
+    // if (ImGui::IsMouseDown(0))
+    // {
+    //     m_particle.StartEmitting();
+    // }
+    // else
+    // {
+    //     m_particle.StopEmitting();
+    // }
 
     /*Panel Handle Event*/
     if (m_eState == EKidsFantasyStates::eReadyForGame)
@@ -117,23 +118,7 @@ bool KidsFantasy::HandleEvent()
     {
         LOG_INFO("Kids Fantasy - ENTER Button Pressed");
 
-        /*Take money counting and request ready for game*/
-        if (m_eState == EKidsFantasyStates::eWinFromGame)
-        {
-            MainApp::GetInstance().ptrPanel->FastCollectCounting();
-            m_statusLine.StopWinScenario();
-            m_lines.Stop();
-            RequestState(EKidsFantasyStates::eReadyForGame);
-        }
-
-        /*Start new Game*/
-        if (m_eState == EKidsFantasyStates::eReadyForGame &&
-            m_reelsArea.StartNewGame())
-        {
-            RequestState(EKidsFantasyStates::eReeling);
-            m_statusLine.NeedToShowGoodLuckScenario();
-        }
-
+        InvokeStartButton();
         return true;
     }
 
@@ -141,6 +126,26 @@ bool KidsFantasy::HandleEvent()
     m_reelsArea.HandleEvent();
 
     return false;
+}
+
+void KidsFantasy::InvokeStartButton(bool bDemoMode)
+{
+    /*Take money counting and request ready for game*/
+    if (m_eState == EKidsFantasyStates::eWinFromGame)
+    {
+        MainApp::GetInstance().ptrPanel->FastCollectCounting();
+        m_statusLine.StopWinScenario();
+        m_lines.Stop();
+        RequestState(EKidsFantasyStates::eReadyForGame);
+    }
+
+    /*Start new Game*/
+    if (m_eState == EKidsFantasyStates::eReadyForGame &&
+        m_reelsArea.StartNewGame(bDemoMode))
+    {
+        RequestState(EKidsFantasyStates::eReeling);
+        m_statusLine.NeedToShowGoodLuckScenario();
+    }
 }
 
 const std::string &KidsFantasy::GetAppName()
@@ -285,14 +290,12 @@ void KidsFantasy::OnEnter()
     LOG_INFO("Kids Fantasy - Transition to Application succeed");
 
     RequestState(EKidsFantasyStates::eReadyForGame);
-    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerGameCycle, 1);
     m_statusLine.StartNormalScenario();
 }
 
 void KidsFantasy::OnExit()
 {
     m_statusLine.StopNormalScenario();
-    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerGameCycle);
     RequestState(EKidsFantasyStates::eInactive);
 
     LOG_INFO("Kids Fantasy - Exit from Application");
@@ -317,7 +320,190 @@ void KidsFantasy::OnDraw()
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();
 
+    /*Demo*/
+    DrawDemo();
+
+    /*Test Particle*/
     m_particle.Draw();
+}
+
+void KidsFantasy::DrawDemo()
+{
+    ImGui::Begin("Kids Fantasy Demo", &m_bDemoMenu);
+
+    ImGui::Text("Win Figures");
+    if (ImGui::Button("Win Figure 1"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Win Figure 2"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureTwo, GameDefs::eGameFigureTwo, GameDefs::eGameFigureTwo, GameDefs::eGameFigureTwo, GameDefs::eGameFigureTwo},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Win Figure 3"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Win Figure 4"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureFour, GameDefs::eGameFigureFour, GameDefs::eGameFigureFour, GameDefs::eGameFigureFour, GameDefs::eGameFigureFour},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Win Figure 5"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureFive, GameDefs::eGameFigureFive, GameDefs::eGameFigureFive, GameDefs::eGameFigureFive, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Win Figure 6"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::Text("Big Win");
+    if (ImGui::Button("Big Win Figure 1"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne, GameDefs::eGameFigureOne},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Big Win Figure 3"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree},
+                 {GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree},
+                 {GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree, GameDefs::eGameFigureThree},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Big Win Figure 6"))
+    {
+        Matrix2DResults results =
+            {
+                {{GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive},
+                 {GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix},
+                 {GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix},
+                 {GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix, GameDefs::eGameFigureSix},
+                 {GameDefs::eGameFigureOne, GameDefs::eGameFigureTwo, GameDefs::eGameFigureThree, GameDefs::eGameFigureFour, GameDefs::eGameFigureFive}}};
+
+        MathLogic::GetInstance().GenerateDemoResults(results);
+        InvokeStartButton(true);
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::Text("Demo Mode");
+    if (ImGui::Button("Demo Mode"))
+    {
+        m_bDemoModeActive = !m_bDemoModeActive;
+
+        if(m_bDemoModeActive)
+        {
+            MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerDemoMode, g_unTimerDemoModePeriod);
+            LOG_INFO("Kids Fantasy - Auto Demo Mode Started");
+        }
+        else
+        {
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerDemoMode);
+            LOG_INFO("Kids Fantasy - Auto Demo Mode Stopped");
+        }
+
+        ImGui::SetWindowCollapsed(true);
+    }
+
+    ImGui::End();
 }
 
 void KidsFantasy::AfterReelingStopped()
@@ -345,7 +531,28 @@ void KidsFantasy::AfterReelingStopped()
 
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if (unID == g_unTimerGameCycle)
+    if(unID == g_unTimerDemoMode)
     {
+        if(!MainApp::GetInstance().ptrPanel->CanStartNewGame())
+        {
+            m_bDemoModeActive = false;
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerDemoMode);
+            return;
+        }
+
+        if(m_eState == EKidsFantasyStates::eReadyForGame)
+        {
+            m_unCounterSecondsDemoMode = 0;
+            InvokeStartButton();
+        }
+        else if(m_eState == EKidsFantasyStates::eWinFromGame)
+        {
+            const unsigned int unSecondsBeforeStart = 10;
+            if(++m_unCounterSecondsDemoMode >= unSecondsBeforeStart)
+            {
+                m_unCounterSecondsDemoMode = 0;
+                InvokeStartButton();
+            }
+        }
     }
 }
