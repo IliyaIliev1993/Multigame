@@ -168,6 +168,9 @@ private:
     void StartEffectParticleWinPanel();
     void StopEffectParticleWinPanel();
 
+    /*String presicion*/
+    std::string ToStringPrecision(const float fValue, const int nPrecision = 2);
+
 
 public:
 

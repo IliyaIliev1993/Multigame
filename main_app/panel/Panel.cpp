@@ -281,15 +281,11 @@ bool Panel::Init()
         return false;
     }
 
-    std::string strFloatToString = std::to_string(m_fCreditAvailable);
-    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCreditAvailable = ToStringPrecision(m_fCreditAvailable);
 
     m_fCurrentBet = GameDefs::g_fMinBet;
-    strFloatToString = std::to_string(m_fCurrentBet);
-    m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
-
-    strFloatToString = std::to_string(m_fCurrentWin);
-    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCurrentBet = ToStringPrecision(m_fCurrentBet);
+    m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
 
     LOG_INFO("Panel - Initialized ...");
     return true;
@@ -530,7 +526,7 @@ bool Panel::HandleEvent()
     if (m_betButton.IsHovered(nXMouse, nYMouse))
     {
         /*Bet increment/decrement*/
-        const float fBetModifier = 0.50f;
+        const float fBetModifier = 1.00f;
 
         /*Decremenet Button*/
         if (m_decrementBetButton.IsPressAndHold(nXMouse, nYMouse))
@@ -551,8 +547,7 @@ bool Panel::HandleEvent()
                     m_fCurrentBet = GameDefs::g_fMinBet;
                 }
 
-                std::string strFloatToString = std::to_string(m_fCurrentBet);
-                m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+                m_strCurrentBet = ToStringPrecision(m_fCurrentBet);
 
                 return true;
             }
@@ -577,8 +572,7 @@ bool Panel::HandleEvent()
                     m_fCurrentBet = GameDefs::g_fMaxBet;
                 }
 
-                std::string strFloatToString = std::to_string(m_fCurrentBet);
-                m_strCurrentBet = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+                m_strCurrentBet = ToStringPrecision(m_fCurrentBet);
 
                 return true;
             }
@@ -802,9 +796,8 @@ void Panel::OnTick(unsigned int unID, unsigned int unTimes)
         {
             MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
         }
-
-        std::string strFloatToString = std::to_string(m_fCurrentWin);
-        m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+        
+        m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
     }
 
     if (unID == g_unTimerParticlesChange)
@@ -835,7 +828,7 @@ void Panel::StartWinCounting(float fWinToReach)
 {
     m_fWinToBeReached = fWinToReach;
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerWinCounting, g_unTimerWinCountingPeriod);
-    m_interpolatorCounting.Start(m_fCurrentWin, 0.0f, m_fWinToBeReached, Ease::SineIn, g_unDurationMilliSecondsCounting);
+    m_interpolatorCounting.Start(m_fCurrentWin, 0.0f, m_fWinToBeReached, Ease::SineOut, g_unDurationMilliSecondsCounting);
 
     /*Particle Effect*/
     StartEffectParticleWinPanel();
@@ -845,8 +838,7 @@ void Panel::FastCollectCounting()
 {
     m_fCurrentWin = m_fWinToBeReached;
     AddCredit(m_fCurrentWin);
-    std::string strFloatToString = std::to_string(m_fCurrentWin);
-    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
     m_interpolatorCounting.Stop();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
     StopEffectParticleWinPanel();
@@ -863,12 +855,14 @@ void Panel::AddCredit(float fCreditToAdd)
     LOG_INFO("Panel - Credit BEFORE adding -> \"{0}\"", m_fCreditAvailable);
     LOG_INFO("Panel - Credit to be added -> \"{0}\"", fCreditToAdd);
 
-    m_fCreditAvailable += fCreditToAdd;
+    m_fCreditAvailable += roundf(fCreditToAdd * 100) / 100;
+
+    float fCreditAvailableMemory = m_fCreditAvailable;
+    m_fCreditAvailable = roundf(fCreditAvailableMemory * 100) / 100;
 
     LOG_INFO("Panel - Credit AFTER adding -> \"{0}\"", m_fCreditAvailable);
 
-    std::string strFloatToString = std::to_string(m_fCreditAvailable);
-    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCreditAvailable = ToStringPrecision(m_fCreditAvailable);
 }
 
 void Panel::RemoveCredit(float fCreditToBeRemoved)
@@ -882,34 +876,41 @@ void Panel::RemoveCredit(float fCreditToBeRemoved)
     LOG_INFO("Panel - Credit BEFORE remove -> \"{0}\"", m_fCreditAvailable);
     LOG_INFO("Panel - Credit to be removed -> \"{0}\"", fCreditToBeRemoved);
 
-    m_fCreditAvailable -= fCreditToBeRemoved;
+    m_fCreditAvailable -= roundf(fCreditToBeRemoved * 100) / 100;
+
+    float fCreditAvailableMemory = m_fCreditAvailable;
+    m_fCreditAvailable = roundf(fCreditAvailableMemory * 100) / 100;
 
     LOG_INFO("Panel - Credit AFTER remove -> \"{0}\"", m_fCreditAvailable);
 
-    std::string strFloatToString = std::to_string(m_fCreditAvailable);
-    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCreditAvailable = ToStringPrecision(m_fCreditAvailable);
 }
 
 void Panel::DecrementCreditWithBet()
 {
-    RemoveCredit(m_fCurrentBet);
+    float fDecrementCredit = roundf(m_fCurrentBet * 100) / 100;
+    RemoveCredit(fDecrementCredit);
 }
 
 void Panel::ResetCredit()
 {
     m_fCreditAvailable = 0.0f;
-
     LOG_INFO("Panel - Credit reset to -> \"{0}\"", m_fCreditAvailable);
 
-    std::string strFloatToString = std::to_string(m_fCreditAvailable);
-    m_strCreditAvailable = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+    m_strCreditAvailable = ToStringPrecision(m_fCreditAvailable);
 }
 
 void Panel::ResetWin()
 {
     m_fCurrentWin = 0.0f;
     m_fWinToBeReached = 0.0f;
+    m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
+}
 
-    std::string strFloatToString = std::to_string(m_fCurrentWin);
-    m_strCurrentWin = strFloatToString.substr(0, strFloatToString.find(".") + 3);
+std::string Panel::ToStringPrecision(const float fValue, const int nPrecision)
+{
+    std::ostringstream out;
+    out.precision(nPrecision);
+    out << std::fixed << fValue;
+    return std::move(out).str();
 }

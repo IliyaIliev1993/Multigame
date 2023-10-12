@@ -185,7 +185,7 @@ const float MathLogic::GetWinFromCurrentGame()
     {
         for (auto &winElement : m_vectorWins)
         {
-            fWinFromGame += winElement.fWin;
+            fWinFromGame += roundf(winElement.fWin * 100) / 100;
         }
     }
 
