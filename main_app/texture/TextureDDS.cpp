@@ -16,6 +16,7 @@ TextureDDS::TextureDDS(const std::string& strPath)
 {
     SetFlipFormat(EFlipFormat::eFlipVertical);
     LOG_INFO("Creating a TextureDDS with path: \"{0}\"", strPath);
+	m_strPath = strPath;
 }
 
 bool TextureDDS::Load(const std::string& strPath)

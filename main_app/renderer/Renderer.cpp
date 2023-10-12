@@ -83,7 +83,7 @@ void Renderer::Deinit()
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    LOG_INFO("Renderer - Deinitialized ...");
+    LOG_WARN("Renderer - Deinitialized ...");
 }
 
 void Renderer::CreateAndFill2DBuffers()

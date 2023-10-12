@@ -68,7 +68,7 @@ bool StatusLine::Init()
 
 bool StatusLine::Deinit()
 {
-    LOG_INFO("StatusLine - Deinitialized ...");
+    LOG_WARN("StatusLine - Deinitialized ...");
     return true;
 }
 

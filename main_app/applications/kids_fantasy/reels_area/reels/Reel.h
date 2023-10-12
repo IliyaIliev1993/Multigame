@@ -78,8 +78,8 @@ public:
     bool Init(GameDefs::EReels eIDReel,
               float fXOrgPos,
               float fYOrgPos,
-              const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture,
-              const std::array<AnimPlayer, GameDefs::eTotalGameFiguresCount> &arrFiguresAnimations);
+              const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture);
+    bool InitFiguresAnimations(const std::array<AnimPlayer, GameDefs::eTotalGameFiguresCount> &arrFiguresAnimations);
     void Draw();
     void StartReeling();
     void NeedToFastStop();

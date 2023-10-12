@@ -18,14 +18,12 @@ constexpr float g_fReelingMaxSpeed = 17.0f;
 bool Reel::Init(GameDefs::EReels eIDReel,
                 float fXOrgPos,
                 float fYOrgPos,
-                const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture,
-                const std::array<AnimPlayer, GameDefs::eTotalGameFiguresCount> &arrFiguresAnimations)
+                const std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount> &arrFiguresTexture)
 {
     m_eIDReel = eIDReel;
     m_fXOrgPos = fXOrgPos;
     m_fYOrgPos = fYOrgPos;
     m_arrFiguresTexture = arrFiguresTexture;
-    m_arrFiguresAnimations = arrFiguresAnimations;
     m_nReelingCyclesBeforeBounce = g_unReelingCyclesBeforeBounce + m_eIDReel;
 
     m_fYMinTresholdReelingFigure = m_fYOrgPos - GameDefs::g_fHeightFigurePicture;
@@ -52,6 +50,18 @@ bool Reel::Init(GameDefs::EReels eIDReel,
     m_eState = EReelState::eStopped;
 
     LOG_INFO("Reel - Initialized Reel with ID - \"{0}\"", (int)m_eIDReel);
+    return true;
+}
+
+bool Reel::InitFiguresAnimations(const std::array<AnimPlayer, GameDefs::eTotalGameFiguresCount> &arrFiguresAnimations)
+{
+    if(arrFiguresAnimations.empty())
+    {
+        LOG_ERROR("Reel - Reel with ID - \"{0}\", failed to initialize Figures Animations!", (int)m_eIDReel);
+        return false;
+    }
+
+    m_arrFiguresAnimations = arrFiguresAnimations;
     return true;
 }
 
@@ -189,6 +199,12 @@ void Reel::NeedToFastStop()
 
 void Reel::StartAnimation(int nFigurePosition, GameDefs::EGameFigure eWinFigure)
 {
+    if(m_arrFiguresAnimations.empty())
+    {
+        LOG_ERROR("Reel - Reel with ID - \"{0}\" cannot start animation due to empty animation container!", (int)m_eIDReel);
+        return;
+    }
+
     auto& winFigure = m_arrReelFigures.at(nFigurePosition);
     winFigure.eGameFigure = eWinFigure;
     winFigure.bWinFigure = true;

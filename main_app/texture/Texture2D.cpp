@@ -8,4 +8,5 @@ Texture2D::Texture2D(const std::string& strPath)
     : Texture(strPath)
 {
     LOG_INFO("Creating a Texture2D with path: \"{0}\"", strPath);
+    m_strPath = strPath;
 }

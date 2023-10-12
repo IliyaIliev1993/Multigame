@@ -49,36 +49,28 @@ bool ReelsArea::Init()
         }
     }
 
-    /*Figures Animations*/
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureOne).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_1", g_fFpsReelAnimations);
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureTwo).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_2", g_fFpsReelAnimations);
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureThree).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_3", g_fFpsReelAnimations);
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureFour).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_4", g_fFpsReelAnimations);
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureFive).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_5", g_fFpsReelAnimations);
-    m_arrFiguresAnimations.at(GameDefs::eGameFigureSix).Init("../src/resources/kids_fantasy/reels_area/reel_animations/figure_6", g_fFpsReelAnimations);
-
     /*Initialize Reels*/
-    if (!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel1, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture, m_arrFiguresAnimations))
+    if (!m_arrReels.at(GameDefs::eFirstReel).Init(GameDefs::eFirstReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel1, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 1!");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel2, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture, m_arrFiguresAnimations))
+    if (!m_arrReels.at(GameDefs::eSecondReel).Init(GameDefs::eSecondReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel2, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 2!");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel3, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture, m_arrFiguresAnimations))
+    if (!m_arrReels.at(GameDefs::eThirdReel).Init(GameDefs::eThirdReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel3, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 3 !");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel4, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture, m_arrFiguresAnimations))
+    if (!m_arrReels.at(GameDefs::eFourthReel).Init(GameDefs::eFourthReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel4, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 4 !");
         return false;
     }
-    if (!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel5, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture, m_arrFiguresAnimations))
+    if (!m_arrReels.at(GameDefs::eFifthReel).Init(GameDefs::eFifthReel, GameDefs::g_fXReelsArea + GameDefs::g_fXOrgPosReel5, GameDefs::g_fYReelsArea + GameDefs::g_fYOrgPosReels, m_arrFiguresTexture))
     {
         LOG_ERROR("Reels Area - Unable to load reel 5!");
         return false;
@@ -90,7 +82,9 @@ bool ReelsArea::Init()
 
 bool ReelsArea::Deinit()
 {
-    LOG_INFO("Reels Area - Deinitialized ...");
+    UnloadResources();
+
+    LOG_WARN("Reels Area - Deinitialized ...");
     return true;
 }
 
@@ -212,4 +206,65 @@ void ReelsArea::StartAnimationsIfAny()
             m_arrReels.at(i).StartAnimation(unFigurePositionToStartAnim, win.eGameFigure);
         }
     }
+}
+
+void ReelsArea::LoadAnimationSurfaces()
+{
+    /*Figures Animations*/
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureOne).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_1", g_fFpsReelAnimations);
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureTwo).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_2", g_fFpsReelAnimations);
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureThree).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_3", g_fFpsReelAnimations);
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFour).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_4", g_fFpsReelAnimations);
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFive).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_5", g_fFpsReelAnimations);
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureSix).InitSurfaces("../src/resources/kids_fantasy/reels_area/reel_animations/figure_6", g_fFpsReelAnimations);
+}
+
+void ReelsArea::LoadTexturesFromSurfaces()
+{
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureOne).LoadTexturesFromSurfaces();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureTwo).LoadTexturesFromSurfaces();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureThree).LoadTexturesFromSurfaces();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFour).LoadTexturesFromSurfaces();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFive).LoadTexturesFromSurfaces();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureSix).LoadTexturesFromSurfaces();
+
+    if (!m_arrReels.at(GameDefs::eFirstReel).InitFiguresAnimations(m_arrFiguresAnimations))
+    {
+        LOG_ERROR("Reels Area - Unable to InitFiguresAnimations reel 1!");
+        return;
+    }
+
+    if (!m_arrReels.at(GameDefs::eSecondReel).InitFiguresAnimations(m_arrFiguresAnimations))
+    {
+        LOG_ERROR("Reels Area - Unable to InitFiguresAnimations reel 2!");
+        return;
+    }
+
+    if (!m_arrReels.at(GameDefs::eThirdReel).InitFiguresAnimations(m_arrFiguresAnimations))
+    {
+        LOG_ERROR("Reels Area - Unable to InitFiguresAnimations reel 3!");
+        return;
+    }
+
+    if (!m_arrReels.at(GameDefs::eFourthReel).InitFiguresAnimations(m_arrFiguresAnimations))
+    {
+        LOG_ERROR("Reels Area - Unable to InitFiguresAnimations reel 4!");
+        return;
+    }
+
+    if (!m_arrReels.at(GameDefs::eFifthReel).InitFiguresAnimations(m_arrFiguresAnimations))
+    {
+        LOG_ERROR("Reels Area - Unable to InitFiguresAnimations reel 5!");
+        return;
+    }
+}
+
+void ReelsArea::UnloadResources()
+{
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureOne).Deinit();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureTwo).Deinit();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureThree).Deinit();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFour).Deinit();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureFive).Deinit();
+    m_arrFiguresAnimations.at(GameDefs::eGameFigureSix).Deinit();
 }

@@ -33,6 +33,9 @@ private:
     /*Current frame index of drawn animation*/
     unsigned int m_unCurrentFrameIndex = 0;
 
+    /*Path to anim*/
+    std::string m_strPath = "N/A";
+
     /*AnimPlayer state*/
     EAnimPlayerStates m_eState = EAnimPlayerStates::eInactive;
 
@@ -51,6 +54,9 @@ private:
 public:
 
     bool Init(std::string strPathToAnim, float fFps);
+    bool InitSurfaces(std::string strPathToAnim, float fFps);
+    bool LoadTexturesFromSurfaces();
+    bool Deinit();
     void Start(float fFps = 25.0f, EAnimPlayerPlayMode ePlayMode = EAnimPlayerPlayMode::ePlayLooped);
     void Stop();
     void Draw(float fX, float fY);

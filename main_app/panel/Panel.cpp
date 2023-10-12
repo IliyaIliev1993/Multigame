@@ -422,7 +422,7 @@ bool Panel::LoadCalculatorButtons()
 
 bool Panel::Deinit()
 {
-    LOG_INFO("Panel - Deinitialized ...");
+    LOG_WARN("Panel - Deinitialized ...");
     return true;
 }
 

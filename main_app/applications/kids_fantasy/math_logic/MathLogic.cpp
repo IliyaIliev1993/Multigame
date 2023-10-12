@@ -22,7 +22,7 @@ bool MathLogic::Init()
 
 bool MathLogic::Deinit()
 {
-    LOG_INFO("MathLogic - Deinitialized ...");
+    LOG_WARN("MathLogic - Deinitialized ...");
     return true;
 }
 

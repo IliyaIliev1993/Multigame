@@ -7,7 +7,7 @@
 #include <main_app/texture/TextureDDS.h>
 #include <debug/Logger.h>
 
-Texture::Texture(const std::string& strPath)
+Texture::Texture(const std::string &strPath)
     : m_strPath(strPath),
       m_unTextureID(0),
       m_nWidth(0),
@@ -19,12 +19,11 @@ Texture::Texture(const std::string& strPath)
       m_nOriginalHeight(0),
       m_eFlipFormat(EFlipFormat::eFlipNone),
       m_arrTexCoords{
-        glm::vec2(0.0f, 1.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(0.0f, 0.0f)}
+          glm::vec2(0.0f, 1.0f),
+          glm::vec2(1.0f, 1.0f),
+          glm::vec2(1.0f, 0.0f),
+          glm::vec2(0.0f, 0.0f)}
 {
-
 }
 
 Texture::~Texture()
@@ -33,10 +32,10 @@ Texture::~Texture()
     DeleteTexture();
 }
 
-std::shared_ptr<Texture> Texture::CreateTexture(const std::string& strPath)
+std::shared_ptr<Texture> Texture::CreateTexture(const std::string &strPath)
 {
-    const std::string& strFileExtension = Utils::GetFileExtension(strPath);
-    if(strFileExtension.compare(".dds") == 0)
+    const std::string &strFileExtension = Utils::GetFileExtension(strPath);
+    if (strFileExtension.compare(".dds") == 0)
     {
         return std::make_shared<TextureDDS>(strPath);
     }
@@ -46,9 +45,9 @@ std::shared_ptr<Texture> Texture::CreateTexture(const std::string& strPath)
     }
 }
 
-bool Texture::Load(const std::string& strPath)
+bool Texture::Load(const std::string &strPath)
 {
-    if(m_unTextureID != 0)
+    if (m_unTextureID != 0)
     {
         LOG_ERROR("Texture \"{0}\" needs to be unloaded before \"{1}\" can be loaded!",
                   m_strPath, strPath);
@@ -60,9 +59,9 @@ bool Texture::Load(const std::string& strPath)
     /* Load Texture Flipped - OpenGL reads the format from bottom to top */
     stbi_set_flip_vertically_on_load(true);
     /* Load the current texture (array of pixels) */
-    stbi_uc* ucData = stbi_load(strPath.c_str(), &m_nWidth, &m_nHeight,
-                                &m_nChannelCount, 4);
-    if(!ucData)
+    m_ucData = stbi_load(strPath.c_str(), &m_nWidth, &m_nHeight,
+                         &m_nChannelCount, 4);
+    if (!m_ucData)
     {
         LOG_ERROR("Failed to load Texture2D \"{0}\"", m_strPath);
         return false;
@@ -79,8 +78,10 @@ bool Texture::Load(const std::string& strPath)
     glBindTexture(GL_TEXTURE_2D, m_unTextureID);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_nWidth,
-                 m_nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, ucData);
-    stbi_image_free(ucData);
+                 m_nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ucData);
+
+    stbi_image_free(m_ucData);
+    m_ucData = nullptr;
 
     /* Generate mimpaps for texture */
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -91,13 +92,77 @@ bool Texture::Load(const std::string& strPath)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    if(Utils::CheckOpenGLError())
+    if (Utils::CheckOpenGLError())
     {
         LOG_ERROR("Failed to load Texture2D to OpenGL: \"{0}\"", m_strPath);
         return false;
     }
 
     LOG_INFO("Loaded Texture2D \"{0}\"", m_strPath);
+    return true;
+}
+
+bool Texture::LoadSurface()
+{
+    m_mutexLoadSurface.lock();
+
+    if (m_unTextureID != 0)
+    {
+        LOG_ERROR("Texture \"{0}\" needs to be unloaded before can be loaded!",
+                  m_strPath);
+        return false;
+    }
+
+    /* Load Texture Flipped - OpenGL reads the format from bottom to top */
+    stbi_set_flip_vertically_on_load(true);
+    /* Load the current texture (array of pixels) */
+    m_ucData = stbi_load(m_strPath.c_str(), &m_nWidth, &m_nHeight,
+                         &m_nChannelCount, 4);
+    if (!m_ucData)
+    {
+        LOG_ERROR("Failed to load Texture2D \"{0}\"", m_strPath);
+        return false;
+    }
+
+    m_nOriginalWidth = m_nWidth;
+    m_nOriginalHeight = m_nHeight;
+
+    SetSourceW(m_nWidth);
+    SetSourceH(m_nHeight);
+
+    m_mutexLoadSurface.unlock();
+
+    return true;
+}
+
+bool Texture::LoadTextureFromSurface()
+{
+    /* Upload the image to OpenGL (the GPU) */
+    glGenTextures(1, &m_unTextureID);
+    glBindTexture(GL_TEXTURE_2D, m_unTextureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_nWidth,
+                 m_nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_ucData);
+
+    stbi_image_free(m_ucData);
+    m_ucData = nullptr;
+
+    /* Generate mimpaps for texture */
+    glGenerateMipmap(GL_TEXTURE_2D);
+    /* Enable bilinear filtering */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    /* Enable texture wrapping */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+    if (Utils::CheckOpenGLError())
+    {
+        LOG_ERROR("Failed to load Texture2D to OpenGL: \"{0}\"", m_strPath);
+        return false;
+    }
+
+    LOG_INFO("Loaded Texture2D  from surface \"{0}\"", m_strPath);
     return true;
 }
 
@@ -117,7 +182,7 @@ const glm::vec2 &Texture::GetTexCoord(Texture::ETexCoords eTexCoord) const
     return m_arrTexCoords.at(Utils::ToNum(eTexCoord));
 }
 
-void Texture::SetTexCoord(ETexCoords eTexCoord, const glm::vec2& vec2TexCoord)
+void Texture::SetTexCoord(ETexCoords eTexCoord, const glm::vec2 &vec2TexCoord)
 {
     m_arrTexCoords.at(Utils::ToNum(eTexCoord)) = vec2TexCoord;
 }
@@ -150,19 +215,18 @@ void Texture::SetTexCoords(Texture::EFlipFormat eFlipFormat)
         break;
     default:
         m_arrTexCoords =
-        {
-          glm::vec2(0.0f, 1.0f),
-          glm::vec2(1.0f, 1.0f),
-          glm::vec2(1.0f, 0.0f),
-          glm::vec2(0.0f, 0.0f)
-        };
+            {
+                glm::vec2(0.0f, 1.0f),
+                glm::vec2(1.0f, 1.0f),
+                glm::vec2(1.0f, 0.0f),
+                glm::vec2(0.0f, 0.0f)};
         break;
     }
 }
 
 void Texture::Bind()
 {
-    if(m_unTextureID != 0)
+    if (m_unTextureID != 0)
     {
         glBindTexture(GL_TEXTURE_2D, m_unTextureID);
     }
@@ -179,7 +243,7 @@ void Texture::Unbind()
 
 void Texture::DeleteTexture()
 {
-    if(m_unTextureID != 0)
+    if (m_unTextureID != 0)
     {
         glDeleteTextures(1, &m_unTextureID);
         LOG_WARN("Deleting Texture: \"{0}\"", m_strPath);
@@ -187,5 +251,12 @@ void Texture::DeleteTexture()
         m_nHeight = 0;
         m_unTextureID = 0;
         m_strPath = "";
+    }
+
+    if (m_ucData)
+    {
+        LOG_WARN("Free Surface Data: \"{0}\"", m_strPath);
+        stbi_image_free(m_ucData);
+        m_ucData = nullptr;
     }
 }

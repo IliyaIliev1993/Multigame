@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <thread>
 
 #include <main_app/applications/IApp.h>
 #include <main_app/texture/Texture.h>
@@ -29,6 +30,9 @@ private:
 
     /*Flag Demo Menu*/
     bool m_bDemoMenu = false;
+
+    /*Flag showing when loading thread finished*/
+    bool m_bHasFinishedLoadingOfSurfaces = false;
 
     /*Flag Demo Mode Active*/
     bool m_bDemoModeActive = false;
@@ -63,6 +67,10 @@ private:
 
     /*Particle test*/
     ParticleSystem m_particle;
+
+    /*Thread Animation loading when entering in game*/
+    std::thread m_threadAnimationLoading;
+
 public:
 
     KidsFantasy();

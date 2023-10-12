@@ -45,4 +45,13 @@ public:
 
     /*Start new game method, when ENTER pressed will be executed*/
     bool StartNewGame(bool bDemoMode = false);
+
+    /*Method called in different thread, due to time saving*/
+    void LoadAnimationSurfaces();
+
+    /*Method called after LoadAnimationSurfaces() in MAIN THREAD !*/
+    void LoadTexturesFromSurfaces();
+
+    /*Method called when exit from game, unloads needed resources*/
+    void UnloadResources();
 };

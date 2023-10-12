@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <mutex>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -50,7 +51,7 @@ public:
 
     using ArrTexCoords = std::array<glm::vec2, Utils::ToNum(ETexCoords::eTotalCount)>;
 
-    Texture(const std::string& strPath = "");
+    Texture(const std::string &strPath = "");
     /**
      * @brief ~Texture - virtual class destructor. Unbinds and deletes this texture.
      */
@@ -62,14 +63,25 @@ public:
      * @param strPath - path, used to initialize m_strPath.
      * @return shared pointer of the newly created Texture Instance.
      */
-    static std::shared_ptr<Texture> CreateTexture(const std::string& strPath);
+    static std::shared_ptr<Texture> CreateTexture(const std::string &strPath);
     /**
      * @brief Load - load an image file from the specified path. Its implementation
      * is child-specific.
      * @param strPath - the location of the image file.
      * @return if the loading was successful.
      */
-    virtual bool Load(const std::string& strPath);
+    virtual bool LoadSurface();
+    /**
+     * DON'T FORGET TO CALL LoadTextureFromSurface(), due to free pixel data !!!
+     * @brief LoadSurface - load an surface from the path, specied in m_strPath, thread safe
+     * @return true if the load was successful.
+     */
+    virtual bool LoadTextureFromSurface();
+    /**
+     * @brief LoadTextureFromSurface - load a texture from already loaded surface specied in m_strPath
+     * @return true if the load was successful.
+     */
+    virtual bool Load(const std::string &strPath);
     /**
      * @brief Load - load an image from the path, specied in m_strPath
      *  [calls Load(m_strPath)].
@@ -84,7 +96,7 @@ public:
      * @brief GetPath - returns the file path of the current texture.
      * @return m_strPath
      */
-    const std::string& GetPath() const { return m_strPath; }
+    const std::string &GetPath() const { return m_strPath; }
     GLuint GetTextureID() const { return m_unTextureID; }
     /**
      * @brief GetWidth - returns the width of the current texture.
@@ -124,20 +136,20 @@ public:
      * from this texture.
      * @return m_arrTexCoords.
      */
-    const ArrTexCoords& GetTexCoords() const { return m_arrTexCoords; }
+    const ArrTexCoords &GetTexCoords() const { return m_arrTexCoords; }
     /**
      * @brief GetTexCoord - return a texture coordinate from m_arrTexCoords.
      * @param eTexCoord - index of the coordinate to be returned.
      * @return the value of the texture coordinate, specified by eTexCoord.
      */
-    const glm::vec2& GetTexCoord(ETexCoords eTexCoord) const;
+    const glm::vec2 &GetTexCoord(ETexCoords eTexCoord) const;
 
     /**
      * @brief SetTexCoords - set the texture coordinates, used to sample from
      * this texture.
      * @param arrTexCoords - the new texture coordinates.
      */
-    void SetTexCoords(const ArrTexCoords& arrTexCoords) { m_arrTexCoords = arrTexCoords; }
+    void SetTexCoords(const ArrTexCoords &arrTexCoords) { m_arrTexCoords = arrTexCoords; }
 
     /**
      * @brief SetTexCoord - set a texture coordinate from m_arrTexCoords.
@@ -145,7 +157,7 @@ public:
      * @param vec2TexCoord - the value of the texture coordinate, specified by
      * eTexCoord
      */
-    void SetTexCoord(ETexCoords eTexCoord, const glm::vec2& vec2TexCoord);
+    void SetTexCoord(ETexCoords eTexCoord, const glm::vec2 &vec2TexCoord);
 
     /**
      * @brief SetTexCoords - set the current texture coordinates, based
@@ -210,6 +222,14 @@ public:
      * @return m_nSourceW.
      */
 protected:
+    /**
+     * @brief m_mutexLoadSurface - prevent accessing method when already in use from another thread
+     */
+    std::mutex m_mutexLoadSurface;
+    /**
+     * @brief m_ucData - holds the physical pixels to surface
+     */
+    unsigned char *m_ucData = nullptr;
     /**
      * @brief m_strPath - holds the path to the physical image of the current
      * texture

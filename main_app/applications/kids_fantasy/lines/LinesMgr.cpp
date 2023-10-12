@@ -44,7 +44,7 @@ bool LinesMgr::Init()
 
 bool LinesMgr::Deinit()
 {
-    LOG_INFO("LinesMgr - Deinitialized ...");
+    LOG_WARN("LinesMgr - Deinitialized ...");
     return true;
 }
 

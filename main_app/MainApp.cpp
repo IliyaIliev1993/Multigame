@@ -120,7 +120,7 @@ bool MainApp::Deinit()
     ptrPanel->Deinit();
     ptrRend->Deinit();
 
-    LOG_INFO("MainApp - Deinitialzied ...");
+    LOG_WARN("MainApp - Deinitialzied ...");
     return true;
 }
 

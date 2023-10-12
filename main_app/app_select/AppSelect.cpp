@@ -78,7 +78,7 @@ bool AppSelect::Deinit()
         }
     }
 
-    LOG_INFO("AppSelect - Deinitialzied ...");
+    LOG_WARN("AppSelect - Deinitialzied ...");
     return true;
 }
 

@@ -14,6 +14,9 @@
 constexpr unsigned int g_unTimerDemoMode = 1;
 constexpr unsigned int g_unTimerDemoModePeriod = 1000;
 
+constexpr unsigned int g_unTimerResourcesLoading = 2;
+constexpr unsigned int g_unTimerResourcesLoadingPeriod = 1;
+
 KidsFantasy::KidsFantasy()
 {
 }
@@ -75,6 +78,11 @@ bool KidsFantasy::Init()
 
 bool KidsFantasy::Deinit()
 {
+    if (m_threadAnimationLoading.joinable())
+    {
+        m_threadAnimationLoading.join();
+    }
+
     /*Reels Area Deinit*/
     m_reelsArea.Deinit();
 
@@ -87,7 +95,7 @@ bool KidsFantasy::Deinit()
     /*Math Logic Deinit*/
     MathLogic::GetInstance().Deinit();
 
-    LOG_INFO("Kids Fantasy - Deinitialized ...");
+    LOG_WARN("Kids Fantasy - Deinitialized ...");
     return true;
 }
 
@@ -287,6 +295,22 @@ void KidsFantasy::RequestState(EKidsFantasyStates eStateToRequest)
 
 void KidsFantasy::OnEnter()
 {
+    if (m_threadAnimationLoading.joinable())
+    {
+        m_threadAnimationLoading.join();
+    }
+
+    std::function<void()> threadCallable = [this]()
+    {
+        m_reelsArea.LoadAnimationSurfaces();
+        m_bHasFinishedLoadingOfSurfaces = true;
+        LOG_INFO("Kids Fantasy - Ready with loading of all Animation Surfaces");
+    };
+
+    m_bHasFinishedLoadingOfSurfaces = false;
+    m_threadAnimationLoading = std::thread(threadCallable);
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerResourcesLoading, g_unTimerResourcesLoadingPeriod);
+
     LOG_INFO("Kids Fantasy - Transition to Application succeed");
 
     RequestState(EKidsFantasyStates::eReadyForGame);
@@ -295,8 +319,16 @@ void KidsFantasy::OnEnter()
 
 void KidsFantasy::OnExit()
 {
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerResourcesLoading);
     m_statusLine.StopNormalScenario();
     RequestState(EKidsFantasyStates::eInactive);
+
+    if (m_threadAnimationLoading.joinable())
+    {
+        m_threadAnimationLoading.join();
+    }
+
+    m_reelsArea.UnloadResources();
 
     LOG_INFO("Kids Fantasy - Exit from Application");
 }
@@ -489,7 +521,7 @@ void KidsFantasy::DrawDemo()
     {
         m_bDemoModeActive = !m_bDemoModeActive;
 
-        if(m_bDemoModeActive)
+        if (m_bDemoModeActive)
         {
             MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerDemoMode, g_unTimerDemoModePeriod);
             LOG_INFO("Kids Fantasy - Auto Demo Mode Started");
@@ -531,28 +563,44 @@ void KidsFantasy::AfterReelingStopped()
 
 void KidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == g_unTimerDemoMode)
+    if (unID == g_unTimerDemoMode)
     {
-        if(!MainApp::GetInstance().ptrPanel->CanStartNewGame())
+        if (!MainApp::GetInstance().ptrPanel->CanStartNewGame())
         {
             m_bDemoModeActive = false;
             MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerDemoMode);
             return;
         }
 
-        if(m_eState == EKidsFantasyStates::eReadyForGame)
+        if (m_eState == EKidsFantasyStates::eReadyForGame)
         {
             m_unCounterSecondsDemoMode = 0;
             InvokeStartButton();
         }
-        else if(m_eState == EKidsFantasyStates::eWinFromGame)
+        else if (m_eState == EKidsFantasyStates::eWinFromGame)
         {
             const unsigned int unSecondsBeforeStart = 10;
-            if(++m_unCounterSecondsDemoMode >= unSecondsBeforeStart)
+            if (++m_unCounterSecondsDemoMode >= unSecondsBeforeStart)
             {
                 m_unCounterSecondsDemoMode = 0;
                 InvokeStartButton();
             }
+        }
+    }
+
+    if (unID == g_unTimerResourcesLoading)
+    {
+        /*If jobs finished*/
+        if (m_bHasFinishedLoadingOfSurfaces)
+        {
+            if (m_threadAnimationLoading.joinable())
+            {
+                m_threadAnimationLoading.join();
+            }
+
+            m_reelsArea.LoadTexturesFromSurfaces();
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerResourcesLoading);
+            m_bHasFinishedLoadingOfSurfaces = false;
         }
     }
 }
