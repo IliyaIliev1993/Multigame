@@ -179,6 +179,7 @@ public:
     bool HandleEvent();
     bool CanStartNewGame();
     const float& GetCurrentBet();
+    const float& GetAvailableCredit();
     void OnDraw();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void StartWinCounting(float fWinToReach);

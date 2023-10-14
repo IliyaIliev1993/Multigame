@@ -5,27 +5,32 @@
 
 #include <main_app/timer/TimerMgr.h>
 
+enum class EInterpolatorStates
+{
+    eInactive,
+    eInProgress
+};
+
 class Interpolator : public ITimer
 {
 
 private:
-
-    float* m_fCurrentValue;
+    float *m_fCurrentValue;
     float m_fInitialValue;
     float m_fDestValue;
-    Ease m_easingFunction;
     float m_fProgress;
+    EInterpolatorStates m_eState = EInterpolatorStates::eInactive;
+    Ease m_easingFunction;
     unsigned int m_unDurationInMilliSeconds;
-    std::function<void()>m_endCallback;
+    std::function<void()> m_endCallback;
 
     void Progress();
 
 public:
-
-    void Start(float& fCurrentValue, float fInitialValue, float fDestValue, Ease easingFunction, unsigned int unDurationInMilliSeconds);
+    void Start(float &fCurrentValue, float fInitialValue, float fDestValue, Ease easingFunction, unsigned int unDurationInMilliSeconds);
     void Stop(bool bReachDestValue = true);
     void OnTick(unsigned int unID, unsigned int unTimes) final;
-    void SetEndCallback(std::function<void()>& endCallback);
-    const float& GetProgress();
-    
+    void SetEndCallback(std::function<void()> &endCallback);
+    const float &GetProgress();
+    const EInterpolatorStates& GetState();
 };

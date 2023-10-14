@@ -16,6 +16,7 @@ void Interpolator::Start(float &fCurrentValue, float fInitialValue, float fDestV
     m_unDurationInMilliSeconds = unDurationInMilliSeconds;
 
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerProcess, g_unTimerProcessPeriod);
+    m_eState = EInterpolatorStates::eInProgress;
 }
 
 void Interpolator::Stop(bool bReachDestValue)
@@ -27,6 +28,7 @@ void Interpolator::Stop(bool bReachDestValue)
 
     m_fProgress = 0.0f;
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerProcess);
+    m_eState = EInterpolatorStates::eInactive;
 }
 
 void Interpolator::OnTick(unsigned int unID, unsigned int unTimes)
@@ -164,4 +166,9 @@ void Interpolator::SetEndCallback(std::function<void()> &endCallback)
 const float &Interpolator::GetProgress()
 {
     return m_fProgress;
+}
+
+const EInterpolatorStates& Interpolator::GetState()
+{
+    return m_eState;
 }

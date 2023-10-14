@@ -11,9 +11,11 @@
         float fValue = 0.0f;
         bool bIsClicked = false;
         bool bIsHovered = false;
+        bool bIsLocked = false;
         std::string strText = "";
         std::shared_ptr<Texture>textureButton = nullptr;
         std::shared_ptr<Font>fontButton = nullptr;
+        glm::vec4 colorButton = {1.0f, 1.0f, 1.0f, 1.0f};
         bool IsHovered(const int& nXMouse, const int& nYMouse);
         bool IsPressed(const int& nXMouse, const int& nYMouse);
         bool IsPressAndHold(const int& nXMouse, const int& nYMouse);

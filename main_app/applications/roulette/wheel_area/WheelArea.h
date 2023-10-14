@@ -1,35 +1,23 @@
 #pragma once
 
-#include <main_app/texture/Texture.h>
-#include <main_app/timer/TimerMgr.h>
-#include <main_app/interpolator/Interpolator.h>
+#include "Wheel.h"
+#include "Ball.h"
 
 class WheelArea : public ITimer
 {
 private:
 
-    /*Degrees Wheel*/
-    float m_fDegreesWheel = 0.0f;
-
-    /*Speed Wheel*/
-    float m_fSpeedWheel = 0.0f;
-
-    /*Texture Wheel Table*/
-    std::shared_ptr<Texture> m_textureWheelTable;
-
-    /*Texture Wheel*/
-    std::shared_ptr<Texture> m_textureWheel;
-
-    /*Interpolator acceleration*/
-    Interpolator m_interpolatorAcceleration;
-
-    /*Method that check if angle > 360*/
-    void NormalizeAngle();
+    /*Ball Object*/
+    Ball m_Ball;
+    
+    /*Wheel Object*/
+    Wheel m_Wheel;
 
 public:
 
     bool Init();
     bool Deinit();
+    bool HandleEvent();
     void Draw();
     void StartSlowRotation();
     void StopSlowRotation();

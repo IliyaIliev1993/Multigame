@@ -650,6 +650,11 @@ const float &Panel::GetCurrentBet()
     return m_fCurrentBet;
 }
 
+const float &Panel::GetAvailableCredit()
+{
+    return m_fCreditAvailable;
+}
+
 void Panel::DrawCreditPanelButton()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
