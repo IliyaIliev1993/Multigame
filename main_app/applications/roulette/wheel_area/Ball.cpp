@@ -14,7 +14,7 @@ constexpr unsigned int g_unTimerRotateWithWheel = 2;
 constexpr unsigned int g_unTimerRotateWithWheelPeriod = 1;
 
 constexpr unsigned int g_unRotatationCycles = 4;
-constexpr unsigned int g_unRotationDuration = 7000;
+constexpr unsigned int g_unRotationDuration = 7500;
 constexpr unsigned int g_unDecrementDistanceDuration = 3500;
 constexpr unsigned int g_unThrowBallDuration = 200;
 
@@ -88,7 +88,7 @@ void Ball::Draw()
 void Ball::StartSpinning()
 {
     const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 75.0f);
-    const float fEndPositionAngle = -90.0f;
+    const float fEndPositionAngle = Random::GetRandomNumber(0.0f, -359.0f); //-90.0f;
 
     LOG_INFO("Ball - StartPositionAngle: \"{0}\"", fStartPositionAnlge);
 
@@ -101,7 +101,7 @@ void Ball::StartSpinning()
     m_interpolatorThrowBall.Start(m_fDistanceFromWheelCenter, g_fHiddenDistanceFormCenter, g_fMaxDistanceFromCenter, Ease::SineOut, g_unThrowBallDuration);
 
     /*Start rotation of the ball*/
-    const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-1500.0f, 2500.0f);
+    const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-500.0f, 1000.0f);
     m_interpolatorRotate.Start(m_fDegreesBall, fStartPositionAnlge, fEndPositionAngle, Ease::QuadraticOut, unDurationRotation);
 
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerSpinning, g_unTimerSpinningPeriod);
@@ -161,12 +161,32 @@ void Ball::CheckForCollision()
     m_fXPolarBall = (m_fDistanceFromWheelCenter * cos(m_fDegreesBall * (M_PI / 180.0f))) + g_fXCenterWheelBall + (GameDefs::g_fWidthBallRoulette / 2.0f);
     m_fYPolarBall = (m_fDistanceFromWheelCenter * sin(m_fDegreesBall * (M_PI / 180.0f))) + g_fYCenterWheelBall + (GameDefs::g_fHeightBallRoulette / 2.0f);
 
+    /*Check for sector collision*/
+    if (m_fDistanceFromWheelCenter < g_fDownerSideMiddleRingRadius &&
+        m_fDistanceFromWheelCenter > g_fMinDistanceFromCenter)
+    {
+        const float fForceX = m_fCurrentSpeed * 3.0f;
+        const float fForceY = -m_fCurrentSpeed * 8.0f;
+        const float fDurationJump = m_fCurrentSpeed * 100.0f;
+        const float fDurationBounce = m_fCurrentSpeed * 200.0f;
+
+        StartCollision(fForceX,
+                       fForceY,
+                       fDurationJump,
+                       fDurationBounce);
+    }
+
     /*Check middle ring collision*/
     if (m_fDistanceFromWheelCenter >= g_fDownerSideMiddleRingRadius &&
         m_fDistanceFromWheelCenter <= g_fUpperSideMiddleRingRadius)
     {
-        const float fForceFactorMiddleRingCollision = 20.0f + Random::GetRandomNumber(-3.0f, 3.0f);
-        StartCollision(-fForceFactorMiddleRingCollision, -fForceFactorMiddleRingCollision);
+        const float fForceFactorMiddleRingCollision = m_fCurrentSpeed * 3.0f;
+        const float fDurationJump = 300.0f;
+        const float fDurationBounce = 500.0f;
+        StartCollision(-fForceFactorMiddleRingCollision,
+                       -fForceFactorMiddleRingCollision,
+                       fDurationJump,
+                       fDurationBounce);
     }
 
     /*Check Rombus Collision*/
@@ -179,11 +199,17 @@ void Ball::CheckForCollision()
         {
             if (m_fDistanceFromWheelCenter <= g_fRombusRadiusCenter)
             {
-                StartCollision(fForceFactorRombusCollision, fForceFactorRombusCollision);
+                StartCollision(fForceFactorRombusCollision,
+                               fForceFactorRombusCollision,
+                               g_unRombusCollisionJumpUpDuration,
+                               g_unRombusCollisionBounceDownDuration);
             }
             else
             {
-                StartCollision(-fForceFactorRombusCollision, -fForceFactorRombusCollision);
+                StartCollision(-fForceFactorRombusCollision,
+                               -fForceFactorRombusCollision,
+                               g_unRombusCollisionJumpUpDuration,
+                               g_unRombusCollisionBounceDownDuration);
             }
 
             break;
@@ -191,32 +217,32 @@ void Ball::CheckForCollision()
     }
 }
 
-void Ball::StartCollision(float fXForce, float fYForce)
+void Ball::StartCollision(float fXForce, float fYForce, unsigned int unJumpDuration, unsigned int unBounceDuration)
 {
     if (m_interpolatorCollisionJumpY.GetState() == EInterpolatorStates::eInactive &&
         m_interpolatorCollisionBounceY.GetState() == EInterpolatorStates::eInactive)
     {
-        std::function<void()> endCallback = [this]()
+        std::function<void()> endCallback = [this, unBounceDuration]()
         {
-            m_interpolatorCollisionBounceY.Start(m_fYBall, m_fYBall, g_fYCenterWheelBall, Ease::BounceOut, g_unRombusCollisionBounceDownDuration);
+            m_interpolatorCollisionBounceY.Start(m_fYBall, m_fYBall, g_fYCenterWheelBall, Ease::BounceOut, unBounceDuration);
         };
 
         m_interpolatorCollisionJumpY.SetEndCallback(endCallback);
-        m_interpolatorCollisionJumpY.Start(m_fYBall, m_fYBall, m_fYBall + fYForce, Ease::CircularOut, g_unRombusCollisionJumpUpDuration);
-        LOG_INFO("Ball - Collision with Forces (X): \"{0}\"", fXForce, fYForce);
+        m_interpolatorCollisionJumpY.Start(m_fYBall, m_fYBall, m_fYBall + fYForce, Ease::CircularOut, unJumpDuration);
+        LOG_INFO("Ball - Collision with Forces (X): \"{0}\"", fXForce);
     }
 
     if (m_interpolatorCollisionJumpX.GetState() == EInterpolatorStates::eInactive &&
         m_interpolatorCollisionBounceX.GetState() == EInterpolatorStates::eInactive)
     {
-        std::function<void()> endCallback = [this]()
+        std::function<void()> endCallback = [this, unBounceDuration]()
         {
-            m_interpolatorCollisionBounceX.Start(m_fXBall, m_fXBall, g_fXCenterWheelBall, Ease::BounceOut, g_unRombusCollisionBounceDownDuration);
+            m_interpolatorCollisionBounceX.Start(m_fXBall, m_fXBall, g_fXCenterWheelBall, Ease::BounceOut, unBounceDuration);
         };
 
         m_interpolatorCollisionJumpX.SetEndCallback(endCallback);
-        m_interpolatorCollisionJumpX.Start(m_fXBall, m_fXBall, m_fXBall + fXForce, Ease::CircularOut, g_unRombusCollisionJumpUpDuration);
-        LOG_INFO("Ball - Collision with Forces (Y): \"{0}\"", fXForce);
+        m_interpolatorCollisionJumpX.Start(m_fXBall, m_fXBall, m_fXBall + fXForce, Ease::CircularOut, unJumpDuration);
+        LOG_INFO("Ball - Collision with Forces (Y): \"{0}\"", fYForce);
     }
 }
 

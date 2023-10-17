@@ -83,7 +83,7 @@ private:
     void CheckForCollision();
 
     /*Starts collision effect*/
-    void StartCollision(float fXForce, float fYForce);
+    void StartCollision(float fXForce, float fYForce, unsigned int unJumpDuration, unsigned int unBounceDuration);
 
 public:
     bool Init();
