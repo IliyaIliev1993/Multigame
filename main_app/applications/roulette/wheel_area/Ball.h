@@ -4,12 +4,23 @@
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/interpolator/Interpolator.h>
 
+/*Collision limits in container*/
+enum ECollisionLimits
+{
+    eMinX,
+    eMaxX,
+    eMinY,
+    eMaxY,
+    eTotalCollisionLimits
+};
+
 class Ball : public ITimer
 {
 
 private:
     /*Degrees Ball*/
     float m_fDegreesBall = 0.0f;
+    float m_fDegreesBallMemory = 0.0f;
 
     /*Speed Ball*/
     float m_fSpeedBall = 0.0f;
@@ -22,6 +33,15 @@ private:
 
     /*Y Coordinate*/
     float m_fYBall = 0.0f;
+
+    /*Polar Coordinate X*/
+    float m_fXPolarBall = 0.0f;
+
+    /*Polar Coordinate Y*/
+    float m_fYPolarBall = 0.0f;
+
+    /*Ball current speed*/
+    float m_fCurrentSpeed = 0.0f;
 
     /*Texture Ball*/
     std::shared_ptr<Texture> m_textureBall;
@@ -36,14 +56,16 @@ private:
     Interpolator m_interpolatorThrowBall;
 
     /*Interpolator collision, when collision is detected*/
-    Interpolator m_interpolatorCollisionX;
-    Interpolator m_interpolatorCollisionY;
+    Interpolator m_interpolatorCollisionJumpX;
+    Interpolator m_interpolatorCollisionJumpY;
+    Interpolator m_interpolatorCollisionBounceX;
+    Interpolator m_interpolatorCollisionBounceY;
 
     /*Check whenever there are some collisions*/
     void CheckForCollision();
 
     /*Starts collision effect*/
-    void StartCollision();
+    void StartCollision(float fXPolar, float fYPolar);
 
 public:
     bool Init();

@@ -2,6 +2,9 @@
 
 namespace GameDefs
 {
+    constexpr float g_fWidthBallRoulette = 26.0f;
+    constexpr float g_fHeightBallRoulette = 26.0f;
+    
     enum Chips
     {
         eChip_1,

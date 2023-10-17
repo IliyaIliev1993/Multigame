@@ -63,6 +63,12 @@ bool Roulette::HandleEvent()
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
 
+    if (ImGui::IsMouseClicked(0))
+    {
+        std::cout << "MOUSE:" << std::endl;
+        std::cout << nXMouse << " " << nYMouse << std::endl;
+    }
+
     /*Table Area Handle Event*/
     m_tableArea.HandleEvent();
 
@@ -114,8 +120,7 @@ void Roulette::OnDraw()
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == g_unTimerLifeRoulette)
+    if (unID == g_unTimerLifeRoulette)
     {
-
     }
 }
