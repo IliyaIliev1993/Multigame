@@ -34,6 +34,9 @@ constexpr float g_fAngleBeforeStartDecrementDistance = 360.0f;
 
 constexpr float g_fRombusRadiusCenter = 330.0f;
 
+constexpr float g_fUpperSideMiddleRingRadius = 215.0f;
+constexpr float g_fDownerSideMiddleRingRadius = 208.0f;
+
 const std::array<std::array<float, eTotalCollisionLimits>, g_unTotalRombusCollision> g_arrRombusCollision =
     {
         {
@@ -139,14 +142,14 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
         }
     }
 
-    if(unID == g_unTimerRotateWithWheel)
+    if (unID == g_unTimerRotateWithWheel)
     {
         m_fDegreesBall += m_fSpeedWheelRoulette;
         m_fCurrentSpeed = (m_fDegreesBallMemory - m_fDegreesBall) * 10.0f;
         m_fDegreesBallMemory = m_fDegreesBall;
 
         /*Normalize when rotating normal*/
-        if(m_fDegreesBall >= 360.0f)
+        if (m_fDegreesBall >= 360.0f)
         {
             m_fDegreesBall = 0.0f;
         }
@@ -155,12 +158,19 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 
 void Ball::CheckForCollision()
 {
-    float fForceFactor = m_fCurrentSpeed * 5.0f;
-
     m_fXPolarBall = (m_fDistanceFromWheelCenter * cos(m_fDegreesBall * (M_PI / 180.0f))) + g_fXCenterWheelBall + (GameDefs::g_fWidthBallRoulette / 2.0f);
     m_fYPolarBall = (m_fDistanceFromWheelCenter * sin(m_fDegreesBall * (M_PI / 180.0f))) + g_fYCenterWheelBall + (GameDefs::g_fHeightBallRoulette / 2.0f);
 
+    /*Check middle ring collision*/
+    if (m_fDistanceFromWheelCenter >= g_fDownerSideMiddleRingRadius &&
+        m_fDistanceFromWheelCenter <= g_fUpperSideMiddleRingRadius)
+    {
+        const float fForceFactorMiddleRingCollision = 20.0f + Random::GetRandomNumber(-3.0f, 3.0f);
+        StartCollision(-fForceFactorMiddleRingCollision, -fForceFactorMiddleRingCollision);
+    }
+
     /*Check Rombus Collision*/
+    const float fForceFactorRombusCollision = m_fCurrentSpeed * 5.0f;
     for (auto &rombusObject : g_arrRombusCollision)
     {
         auto &rombusLimits = rombusObject;
@@ -169,11 +179,11 @@ void Ball::CheckForCollision()
         {
             if (m_fDistanceFromWheelCenter <= g_fRombusRadiusCenter)
             {
-                StartCollision(fForceFactor, fForceFactor);
+                StartCollision(fForceFactorRombusCollision, fForceFactorRombusCollision);
             }
             else
             {
-                StartCollision(-fForceFactor, -fForceFactor);
+                StartCollision(-fForceFactorRombusCollision, -fForceFactorRombusCollision);
             }
 
             break;
@@ -183,9 +193,8 @@ void Ball::CheckForCollision()
 
 void Ball::StartCollision(float fXForce, float fYForce)
 {
-    LOG_INFO("Ball - Collision with Forces (X) - (Y): \"{0}\" - \"{1}\"", fXForce, fYForce);
-
-    if (m_interpolatorCollisionJumpY.GetState() == EInterpolatorStates::eInactive)
+    if (m_interpolatorCollisionJumpY.GetState() == EInterpolatorStates::eInactive &&
+        m_interpolatorCollisionBounceY.GetState() == EInterpolatorStates::eInactive)
     {
         std::function<void()> endCallback = [this]()
         {
@@ -194,9 +203,11 @@ void Ball::StartCollision(float fXForce, float fYForce)
 
         m_interpolatorCollisionJumpY.SetEndCallback(endCallback);
         m_interpolatorCollisionJumpY.Start(m_fYBall, m_fYBall, m_fYBall + fYForce, Ease::CircularOut, g_unRombusCollisionJumpUpDuration);
+        LOG_INFO("Ball - Collision with Forces (X): \"{0}\"", fXForce, fYForce);
     }
 
-    if (m_interpolatorCollisionJumpX.GetState() == EInterpolatorStates::eInactive)
+    if (m_interpolatorCollisionJumpX.GetState() == EInterpolatorStates::eInactive &&
+        m_interpolatorCollisionBounceX.GetState() == EInterpolatorStates::eInactive)
     {
         std::function<void()> endCallback = [this]()
         {
@@ -205,6 +216,7 @@ void Ball::StartCollision(float fXForce, float fYForce)
 
         m_interpolatorCollisionJumpX.SetEndCallback(endCallback);
         m_interpolatorCollisionJumpX.Start(m_fXBall, m_fXBall, m_fXBall + fXForce, Ease::CircularOut, g_unRombusCollisionJumpUpDuration);
+        LOG_INFO("Ball - Collision with Forces (Y): \"{0}\"", fXForce);
     }
 }
 
