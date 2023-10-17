@@ -7,6 +7,8 @@
 #include <main_app/renderer/Renderer.h>
 #include <debug/Logger.h>
 
+constexpr unsigned int g_unTimerLifeRoulette = 1;
+
 bool WheelArea::Init()
 {
     if (!m_Ball.Init())
@@ -62,13 +64,21 @@ void WheelArea::Draw()
 void WheelArea::StartSlowRotation()
 {
     m_Wheel.StartSlowRotation();
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerLifeRoulette, 1);
 }
 
 void WheelArea::StopSlowRotation()
 {
     m_Wheel.StopSlowRotation();
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerLifeRoulette);
 }
 
 void WheelArea::OnTick(unsigned int unID, unsigned int unTimes)
 {
+    if(unID == g_unTimerLifeRoulette)
+    {
+        /*Set every frame communication between objects*/
+        m_Ball.SetDegreesRoulette(m_Wheel.GetDegrees());
+        m_Ball.SetSpeedRoulette(m_Wheel.GetSpeed());
+    }
 }

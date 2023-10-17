@@ -10,8 +10,6 @@
 #include <main_app/panel/Panel.h>
 #include <debug/Logger.h>
 
-constexpr unsigned int g_unTimerLifeRoulette = 1;
-
 Roulette::Roulette()
 {
 }
@@ -88,8 +86,8 @@ const std::string &Roulette::GetAppName()
 
 void Roulette::OnEnter()
 {
-    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerLifeRoulette, 1);
     m_wheelArea.StartSlowRotation();
+
     LOG_INFO("Roulette - Transition to Application succeed");
 }
 
@@ -97,7 +95,6 @@ void Roulette::OnExit()
 {
     m_wheelArea.StopSlowRotation();
 
-    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerLifeRoulette);
     LOG_INFO("Roulette - Exit from Application");
 }
 
@@ -120,7 +117,5 @@ void Roulette::OnDraw()
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if (unID == g_unTimerLifeRoulette)
-    {
-    }
+
 }

@@ -2,6 +2,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/applications/roulette/GameDefinitions.h>
 #include <debug/Logger.h>
 
 constexpr float g_fXWheelTable = 0.0f;
@@ -69,6 +70,12 @@ void Wheel::OnTick(unsigned int unID, unsigned int unTimes)
     {
         m_fDegreesWheel += m_fSpeedWheel;
         NormalizeAngle();
+
+        /*Increment counter sector every time sector degrees change*/
+        if (m_fDegreesWheel > (GameDefs::g_fAnglePerSector * m_unCounterSector))
+        {
+            ++m_unCounterSector;
+        }
     }
 }
 
@@ -77,5 +84,16 @@ void Wheel::NormalizeAngle()
     if (m_fDegreesWheel >= 360.0f)
     {
         m_fDegreesWheel = 0.0f;
+        m_unCounterSector = 0;
     }
+}
+
+const float& Wheel::GetSpeed()
+{
+    return m_fSpeedWheel;
+}
+
+const float& Wheel::GetDegrees()
+{
+    return m_fDegreesWheel;
 }

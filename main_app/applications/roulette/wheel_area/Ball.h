@@ -14,13 +14,31 @@ enum ECollisionLimits
     eTotalCollisionLimits
 };
 
+enum class EBallStates
+{
+    eHidden,
+    eRotateInTableOrbit,
+    eGoingToSector,
+    eStoppedAndRotateWithWheel,
+    eTotalBallStates
+};
+
 class Ball : public ITimer
 {
 
 private:
+    /*Ball State*/
+    EBallStates m_eState = EBallStates::eHidden;
+
     /*Degrees Ball*/
     float m_fDegreesBall = 0.0f;
     float m_fDegreesBallMemory = 0.0f;
+
+    /*Degrees Wheel Roulette*/
+    float m_fDegreesWheelRoulette = 0.0f;
+
+    /*Speed Wheel Roulette*/
+    float m_fSpeedWheelRoulette = 0.0f;
 
     /*Speed Ball*/
     float m_fSpeedBall = 0.0f;
@@ -65,7 +83,7 @@ private:
     void CheckForCollision();
 
     /*Starts collision effect*/
-    void StartCollision(float fXPolar, float fYPolar);
+    void StartCollision(float fXForce, float fYForce);
 
 public:
     bool Init();
@@ -73,4 +91,6 @@ public:
     void Draw();
     void StartSpinning();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
+    void SetDegreesRoulette(const float &fDegreesWheelRoulette);
+    void SetSpeedRoulette(const float &fSpeedWheelRoulette);
 };
