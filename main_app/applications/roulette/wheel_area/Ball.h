@@ -62,10 +62,13 @@ private:
     float m_fCurrentSpeed = 0.0f;
 
     /*Callback called when ball stopped*/
-    std::function<void()>m_afterSpinningStoppedCallback;
+    std::function<void()> m_afterSpinningStoppedCallback;
 
     /*Texture Ball*/
     std::shared_ptr<Texture> m_textureBall;
+
+    /*Texture Ball Shadow*/
+    std::shared_ptr<Texture> m_textureBallShadow;
 
     /*Interpolator rotation*/
     Interpolator m_interpolatorRotate;
@@ -88,6 +91,9 @@ private:
     /*Starts collision effect*/
     void StartCollision(float fXForce, float fYForce, unsigned int unJumpDuration, unsigned int unBounceDuration);
 
+    /*Draw Shadow ball effect*/
+    void DrawShadow();
+
 public:
     bool Init();
     bool Deinit();
@@ -96,5 +102,5 @@ public:
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void SetDegreesRoulette(const float &fDegreesWheelRoulette);
     void SetSpeedRoulette(const float &fSpeedWheelRoulette);
-    void SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback);
+    void SetAfterSpinningStoppedCallback(std::function<void()> &afterSpinningStoppedCallback);
 };

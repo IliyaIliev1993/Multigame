@@ -11,6 +11,9 @@ private:
     /*Texture Table Bets*/
     std::shared_ptr<Texture> m_textureTableBets;
 
+    /*Texture Chips Table*/
+    std::shared_ptr<Texture> m_textureChipsTable;
+
     /*Container holding textures buttons of bet chips*/
     std::array<Button, GameDefs::eTotalCountChips>m_arrBetChips;
 

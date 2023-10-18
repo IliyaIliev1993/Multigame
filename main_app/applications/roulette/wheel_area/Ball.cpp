@@ -37,6 +37,10 @@ constexpr float g_fRombusRadiusCenter = 330.0f;
 constexpr float g_fUpperSideMiddleRingRadius = 215.0f;
 constexpr float g_fDownerSideMiddleRingRadius = 208.0f;
 
+constexpr float g_fMaxAlphaShadowBall = 0.4f;
+constexpr float g_fMaxDifferenceYVectorShadowBall = 70.0f;
+constexpr float g_fDegreesShadowBall = -40.0f;
+
 const std::array<std::array<float, eTotalCollisionLimits>, g_unTotalRombusCollision> g_arrRombusCollision =
     {
         {
@@ -54,10 +58,17 @@ const std::array<std::array<float, eTotalCollisionLimits>, g_unTotalRombusCollis
 bool Ball::Init()
 {
     m_textureBall = Texture::CreateTexture("../src/resources/roulette/wheel/ball.png");
+    m_textureBallShadow = Texture::CreateTexture("../src/resources/roulette/wheel/ball_shadow.png");
 
     if (!m_textureBall->Load())
     {
-        LOG_ERROR("Ball - Unable to load texture table ball !");
+        LOG_ERROR("Ball - Unable to load texture ball !");
+        return false;
+    }
+
+    if (!m_textureBallShadow->Load())
+    {
+        LOG_ERROR("Ball - Unable to load texture ball shadow!");
         return false;
     }
 
@@ -78,10 +89,34 @@ bool Ball::Deinit()
     return true;
 }
 
+void Ball::DrawShadow()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+
+    float fAlphaFactor = g_fMaxAlphaShadowBall / g_fMaxDifferenceYVectorShadowBall;
+    float fAlpha = g_fMaxAlphaShadowBall - (fAlphaFactor * (g_fYCenterWheelBall - m_fYBall));
+
+    rend->SetColor(1.0f, 1.0f, 1.0f, fAlpha);
+
+    const float fXShadow = m_fXPolarBall - (GameDefs::g_fWidthBallRoulette - 8.0f)  - ((g_fXCenterWheelBall - m_fYBall) * 4.0f);
+    const float fYShadow = m_fYPolarBall - GameDefs::g_fHeightBallRoulette - ((g_fYCenterWheelBall - m_fYBall) * 2.0f);
+
+    rend->DrawPictureRotated(m_textureBallShadow,
+                             fXShadow,
+                             fYShadow,
+                             g_fDegreesShadowBall);
+
+    rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 void Ball::Draw()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
+    /*Draw Shadow*/
+    DrawShadow();
+
+    /*Draw Ball*/
     rend->DrawPictureAroundPoint(m_textureBall, m_fXBall, m_fYBall, m_fDegreesBall, m_fDistanceFromWheelCenter);
 }
 
@@ -166,9 +201,6 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 
 void Ball::CheckForCollision()
 {
-    m_fXPolarBall = (m_fDistanceFromWheelCenter * cos(m_fDegreesBall * (M_PI / 180.0f))) + g_fXCenterWheelBall + (GameDefs::g_fWidthBallRoulette / 2.0f);
-    m_fYPolarBall = (m_fDistanceFromWheelCenter * sin(m_fDegreesBall * (M_PI / 180.0f))) + g_fYCenterWheelBall + (GameDefs::g_fHeightBallRoulette / 2.0f);
-
     /*Check for sector collision*/
     if (m_fDistanceFromWheelCenter < g_fDownerSideMiddleRingRadius &&
         m_fDistanceFromWheelCenter > g_fMinDistanceFromCenter)
@@ -188,9 +220,9 @@ void Ball::CheckForCollision()
     if (m_fDistanceFromWheelCenter >= g_fDownerSideMiddleRingRadius &&
         m_fDistanceFromWheelCenter <= g_fUpperSideMiddleRingRadius)
     {
-        const float fForceFactorMiddleRingCollision = m_fCurrentSpeed * 3.0f;
-        const float fDurationJump = 300.0f;
-        const float fDurationBounce = 500.0f;
+        const float fForceFactorMiddleRingCollision = m_fCurrentSpeed * 2.0f;
+        const float fDurationJump = 175.0f;
+        const float fDurationBounce = 300.0f;
         StartCollision(-fForceFactorMiddleRingCollision,
                        -fForceFactorMiddleRingCollision,
                        fDurationJump,
@@ -257,6 +289,9 @@ void Ball::StartCollision(float fXForce, float fYForce, unsigned int unJumpDurat
 void Ball::SetDegreesRoulette(const float &fDegreesWheelRoulette)
 {
     m_fDegreesWheelRoulette = fDegreesWheelRoulette;
+
+    m_fXPolarBall = (m_fDistanceFromWheelCenter * cos(m_fDegreesBall * (M_PI / 180.0f))) + g_fXCenterWheelBall + (GameDefs::g_fWidthBallRoulette / 2.0f);
+    m_fYPolarBall = (m_fDistanceFromWheelCenter * sin(m_fDegreesBall * (M_PI / 180.0f))) + g_fYCenterWheelBall + (GameDefs::g_fHeightBallRoulette / 2.0f);
 }
 
 void Ball::SetSpeedRoulette(const float &fSpeedWheelRoulette)

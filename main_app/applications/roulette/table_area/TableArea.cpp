@@ -14,10 +14,14 @@ constexpr float g_fYTableBets = 300.0f;
 constexpr float g_fXOffsetFromBetChips = 170.0f;
 constexpr float g_fXOffsetBetChips = 30.0f;
 constexpr float g_fYOffsetBetChips = -100.0f;
+constexpr float g_fXOffsetBethipsTable = 3.0f;
+constexpr float g_fYOffsetBethipsTable = -121.0f;
 
 bool TableArea::Init()
 {
     m_textureTableBets = Texture::CreateTexture("../src/resources/roulette/table_bets/table_bets.png");
+    m_textureChipsTable = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_table.png");
+
     m_arrBetChips.at(GameDefs::eChip_1).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_1.png");
     m_arrBetChips.at(GameDefs::eChip_5).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_5.png");
     m_arrBetChips.at(GameDefs::eChip_10).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_10.png");
@@ -35,6 +39,12 @@ bool TableArea::Init()
     if (!m_textureTableBets->Load())
     {
         LOG_ERROR("TableArea - Unable to load texture table bets !");
+        return false;
+    }
+
+    if (!m_textureChipsTable->Load())
+    {
+        LOG_ERROR("TableArea - Unable to load texture chips table !");
         return false;
     }
 
@@ -71,7 +81,7 @@ bool TableArea::HandleEvent()
 
     for (auto &chip : m_arrBetChips)
     {
-        if(fAvalableCredit < chip.fValue)
+        if (fAvalableCredit < chip.fValue)
         {
             chip.colorButton.a = 0.5f;
             chip.bIsLocked = true;
@@ -101,6 +111,9 @@ void TableArea::Draw()
 
     /*Draw Table Bets*/
     rend->DrawPicture(m_textureTableBets, g_fXTableBets, g_fYTableBets);
+
+    /*Chips Table*/
+    rend->DrawPicture(m_textureChipsTable, g_fXTableBets + g_fXOffsetBethipsTable, g_fYTableBets + g_fYOffsetBethipsTable);
 
     /*Draw Bet Chip*/
     for (auto &chip : m_arrBetChips)
