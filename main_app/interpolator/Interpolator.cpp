@@ -9,6 +9,7 @@ const unsigned int g_unTimerProcessPeriod = 1;
 void Interpolator::Start(float &fCurrentValue, float fInitialValue, float fDestValue, Ease easingFunction, unsigned int unDurationInMilliSeconds)
 {
     m_fProgress = 0.0f;
+    m_fDeltaTime = MainApp::GetInstance().GetDeltaTime();
     m_fCurrentValue = &fCurrentValue;
     m_fInitialValue = fInitialValue;
     m_fDestValue = fDestValue;
@@ -41,8 +42,7 @@ void Interpolator::OnTick(unsigned int unID, unsigned int unTimes)
 
 void Interpolator::Progress()
 {
-    const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
-    const float fStepsToReachDestTime = (float)m_unDurationInMilliSeconds / fDeltaTime;
+    const float fStepsToReachDestTime = (float)m_unDurationInMilliSeconds / m_fDeltaTime;
     const float fIncrementStep = 1.0f / fStepsToReachDestTime;
 
     m_fProgress += fIncrementStep;

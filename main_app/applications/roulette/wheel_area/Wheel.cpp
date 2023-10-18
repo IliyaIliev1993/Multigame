@@ -12,7 +12,7 @@ constexpr float g_fXWheelOffset = 134.0f;
 constexpr float g_fYWheelOffset = 134.0f;
 
 constexpr float g_fSlowSpeedWheel = 0.1f;
-constexpr float g_fFastSpeedWheel = 0.2f;
+constexpr float g_fFastSpeedWheel = 0.1f;
 
 constexpr unsigned int g_unAccelerationSlowSpeedDuration = 2000;
 constexpr unsigned int g_unAccelerationDecrementSpeedDuration = 3000;

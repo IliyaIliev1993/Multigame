@@ -19,6 +19,7 @@ private:
     float m_fInitialValue;
     float m_fDestValue;
     float m_fProgress;
+    float m_fDeltaTime;
     EInterpolatorStates m_eState = EInterpolatorStates::eInactive;
     Ease m_easingFunction;
     unsigned int m_unDurationInMilliSeconds;

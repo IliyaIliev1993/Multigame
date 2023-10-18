@@ -87,8 +87,12 @@ void Ball::Draw()
 
 void Ball::StartSpinning()
 {
+    const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-500.0f, 1000.0f);
+    const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
+    const float fTargetSectorAngle = (GameDefs::eSector0 * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
+    const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * 0.1);
     const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 75.0f);
-    const float fEndPositionAngle = Random::GetRandomNumber(0.0f, -359.0f); //-90.0f;
+    const float fEndPositionAngle = (fTargetSectorFutureAngle - 360.0f) - 360.0f;
 
     LOG_INFO("Ball - StartPositionAngle: \"{0}\"", fStartPositionAnlge);
     LOG_INFO("Ball - EndPositionAngle: \"{0}\"", fEndPositionAngle);
@@ -102,7 +106,6 @@ void Ball::StartSpinning()
     m_interpolatorThrowBall.Start(m_fDistanceFromWheelCenter, g_fHiddenDistanceFormCenter, g_fMaxDistanceFromCenter, Ease::SineOut, g_unThrowBallDuration);
 
     /*Start rotation of the ball*/
-    const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-500.0f, 1000.0f);
     m_interpolatorRotate.Start(m_fDegreesBall, fStartPositionAnlge, fEndPositionAngle, Ease::QuadraticOut, unDurationRotation);
 
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerSpinning, g_unTimerSpinningPeriod);
@@ -122,7 +125,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
         CheckForCollision();
 
         /*Here starts decrementing the distance and going to sector*/
-        if (m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-90.0f, +90.0f)))
+        if (m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-180.0f, 0.0f)))
         {
             if (m_interpolatorDecrementDistance.GetState() == EInterpolatorStates::eInactive)
             {
@@ -138,7 +141,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 
                 m_interpolatorDecrementDistance.SetEndCallback(endCallback);
                 /*Start decrement distance*/
-                const unsigned int unDurationDecrementDistance = g_unDecrementDistanceDuration + Random::GetRandomNumber(-500.0f, 1500.0f);
+                const unsigned int unDurationDecrementDistance = g_unDecrementDistanceDuration + Random::GetRandomNumber(-500.0f, 500.0f);
                 m_interpolatorDecrementDistance.Start(m_fDistanceFromWheelCenter, g_fMaxDistanceFromCenter, g_fMinDistanceFromCenter, Ease::BounceOut, g_unDecrementDistanceDuration);
 
                 m_eState = EBallStates::eGoingToSector;
@@ -261,7 +264,7 @@ void Ball::SetSpeedRoulette(const float &fSpeedWheelRoulette)
     m_fSpeedWheelRoulette = fSpeedWheelRoulette;
 }
 
-void Ball::SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback)
+void Ball::SetAfterSpinningStoppedCallback(std::function<void()> &afterSpinningStoppedCallback)
 {
     m_afterSpinningStoppedCallback = afterSpinningStoppedCallback;
 }
