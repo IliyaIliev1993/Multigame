@@ -13,6 +13,9 @@ private:
     /*Wheel Object*/
     Wheel m_Wheel;
 
+    /*Callback, called after stop of the ball*/
+    void AfterSpinningStopped();
+
 public:
 
     bool Init();

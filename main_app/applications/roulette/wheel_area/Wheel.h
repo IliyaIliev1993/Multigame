@@ -36,6 +36,8 @@ public:
     void Draw();
     void StartSlowRotation();
     void StopSlowRotation();
+    void StartFastRotation();
+    void DecrementToSlowRotation();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     const float& GetSpeed();
     const float& GetDegrees();

@@ -61,6 +61,9 @@ private:
     /*Ball current speed*/
     float m_fCurrentSpeed = 0.0f;
 
+    /*Callback called when ball stopped*/
+    std::function<void()>m_afterSpinningStoppedCallback;
+
     /*Texture Ball*/
     std::shared_ptr<Texture> m_textureBall;
 
@@ -93,4 +96,5 @@ public:
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void SetDegreesRoulette(const float &fDegreesWheelRoulette);
     void SetSpeedRoulette(const float &fSpeedWheelRoulette);
+    void SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback);
 };

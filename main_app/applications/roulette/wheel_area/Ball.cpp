@@ -91,6 +91,7 @@ void Ball::StartSpinning()
     const float fEndPositionAngle = Random::GetRandomNumber(0.0f, -359.0f); //-90.0f;
 
     LOG_INFO("Ball - StartPositionAngle: \"{0}\"", fStartPositionAnlge);
+    LOG_INFO("Ball - EndPositionAngle: \"{0}\"", fEndPositionAngle);
 
     /*Start from hidden position*/
     m_fDistanceFromWheelCenter = g_fHiddenDistanceFormCenter;
@@ -108,6 +109,7 @@ void Ball::StartSpinning()
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotateWithWheel);
 
     m_eState = EBallStates::eRotateInTableOrbit;
+    LOG_INFO("Ball - State: eRotateInTableOrbit");
 }
 
 void Ball::OnTick(unsigned int unID, unsigned int unTimes)
@@ -120,7 +122,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
         CheckForCollision();
 
         /*Here starts decrementing the distance and going to sector*/
-        if (m_fDegreesBall <= g_fAngleBeforeStartDecrementDistance)
+        if (m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-90.0f, +90.0f)))
         {
             if (m_interpolatorDecrementDistance.GetState() == EInterpolatorStates::eInactive)
             {
@@ -130,6 +132,8 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
                     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotateWithWheel, g_unTimerRotateWithWheelPeriod);
 
                     m_eState = EBallStates::eStoppedAndRotateWithWheel;
+                    m_afterSpinningStoppedCallback();
+                    LOG_INFO("Ball - State: eStoppedAndRotateWithWheel");
                 };
 
                 m_interpolatorDecrementDistance.SetEndCallback(endCallback);
@@ -138,6 +142,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
                 m_interpolatorDecrementDistance.Start(m_fDistanceFromWheelCenter, g_fMaxDistanceFromCenter, g_fMinDistanceFromCenter, Ease::BounceOut, g_unDecrementDistanceDuration);
 
                 m_eState = EBallStates::eGoingToSector;
+                LOG_INFO("Ball - State: eGoingToSector");
             }
         }
     }
@@ -254,4 +259,9 @@ void Ball::SetDegreesRoulette(const float &fDegreesWheelRoulette)
 void Ball::SetSpeedRoulette(const float &fSpeedWheelRoulette)
 {
     m_fSpeedWheelRoulette = fSpeedWheelRoulette;
+}
+
+void Ball::SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback)
+{
+    m_afterSpinningStoppedCallback = afterSpinningStoppedCallback;
 }

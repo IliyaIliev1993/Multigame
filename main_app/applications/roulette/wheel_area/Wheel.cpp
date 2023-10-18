@@ -12,8 +12,10 @@ constexpr float g_fXWheelOffset = 134.0f;
 constexpr float g_fYWheelOffset = 134.0f;
 
 constexpr float g_fSlowSpeedWheel = 0.1f;
+constexpr float g_fFastSpeedWheel = 0.2f;
 
 constexpr unsigned int g_unAccelerationSlowSpeedDuration = 2000;
+constexpr unsigned int g_unAccelerationDecrementSpeedDuration = 3000;
 
 constexpr unsigned int g_unTimerRotationWheel = 1;
 constexpr unsigned int g_unTimerRotationWheelPeriod = 1;
@@ -57,11 +59,26 @@ void Wheel::StartSlowRotation()
 {
     m_interpolatorAcceleration.Start(m_fSpeedWheel, 0.0f, g_fSlowSpeedWheel, Ease::SineIn, g_unAccelerationSlowSpeedDuration);
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotationWheel, g_unTimerRotationWheelPeriod);
+    LOG_INFO("Wheel - Start Slow Rotation");
 }
 
 void Wheel::StopSlowRotation()
 {
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotationWheel);
+    m_fSpeedWheel = 0.0f;
+    LOG_INFO("Wheel - Stopped Slow Rotation");
+}
+
+void Wheel::StartFastRotation()
+{
+    m_interpolatorAcceleration.Start(m_fSpeedWheel, m_fSpeedWheel, g_fFastSpeedWheel, Ease::SineIn, g_unAccelerationSlowSpeedDuration);
+    LOG_INFO("Wheel - Start Fast Rotation");
+}
+
+void Wheel::DecrementToSlowRotation()
+{
+    m_interpolatorAcceleration.Start(m_fSpeedWheel, g_fFastSpeedWheel, g_fSlowSpeedWheel, Ease::SineIn, g_unAccelerationDecrementSpeedDuration);
+    LOG_INFO("Wheel - Decrement from Fast to Slow Rotation");
 }
 
 void Wheel::OnTick(unsigned int unID, unsigned int unTimes)
@@ -88,12 +105,12 @@ void Wheel::NormalizeAngle()
     }
 }
 
-const float& Wheel::GetSpeed()
+const float &Wheel::GetSpeed()
 {
     return m_fSpeedWheel;
 }
 
-const float& Wheel::GetDegrees()
+const float &Wheel::GetDegrees()
 {
     return m_fDegreesWheel;
 }

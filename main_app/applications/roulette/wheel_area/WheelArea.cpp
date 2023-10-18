@@ -23,6 +23,13 @@ bool WheelArea::Init()
         return false;
     }
 
+    std::function<void()>afterSpinningStoppedCallabck = [this]()
+    {
+        AfterSpinningStopped();
+    };
+
+    m_Ball.SetAfterSpinningStoppedCallback(afterSpinningStoppedCallabck);
+
     LOG_INFO("Wheel Area - Initialized ...");
     return true;
 }
@@ -47,6 +54,7 @@ bool WheelArea::HandleEvent()
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
     {
         m_Ball.StartSpinning();
+        m_Wheel.StartFastRotation();
     }
 
     return false;
@@ -81,4 +89,9 @@ void WheelArea::OnTick(unsigned int unID, unsigned int unTimes)
         m_Ball.SetDegreesRoulette(m_Wheel.GetDegrees());
         m_Ball.SetSpeedRoulette(m_Wheel.GetSpeed());
     }
+}
+
+void WheelArea::AfterSpinningStopped()
+{
+    m_Wheel.DecrementToSlowRotation();
 }
