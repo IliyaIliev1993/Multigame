@@ -8,7 +8,8 @@
 enum class EInterpolatorStates
 {
     eInactive,
-    eInProgress
+    eInProgress,
+    ePaused
 };
 
 class Interpolator : public ITimer
@@ -30,6 +31,8 @@ private:
 public:
     void Start(float &fCurrentValue, float fInitialValue, float fDestValue, Ease easingFunction, unsigned int unDurationInMilliSeconds);
     void Stop(bool bReachDestValue = true);
+    void Pause();
+    void Resume();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void SetEndCallback(std::function<void()> &endCallback);
     const float &GetProgress();

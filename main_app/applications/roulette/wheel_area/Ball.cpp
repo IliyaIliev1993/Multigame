@@ -12,9 +12,9 @@ constexpr unsigned int g_unTimerSpinningPeriod = 1;
 constexpr unsigned int g_unTimerRotateWithWheel = 2;
 constexpr unsigned int g_unTimerRotateWithWheelPeriod = 1;
 
-constexpr unsigned int g_unRotatationCycles = 4;
-constexpr unsigned int g_unRotationDuration = 7500;
-constexpr unsigned int g_unDecrementDistanceDuration = 3500;
+constexpr unsigned int g_unRotatationCycles = 3;
+constexpr unsigned int g_unRotationDuration = 8500;
+constexpr unsigned int g_unDecrementDistanceDuration = 6000;
 constexpr unsigned int g_unThrowBallDuration = 200;
 
 constexpr unsigned int g_unTotalRombusCollision = 8;
@@ -97,7 +97,7 @@ void Ball::DrawShadow()
 
     rend->SetColor(1.0f, 1.0f, 1.0f, fAlpha);
 
-    const float fXShadow = m_fXPolarBall - (GameDefs::g_fWidthBallRoulette - 8.0f)  - ((g_fXCenterWheelBall - m_fYBall) * 4.0f);
+    const float fXShadow = m_fXPolarBall - (GameDefs::g_fWidthBallRoulette - 8.0f) - ((g_fXCenterWheelBall - m_fYBall) * 4.0f);
     const float fYShadow = m_fYPolarBall - GameDefs::g_fHeightBallRoulette - ((g_fYCenterWheelBall - m_fYBall) * 2.0f);
 
     rend->DrawPictureRotated(m_textureBallShadow,
@@ -119,9 +119,9 @@ void Ball::Draw()
     rend->DrawPictureAroundPoint(m_textureBall, m_fXBall, m_fYBall, m_fDegreesBall, m_fDistanceFromWheelCenter);
 }
 
-void Ball::StartSpinning(const GameDefs::EWheelSectors& eWheelSectorToStopAt)
+void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
 {
-    const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-500.0f, 1000.0f);
+    const unsigned int unDurationRotation = g_unRotationDuration;
     const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
     const float fTargetSectorAngle = (eWheelSectorToStopAt * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
     const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * 0.1);
@@ -139,6 +139,17 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors& eWheelSectorToStopAt)
     const unsigned int unDurationThrowBall = g_unThrowBallDuration + Random::GetRandomNumber(-50.0f, 100.0f);
     m_interpolatorThrowBall.Start(m_fDistanceFromWheelCenter, g_fHiddenDistanceFormCenter, g_fMaxDistanceFromCenter, Ease::SineOut, g_unThrowBallDuration);
 
+    std::function<void()> endCallback = [this]()
+    {
+        MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerSpinning);
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotateWithWheel, g_unTimerRotateWithWheelPeriod);
+
+        m_eState = EBallStates::eStoppedAndRotateWithWheel;
+        m_afterSpinningStoppedCallback();
+        LOG_INFO("Ball - State: eStoppedAndRotateWithWheel");
+    };
+
+    m_interpolatorRotate.SetEndCallback(endCallback);
     /*Start rotation of the ball*/
     m_interpolatorRotate.Start(m_fDegreesBall, fStartPositionAnlge, fEndPositionAngle, Ease::QuadraticOut, unDurationRotation);
 
@@ -159,23 +170,13 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
         CheckForCollision();
 
         /*Here starts decrementing the distance and going to sector*/
-        if (m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-180.0f, 0.0f)))
+        if (m_eState == EBallStates::eRotateInTableOrbit &&
+            m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-180.0f, 0.0f)))
         {
             if (m_interpolatorDecrementDistance.GetState() == EInterpolatorStates::eInactive)
             {
-                std::function<void()> endCallback = [this]()
-                {
-                    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerSpinning);
-                    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotateWithWheel, g_unTimerRotateWithWheelPeriod);
-
-                    m_eState = EBallStates::eStoppedAndRotateWithWheel;
-                    m_afterSpinningStoppedCallback();
-                    LOG_INFO("Ball - State: eStoppedAndRotateWithWheel");
-                };
-
-                m_interpolatorDecrementDistance.SetEndCallback(endCallback);
                 /*Start decrement distance*/
-                const unsigned int unDurationDecrementDistance = g_unDecrementDistanceDuration + Random::GetRandomNumber(-500.0f, 500.0f);
+                const unsigned int unDurationDecrementDistance = g_unDecrementDistanceDuration;
                 m_interpolatorDecrementDistance.Start(m_fDistanceFromWheelCenter, g_fMaxDistanceFromCenter, g_fMinDistanceFromCenter, Ease::BounceOut, g_unDecrementDistanceDuration);
 
                 m_eState = EBallStates::eGoingToSector;
@@ -201,13 +202,12 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 void Ball::CheckForCollision()
 {
     /*Check for sector collision*/
-    if (m_fDistanceFromWheelCenter < g_fDownerSideMiddleRingRadius &&
-        m_fDistanceFromWheelCenter > g_fMinDistanceFromCenter)
+    if (m_fDistanceFromWheelCenter < g_fDownerSideMiddleRingRadius)
     {
-        const float fForceX = m_fCurrentSpeed * 3.0f;
-        const float fForceY = -m_fCurrentSpeed * 8.0f;
-        const float fDurationJump = m_fCurrentSpeed * 100.0f;
-        const float fDurationBounce = m_fCurrentSpeed * 200.0f;
+        const float fForceX = m_fCurrentSpeed * 2.0f;
+        const float fForceY = -m_fCurrentSpeed * 6.0f;
+        const float fDurationJump = m_fCurrentSpeed * 50.0f;
+        const float fDurationBounce = m_fCurrentSpeed * 100.0f;
 
         StartCollision(fForceX,
                        fForceY,
@@ -220,16 +220,19 @@ void Ball::CheckForCollision()
         m_fDistanceFromWheelCenter <= g_fUpperSideMiddleRingRadius)
     {
         const float fForceFactorMiddleRingCollision = m_fCurrentSpeed * 2.0f;
-        const float fDurationJump = 175.0f;
-        const float fDurationBounce = 300.0f;
+        const float fDurationJumpMiddleRing = m_fCurrentSpeed * 20.0f;
+        const float fDurationBounceMiddleRing = m_fCurrentSpeed * 50.0f;
+
         StartCollision(-fForceFactorMiddleRingCollision,
                        -fForceFactorMiddleRingCollision,
-                       fDurationJump,
-                       fDurationBounce);
+                       fDurationJumpMiddleRing,
+                       fDurationBounceMiddleRing);
     }
 
     /*Check Rombus Collision*/
-    const float fForceFactorRombusCollision = m_fCurrentSpeed * 5.0f;
+    const float fForceFactorRombusCollision = m_fCurrentSpeed * 2.0f;
+    const float fDurationJumpRombus = m_fCurrentSpeed * 30.0f;
+    const float fDurationBounceRombus = m_fCurrentSpeed * 80.0f;
     for (auto &rombusObject : g_arrRombusCollision)
     {
         auto &rombusLimits = rombusObject;
@@ -240,15 +243,15 @@ void Ball::CheckForCollision()
             {
                 StartCollision(fForceFactorRombusCollision,
                                fForceFactorRombusCollision,
-                               g_unRombusCollisionJumpUpDuration,
-                               g_unRombusCollisionBounceDownDuration);
+                               fDurationJumpRombus,
+                               fDurationBounceRombus);
             }
             else
             {
                 StartCollision(-fForceFactorRombusCollision,
                                -fForceFactorRombusCollision,
-                               g_unRombusCollisionJumpUpDuration,
-                               g_unRombusCollisionBounceDownDuration);
+                               fDurationJumpRombus,
+                               fDurationBounceRombus);
             }
 
             break;

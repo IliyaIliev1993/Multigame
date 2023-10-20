@@ -32,10 +32,31 @@ void Interpolator::Stop(bool bReachDestValue)
     m_eState = EInterpolatorStates::eInactive;
 }
 
+void Interpolator::Pause()
+{
+    if (m_eState == EInterpolatorStates::eInProgress)
+    {
+        m_eState = EInterpolatorStates::ePaused;
+    }
+}
+
+void Interpolator::Resume()
+{
+    if (m_eState == EInterpolatorStates::ePaused)
+    {
+        m_eState = EInterpolatorStates::eInProgress;
+    }
+}
+
 void Interpolator::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if (unID == g_unTimerProcess)
     {
+        if (m_eState == EInterpolatorStates::ePaused)
+        {
+            return;
+        }
+
         Progress();
     }
 }
@@ -168,7 +189,7 @@ const float &Interpolator::GetProgress()
     return m_fProgress;
 }
 
-const EInterpolatorStates& Interpolator::GetState()
+const EInterpolatorStates &Interpolator::GetState()
 {
     return m_eState;
 }
