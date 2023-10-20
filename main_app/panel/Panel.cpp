@@ -523,7 +523,7 @@ bool Panel::HandleEvent()
     }
 
     /*Bet Button - Field*/
-    if (m_betButton.IsHovered(nXMouse, nYMouse))
+    if (!m_bLockBetButtons && m_betButton.IsHovered(nXMouse, nYMouse))
     {
         /*Bet increment/decrement*/
         const float fBetModifier = 1.00f;
@@ -918,4 +918,14 @@ std::string Panel::ToStringPrecision(const float fValue, const int nPrecision)
     out.precision(nPrecision);
     out << std::fixed << fValue;
     return std::move(out).str();
+}
+
+void Panel::LockBetButtons()
+{
+    m_bLockBetButtons = true;
+}
+
+void Panel::UnlockBetButtons()
+{
+    m_bLockBetButtons = false;
 }

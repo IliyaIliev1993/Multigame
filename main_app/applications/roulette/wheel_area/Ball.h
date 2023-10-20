@@ -21,6 +21,7 @@ enum class EBallStates
     eRotateInTableOrbit,
     eGoingToSector,
     eStoppedAndRotateWithWheel,
+    eDecrementingToZero,
     eTotalBallStates
 };
 
@@ -86,6 +87,12 @@ private:
     Interpolator m_interpolatorCollisionBounceX;
     Interpolator m_interpolatorCollisionBounceY;
 
+    /*Interpolator acceleration to slow speed*/
+    Interpolator m_accelerationSlowSpeed;
+
+    /*Interpolator deceleration to zero*/
+    Interpolator m_decelerationToZero;
+
     /*Check whenever there are some collisions*/
     void CheckForCollision();
 
@@ -100,8 +107,11 @@ public:
     bool Deinit();
     void Draw();
     void StartSpinning(const GameDefs::EWheelSectors& eWheelSectorToStopAt);
+    void StartRotationWithWheel();
+    void StopRotationWithWheel();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void SetDegreesRoulette(const float &fDegreesWheelRoulette);
     void SetSpeedRoulette(const float &fSpeedWheelRoulette);
     void SetAfterSpinningStoppedCallback(std::function<void()> &afterSpinningStoppedCallback);
+    const EBallStates& GetState();
 };

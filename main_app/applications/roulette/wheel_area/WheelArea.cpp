@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/panel/Panel.h>
 #include <main_app/applications/roulette/math_logic/RouletteMathLogic.h>
 #include <debug/Logger.h>
 
@@ -31,6 +32,13 @@ bool WheelArea::Init()
 
     m_Ball.SetAfterSpinningStoppedCallback(afterSpinningStoppedCallabck);
 
+    std::function<void()> afterWheelStopped = [this]()
+    {
+        AfterWheelStopped();
+    };
+
+    m_Wheel.SetWheelStoppedCallback(afterWheelStopped);
+
     LOG_INFO("Wheel Area - Initialized ...");
     return true;
 }
@@ -52,6 +60,22 @@ bool WheelArea::HandleEvent()
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
 
+    /*If Credit available, start slow spinning*/
+    if (MainApp::GetInstance().ptrPanel->CanStartNewGame())
+    {
+        if (m_Wheel.GetState() == EWheelStates::eStopped)
+        {
+            StartSlowRotation();
+        }
+    }
+    else
+    {
+        if (m_Wheel.GetState() == EWheelStates::eRotatingSlow)
+        {
+            m_Wheel.DecrementSlowRotationToZero();
+        }
+    }
+
     return false;
 }
 
@@ -66,6 +90,21 @@ void WheelArea::Draw()
 
 void WheelArea::StartNewSpin()
 {
+    if (!MainApp::GetInstance().ptrPanel->CanStartNewGame())
+    {
+        LOG_ERROR("WheelArea - Add Credit to Start New Game !");
+        return;
+    }
+
+    if (m_Ball.GetState() == EBallStates::eRotateInTableOrbit ||
+        m_Ball.GetState() == EBallStates::eGoingToSector)
+    {
+        return;
+    }
+
+    /*Generate new results*/
+    RouletteMathLogic::GetInstance().GenerateResults();
+
     m_Ball.StartSpinning(RouletteMathLogic::GetInstance().GetWinningSector());
     m_Wheel.StartFastRotation();
 }
@@ -73,12 +112,14 @@ void WheelArea::StartNewSpin()
 void WheelArea::StartSlowRotation()
 {
     m_Wheel.StartSlowRotation();
+    m_Ball.StartRotationWithWheel();
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerLifeRoulette, 1);
 }
 
-void WheelArea::StopSlowRotation()
+void WheelArea::StopRotation()
 {
-    m_Wheel.StopSlowRotation();
+    m_Wheel.StopRotation();
+    m_Ball.StopRotationWithWheel();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerLifeRoulette);
 }
 
@@ -95,4 +136,10 @@ void WheelArea::OnTick(unsigned int unID, unsigned int unTimes)
 void WheelArea::AfterSpinningStopped()
 {
     m_Wheel.DecrementToSlowRotation();
+}
+
+void WheelArea::AfterWheelStopped()
+{
+    m_Ball.StopRotationWithWheel();
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerLifeRoulette);
 }

@@ -105,24 +105,21 @@ const std::string &Roulette::GetAppName()
 
 void Roulette::StartNewGame()
 {
-    /*Generate new results*/
-    RouletteMathLogic::GetInstance().GenerateResults();
     m_wheelArea.StartNewSpin();
 }
 
 void Roulette::OnEnter()
 {
-    m_wheelArea.StartSlowRotation();
-
+    MainApp::GetInstance().ptrPanel->LockBetButtons();
     LOG_INFO("Roulette - Transition to Application succeed");
 }
 
 void Roulette::OnExit()
 {
-    m_wheelArea.StopSlowRotation();
-
     LOG_INFO("Roulette - Exit from Application");
+    m_wheelArea.StopRotation();
 }
+
 
 void Roulette::OnDraw()
 {

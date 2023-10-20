@@ -4,9 +4,20 @@
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/interpolator/Interpolator.h>
 
+enum class EWheelStates
+{
+    eStopped,
+    eRotatingSlow,
+    eRotatingFast,
+    eDecrementingToZero,
+    eTotalWheelStates
+};
+
 class Wheel : public ITimer
 {
 private:
+    /*Wheel State*/
+    EWheelStates m_eState = EWheelStates::eStopped;
 
     /*Degrees Wheel*/
     float m_fDegreesWheel = 0.0f;
@@ -26,19 +37,27 @@ private:
     /*Interpolator acceleration*/
     Interpolator m_interpolatorAcceleration;
 
+    /*Interpolator decceleration*/
+    Interpolator m_interpolatorDecceleration;
+
+    /*Callback called when wheel stopped*/
+    std::function<void()> m_wheelStoppedCallback;
+
     /*Method that check if angle > 360*/
     void NormalizeAngle();
 
 public:
-
     bool Init();
     bool Deinit();
     void Draw();
     void StartSlowRotation();
-    void StopSlowRotation();
+    void DecrementSlowRotationToZero();
+    void StopRotation();
     void StartFastRotation();
     void DecrementToSlowRotation();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
-    const float& GetSpeed();
-    const float& GetDegrees();
+    void SetWheelStoppedCallback(std::function<void()> &wheelStoppedCallback);
+    const EWheelStates &GetState();
+    const float &GetSpeed();
+    const float &GetDegrees();
 };

@@ -315,6 +315,7 @@ void KidsFantasy::OnEnter()
 
     RequestState(EKidsFantasyStates::eReadyForGame);
     m_statusLine.StartNormalScenario();
+    MainApp::GetInstance().ptrPanel->UnlockBetButtons();
 }
 
 void KidsFantasy::OnExit()

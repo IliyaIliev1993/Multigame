@@ -61,6 +61,9 @@ private:
     /*Volume Percentage*/
     int m_nVolumePercentage = 0;
 
+    /*Lock bet buttons, if needed*/
+    bool m_bLockBetButtons = false;
+
     /*String Credit Available*/
     std::string m_strCreditAvailable;
 
@@ -189,4 +192,6 @@ public:
     void DecrementCreditWithBet();
     void ResetWin();
     void ResetCredit();
+    void LockBetButtons();
+    void UnlockBetButtons();
 };

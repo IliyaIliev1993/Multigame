@@ -124,7 +124,7 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
     const unsigned int unDurationRotation = g_unRotationDuration;
     const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
     const float fTargetSectorAngle = (eWheelSectorToStopAt * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
-    const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * 0.1);
+    const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * GameDefs::g_fSlowSpeedWheel);
     const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 75.0f);
     const float fEndPositionAngle = (fTargetSectorFutureAngle - 360.0f) - 360.0f;
 
@@ -158,6 +158,28 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
 
     m_eState = EBallStates::eRotateInTableOrbit;
     LOG_INFO("Ball - State: eRotateInTableOrbit");
+}
+
+void Ball::StartRotationWithWheel()
+{
+    if (m_eState != EBallStates::eStoppedAndRotateWithWheel)
+    {
+        return;
+    }
+
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotateWithWheel, g_unTimerRotateWithWheelPeriod);
+    LOG_INFO("Ball - Start Rotation with Wheel");
+}
+
+void Ball::StopRotationWithWheel()
+{
+    if (m_eState != EBallStates::eStoppedAndRotateWithWheel)
+    {
+        return;
+    }
+    
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotateWithWheel);
+    LOG_INFO("Ball - Stop Rotation with Wheel");
 }
 
 void Ball::OnTick(unsigned int unID, unsigned int unTimes)
@@ -304,4 +326,9 @@ void Ball::SetSpeedRoulette(const float &fSpeedWheelRoulette)
 void Ball::SetAfterSpinningStoppedCallback(std::function<void()> &afterSpinningStoppedCallback)
 {
     m_afterSpinningStoppedCallback = afterSpinningStoppedCallback;
+}
+
+const EBallStates &Ball::GetState()
+{
+    return m_eState;
 }

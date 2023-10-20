@@ -9,6 +9,12 @@ namespace GameDefs
 
     constexpr float g_fAnglePerSector = 9.73f;
 
+    constexpr float g_fSlowSpeedWheel = 0.1f;
+    constexpr float g_fFastSpeedWheel = 0.1f;
+
+    constexpr unsigned int g_unAccelerationSlowSpeedDuration = 1000;
+    constexpr unsigned int g_unDecelerationSlowSpeedDuration = 200;
+
     enum class EColor
     {
         eRed,
@@ -45,7 +51,7 @@ namespace GameDefs
         e19to36,
         eIsZero
     };
-    
+
     enum EChips
     {
         eChip_1,
@@ -56,6 +62,15 @@ namespace GameDefs
         eChip_500,
         eTotalCountChips
     };
+
+    const std::array<unsigned int, eTotalCountChips> g_arrChipsValue =
+        {
+            1,
+            5,
+            10,
+            25,
+            100,
+            500};
 
     enum EWheelSectors
     {
@@ -99,44 +114,43 @@ namespace GameDefs
         eTotalWheelSectorsCount
     };
 
-    const std::array<unsigned int, eTotalWheelSectorsCount> g_arrSectorNumbers = 
-    {
-      32,
-      15,
-      19,
-      4,
-      21,
-      2,
-      25,
-      17,
-      34,
-      6,
-      27,
-      13,
-      36,
-      11,
-      30,
-      8,
-      23,
-      10,
-      5,
-      24,
-      16,
-      33,
-      1,
-      20,
-      14,
-      31,
-      9,
-      22,
-      18,
-      29,
-      7,
-      28,
-      12,
-      35,
-      3,
-      26,
-      0
-    };
+    const std::array<unsigned int, eTotalWheelSectorsCount> g_arrSectorNumbers =
+        {
+            32,
+            15,
+            19,
+            4,
+            21,
+            2,
+            25,
+            17,
+            34,
+            6,
+            27,
+            13,
+            36,
+            11,
+            30,
+            8,
+            23,
+            10,
+            5,
+            24,
+            16,
+            33,
+            1,
+            20,
+            14,
+            31,
+            9,
+            22,
+            18,
+            29,
+            7,
+            28,
+            12,
+            35,
+            3,
+            26,
+            0};
 }
