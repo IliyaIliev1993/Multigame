@@ -1,5 +1,6 @@
 #pragma once
 
+#include <main_app/applications/roulette/GameDefinitions.h>
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
 #include <main_app/interpolator/Interpolator.h>
@@ -98,7 +99,7 @@ public:
     bool Init();
     bool Deinit();
     void Draw();
-    void StartSpinning();
+    void StartSpinning(const GameDefs::EWheelSectors& eWheelSectorToStopAt);
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void SetDegreesRoulette(const float &fDegreesWheelRoulette);
     void SetSpeedRoulette(const float &fSpeedWheelRoulette);

@@ -23,6 +23,8 @@ private:
     /*Table Area Objet*/
     TableArea m_tableArea;
     
+    /*Method called when need to start new game*/
+    void StartNewGame();
 
 public:
     Roulette();

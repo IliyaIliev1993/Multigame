@@ -8,6 +8,7 @@
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
 #include <main_app/panel/Panel.h>
+#include <main_app/applications/roulette/math_logic/RouletteMathLogic.h>
 #include <debug/Logger.h>
 
 Roulette::Roulette()
@@ -23,6 +24,13 @@ bool Roulette::Init()
     if (!m_textureBackground->Load())
     {
         LOG_ERROR("Roulette - Unable to load texture background !");
+        return false;
+    }
+
+    /*Initialize Math Logic*/
+    if (!RouletteMathLogic::GetInstance().Init())
+    {
+        LOG_ERROR("Roulette - Unable to init math logic !");
         return false;
     }
 
@@ -52,6 +60,9 @@ bool Roulette::Deinit()
     /*Deinit table area*/
     m_tableArea.Deinit();
 
+    /*Deinitialize math logic*/
+    RouletteMathLogic::GetInstance().Deinit();
+
     LOG_WARN("Roulette - Deinitalized ...");
     return true;
 }
@@ -60,6 +71,14 @@ bool Roulette::HandleEvent()
 {
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
+
+    /*ENTER button*/
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
+    {
+        LOG_INFO("Roulette - ENTER Button Pressed");
+        StartNewGame();
+        return true;
+    }
 
     if (ImGui::IsMouseClicked(0))
     {
@@ -82,6 +101,13 @@ bool Roulette::HandleEvent()
 const std::string &Roulette::GetAppName()
 {
     return m_strAppName;
+}
+
+void Roulette::StartNewGame()
+{
+    /*Generate new results*/
+    RouletteMathLogic::GetInstance().GenerateResults();
+    m_wheelArea.StartNewSpin();
 }
 
 void Roulette::OnEnter()
@@ -117,5 +143,4 @@ void Roulette::OnDraw()
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
-
 }

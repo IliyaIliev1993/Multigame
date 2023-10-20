@@ -8,6 +8,43 @@ namespace GameDefs
     constexpr float g_fHeightBallRoulette = 26.0f;
 
     constexpr float g_fAnglePerSector = 9.73f;
+
+    enum class EColor
+    {
+        eRed,
+        eBlack,
+        eIsZero
+    };
+
+    enum class EEvenOdd
+    {
+        eEven,
+        eOdd,
+        eIsZero
+    };
+
+    enum class ETwelfth
+    {
+        eFirstTwelfth,
+        eSecondTwelfth,
+        eThirdTwelfth,
+        eIsZero
+    };
+
+    enum class EByThree
+    {
+        eIsOneByThree,
+        eIsTwoByThree,
+        eIsThreeByThree,
+        eIsZero
+    };
+
+    enum class EHalfTable
+    {
+        e1to18,
+        e19to36,
+        eIsZero
+    };
     
     enum EChips
     {

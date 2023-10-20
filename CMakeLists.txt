@@ -49,6 +49,8 @@ file(GLOB SOURCES
     main_app/applications/*.cpp
     main_app/applications/roulette/*.h
     main_app/applications/roulette/*.cpp
+    main_app/applications/roulette/math_logic/*.h
+    main_app/applications/roulette/math_logic/*.cpp
     main_app/applications/roulette/table_area/*.h
     main_app/applications/roulette/table_area/*.cpp
     main_app/applications/roulette/wheel_area/*.h

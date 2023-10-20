@@ -4,7 +4,6 @@
 #include <main_app/MainApp.h>
 #include <main_app/particle_system/Random.h>
 #include <main_app/renderer/Renderer.h>
-#include <main_app/applications/roulette/GameDefinitions.h>
 #include <debug/Logger.h>
 
 constexpr unsigned int g_unTimerSpinning = 1;
@@ -120,11 +119,11 @@ void Ball::Draw()
     rend->DrawPictureAroundPoint(m_textureBall, m_fXBall, m_fYBall, m_fDegreesBall, m_fDistanceFromWheelCenter);
 }
 
-void Ball::StartSpinning()
+void Ball::StartSpinning(const GameDefs::EWheelSectors& eWheelSectorToStopAt)
 {
     const unsigned int unDurationRotation = g_unRotationDuration + Random::GetRandomNumber(-500.0f, 1000.0f);
     const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
-    const float fTargetSectorAngle = (GameDefs::eSector0 * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
+    const float fTargetSectorAngle = (eWheelSectorToStopAt * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
     const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * 0.1);
     const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 75.0f);
     const float fEndPositionAngle = (fTargetSectorFutureAngle - 360.0f) - 360.0f;

@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/applications/roulette/math_logic/RouletteMathLogic.h>
 #include <debug/Logger.h>
 
 constexpr unsigned int g_unTimerLifeRoulette = 1;
@@ -23,7 +24,7 @@ bool WheelArea::Init()
         return false;
     }
 
-    std::function<void()>afterSpinningStoppedCallabck = [this]()
+    std::function<void()> afterSpinningStoppedCallabck = [this]()
     {
         AfterSpinningStopped();
     };
@@ -51,12 +52,6 @@ bool WheelArea::HandleEvent()
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
 
-    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
-    {
-        m_Ball.StartSpinning();
-        m_Wheel.StartFastRotation();
-    }
-
     return false;
 }
 
@@ -67,6 +62,12 @@ void WheelArea::Draw()
 
     /*Draw Ball*/
     m_Ball.Draw();
+}
+
+void WheelArea::StartNewSpin()
+{
+    m_Ball.StartSpinning(RouletteMathLogic::GetInstance().GetWinningSector());
+    m_Wheel.StartFastRotation();
 }
 
 void WheelArea::StartSlowRotation()
@@ -83,7 +84,7 @@ void WheelArea::StopSlowRotation()
 
 void WheelArea::OnTick(unsigned int unID, unsigned int unTimes)
 {
-    if(unID == g_unTimerLifeRoulette)
+    if (unID == g_unTimerLifeRoulette)
     {
         /*Set every frame communication between objects*/
         m_Ball.SetDegreesRoulette(m_Wheel.GetDegrees());

@@ -6,10 +6,9 @@
 class WheelArea : public ITimer
 {
 private:
-
     /*Ball Object*/
     Ball m_Ball;
-    
+
     /*Wheel Object*/
     Wheel m_Wheel;
 
@@ -17,7 +16,6 @@ private:
     void AfterSpinningStopped();
 
 public:
-
     bool Init();
     bool Deinit();
     bool HandleEvent();
@@ -25,4 +23,6 @@ public:
     void StartSlowRotation();
     void StopSlowRotation();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
+    /*Method called when need to start new spin*/
+    void StartNewSpin();
 };

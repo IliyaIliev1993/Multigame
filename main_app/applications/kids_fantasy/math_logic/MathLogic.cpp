@@ -16,13 +16,13 @@ MathLogic::~MathLogic()
 bool MathLogic::Init()
 {
 
-    LOG_INFO("MathLogic - Initialized ...");
+    LOG_INFO("MathLogic - KidsFantasy - Initialized ...");
     return true;
 }
 
 bool MathLogic::Deinit()
 {
-    LOG_WARN("MathLogic - Deinitialized ...");
+    LOG_WARN("MathLogic - KidsFantasy - Deinitialized ...");
     return true;
 }
 
@@ -37,7 +37,7 @@ long MathLogic::GenerateRandomNuber(long nLowerBound, long nUpperBound)
     srand(unSeed);
     long nNumberToReturn = rand() % nUpperBound + nLowerBound;
 
-    // LOG_INFO("MathLogic - Generated Random Number - \"{0}\"", nNumberToReturn);
+    // LOG_INFO("MathLogic - KidsFantasy - Generated Random Number - \"{0}\"", nNumberToReturn);
 
     return nNumberToReturn;
 }
@@ -57,7 +57,7 @@ void MathLogic::GenerateResults()
     }
 
     /*Here is just a print logic*/
-    LOG_WARN("MathLogic - Generated Results BEGIN ");
+    LOG_WARN("MathLogic - KidsFantasy - Generated Results BEGIN ");
     for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)
     {
         for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
@@ -67,7 +67,7 @@ void MathLogic::GenerateResults()
 
         std::cout << std::endl;
     }
-    LOG_WARN("MathLogic - Generated Results END ");
+    LOG_WARN("MathLogic - KidsFantasy - Generated Results END ");
 
     /*Check for Lines win*/
     CheckForWins();
@@ -75,12 +75,12 @@ void MathLogic::GenerateResults()
     /*Here is just a print logic of the lines*/
     if (!m_vectorWins.empty())
     {
-        LOG_WARN("MathLogic - Win Element BEGIN ");
+        LOG_WARN("MathLogic - KidsFantasy - Win Element BEGIN ");
         for (const auto &element : m_vectorWins)
         {
             std::cout << "Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << " Win -> " << element.fWin << std::endl;
         }
-        LOG_WARN("MathLogic - Win Element END ");
+        LOG_WARN("MathLogic - KidsFantasy - Win Element END ");
     }
 }
 
@@ -93,7 +93,7 @@ void MathLogic::GenerateDemoResults(Matrix2DResults &arrResults)
     m_arrResults = arrResults;
 
     /*Here is just a print logic*/
-    LOG_WARN("MathLogic - Generated Results BEGIN ");
+    LOG_WARN("MathLogic - KidsFantasy - Generated Results BEGIN ");
     for (unsigned int figure = GameDefs::eFirstPositionNONVisible; figure < GameDefs::eTotalFigurePositionsPerReel; ++figure)
     {
         for (unsigned int reel = GameDefs::eFirstReel; reel < GameDefs::eTotalReelCount; ++reel)
@@ -103,7 +103,7 @@ void MathLogic::GenerateDemoResults(Matrix2DResults &arrResults)
 
         std::cout << std::endl;
     }
-    LOG_WARN("MathLogic - Generated Results END ");
+    LOG_WARN("MathLogic - KidsFantasy - Generated Results END ");
 
     /*Check for Lines win*/
     CheckForWins();
@@ -111,12 +111,12 @@ void MathLogic::GenerateDemoResults(Matrix2DResults &arrResults)
     /*Here is just a print logic of the lines*/
     if (!m_vectorWins.empty())
     {
-        LOG_WARN("MathLogic - Win Element BEGIN ");
+        LOG_WARN("MathLogic - KidsFantasy - Win Element BEGIN ");
         for (const auto &element : m_vectorWins)
         {
-            std::cout << "Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << " Win -> " << element.fWin << std::endl;
+            std::cout << "MathLogic - KidsFantasy - Line -> " << element.eLine + 1 << " Game Figure -> " << element.eGameFigure + 1 << " Figure Count -> " << element.unFigureCount << " Win -> " << element.fWin << std::endl;
         }
-        LOG_WARN("MathLogic - Win Element END ");
+        LOG_WARN("MathLogic - KidsFantasy - Win Element END ");
     }
 }
 
