@@ -17,24 +17,28 @@ constexpr float g_fYOffsetBetChips = -100.0f;
 constexpr float g_fXOffsetBethipsTable = 3.0f;
 constexpr float g_fYOffsetBethipsTable = -121.0f;
 
+constexpr float g_fYMaxBetChips = g_fYTableBets + g_fYOffsetBetChips - 80.0f;
+constexpr float g_fYMinBetChips = g_fYTableBets + g_fYOffsetBetChips;
+constexpr unsigned int g_unDurationSelectionChips = 200;
+
 bool TableArea::Init()
 {
     m_textureTableBets = Texture::CreateTexture("../src/resources/roulette/table_bets/table_bets.png");
     m_textureChipsTable = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_table.png");
 
-    m_arrBetChips.at(GameDefs::eChip_1).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_1.png");
-    m_arrBetChips.at(GameDefs::eChip_5).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_5.png");
-    m_arrBetChips.at(GameDefs::eChip_10).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_10.png");
-    m_arrBetChips.at(GameDefs::eChip_25).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_25.png");
-    m_arrBetChips.at(GameDefs::eChip_100).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_100.png");
-    m_arrBetChips.at(GameDefs::eChip_500).textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_500.png");
+    m_arrBetChips.at(GameDefs::eChip_1).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_1.png");
+    m_arrBetChips.at(GameDefs::eChip_5).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_5.png");
+    m_arrBetChips.at(GameDefs::eChip_10).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_10.png");
+    m_arrBetChips.at(GameDefs::eChip_25).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_25.png");
+    m_arrBetChips.at(GameDefs::eChip_100).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_100.png");
+    m_arrBetChips.at(GameDefs::eChip_500).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_500.png");
 
-    m_arrBetChips.at(GameDefs::eChip_1).fValue = 1.0f;
-    m_arrBetChips.at(GameDefs::eChip_5).fValue = 5.0f;
-    m_arrBetChips.at(GameDefs::eChip_10).fValue = 10.0f;
-    m_arrBetChips.at(GameDefs::eChip_25).fValue = 25.0f;
-    m_arrBetChips.at(GameDefs::eChip_100).fValue = 100.0f;
-    m_arrBetChips.at(GameDefs::eChip_500).fValue = 500.0f;
+    m_arrBetChips.at(GameDefs::eChip_1).buttonChip.fValue = 1.0f;
+    m_arrBetChips.at(GameDefs::eChip_5).buttonChip.fValue = 5.0f;
+    m_arrBetChips.at(GameDefs::eChip_10).buttonChip.fValue = 10.0f;
+    m_arrBetChips.at(GameDefs::eChip_25).buttonChip.fValue = 25.0f;
+    m_arrBetChips.at(GameDefs::eChip_100).buttonChip.fValue = 100.0f;
+    m_arrBetChips.at(GameDefs::eChip_500).buttonChip.fValue = 500.0f;
 
     if (!m_textureTableBets->Load())
     {
@@ -48,18 +52,22 @@ bool TableArea::Init()
         return false;
     }
 
+    m_buttonTableBets.textureButton = m_textureTableBets;
+    m_buttonTableBets.fX = g_fXTableBets;
+    m_buttonTableBets.fY = g_fYTableBets;
+
     for (unsigned int i = 0; i < m_arrBetChips.size(); ++i)
     {
         auto &chip = m_arrBetChips[i];
 
-        if (!chip.textureButton->Load())
+        if (!chip.buttonChip.textureButton->Load())
         {
             LOG_ERROR("TableArea - Unable to load texture chip !");
             return false;
         }
 
-        chip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
-        chip.fY = g_fYTableBets + g_fYOffsetBetChips;
+        chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
+        chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
     }
 
     LOG_INFO("Table Area - Initialized ...");
@@ -76,29 +84,56 @@ bool TableArea::HandleEvent()
 {
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
-
     const auto &fAvalableCredit = MainApp::GetInstance().ptrPanel->GetAvailableCredit();
 
     for (auto &chip : m_arrBetChips)
     {
-        if (fAvalableCredit < chip.fValue)
+        /*If credit available, unlock chips*/
+        if (fAvalableCredit < chip.buttonChip.fValue)
         {
-            chip.colorButton.a = 0.5f;
-            chip.bIsLocked = true;
+            chip.buttonChip.colorButton.a = 0.3f;
+            chip.buttonChip.bIsLocked = true;
             continue;
         }
 
-        chip.bIsLocked = false;
+        chip.buttonChip.bIsLocked = false;
 
-        /*Hover over Chip*/
-        if (chip.IsHovered(nXMouse, nYMouse))
+        /*Press Chip*/
+        if (chip.buttonChip.IsPressed(nXMouse, nYMouse))
         {
-            chip.colorButton.a = 0.5f;
+            chip.buttonChip.colorButton.a = 0.7f;
+            chip.bIsSelectedForBet = !chip.bIsSelectedForBet;
+
+            /*If selected, goes up else goes down*/
+            if (chip.bIsSelectedForBet)
+            {
+                chip.m_interpolatorChipUp.Start(chip.buttonChip.fY, chip.buttonChip.fY, g_fYMaxBetChips, Ease::SineIn, g_unDurationSelectionChips);
+                m_bIsAnyChipSelected = true;
+            }
+            else
+            {
+                chip.m_interpolatorChipDown.Start(chip.buttonChip.fY, chip.buttonChip.fY, g_fYMinBetChips, Ease::SineOut, g_unDurationSelectionChips);
+                m_bIsAnyChipSelected = false;
+            }
+
             return true;
+        }
+        /*Hover on Chip*/
+        else if (chip.buttonChip.IsHovered(nXMouse, nYMouse))
+        {
+            chip.buttonChip.colorButton.a = 1.0f;
         }
         else
         {
-            chip.colorButton.a = 1.0f;
+            /*If up, increment alpha*/
+            if (chip.bIsSelectedForBet)
+            {
+                chip.buttonChip.colorButton.a = 1.0f;
+            }
+            else
+            {
+                chip.buttonChip.colorButton.a = 0.7f;
+            }
         }
     }
 
@@ -110,7 +145,9 @@ void TableArea::Draw()
     const auto &rend = MainApp::GetInstance().ptrRend;
 
     /*Draw Table Bets*/
-    rend->DrawPicture(m_textureTableBets, g_fXTableBets, g_fYTableBets);
+    rend->SetColor(m_buttonTableBets.colorButton.r, m_buttonTableBets.colorButton.g, m_buttonTableBets.colorButton.b, m_buttonTableBets.colorButton.a);
+    rend->DrawPicture(m_buttonTableBets.textureButton, m_buttonTableBets.fX, m_buttonTableBets.fY);
+    rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     /*Chips Table*/
     rend->DrawPicture(m_textureChipsTable, g_fXTableBets + g_fXOffsetBethipsTable, g_fYTableBets + g_fYOffsetBethipsTable);
@@ -118,8 +155,8 @@ void TableArea::Draw()
     /*Draw Bet Chip*/
     for (auto &chip : m_arrBetChips)
     {
-        rend->SetColor(chip.colorButton.r, chip.colorButton.g, chip.colorButton.b, chip.colorButton.a);
-        rend->DrawPicture(chip.textureButton, chip.fX, chip.fY);
+        rend->SetColor(chip.buttonChip.colorButton.r, chip.buttonChip.colorButton.g, chip.buttonChip.colorButton.b, chip.buttonChip.colorButton.a);
+        rend->DrawPicture(chip.buttonChip.textureButton, chip.buttonChip.fX, chip.buttonChip.fY);
         rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
