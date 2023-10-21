@@ -80,12 +80,6 @@ bool Roulette::HandleEvent()
         return true;
     }
 
-    if (ImGui::IsMouseClicked(0))
-    {
-        std::cout << "MOUSE:" << std::endl;
-        std::cout << nXMouse << " " << nYMouse << std::endl;
-    }
-
     /*Table Area Handle Event*/
     m_tableArea.HandleEvent();
 

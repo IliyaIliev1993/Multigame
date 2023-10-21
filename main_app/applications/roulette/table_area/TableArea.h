@@ -30,8 +30,23 @@ private:
     /*Texture Chips Table*/
     std::shared_ptr<Texture> m_textureChipsTable;
 
+    /*Texture Zero Pattern*/
+    std::shared_ptr<Texture> m_textureZeroPattern;
+
+    /*Texture Numbers Pattern*/
+    std::shared_ptr<Texture> m_textureNumbersPattern;
+
+    /*Texture Twelve Pattern*/
+    std::shared_ptr<Texture> m_textureTwelvePattern;
+
+    /*Texture Downer Pattern*/
+    std::shared_ptr<Texture> m_textureDownerPattern;
+
     /*Container holding textures buttons of bet chips*/
     std::array<Chip, GameDefs::eTotalCountChips> m_arrBetChips;
+
+    /*Container holding all the table elements*/
+    std::array<Sector, GameDefs::eTotalTableElements> m_arrTableElements;
 
     /*Fade effect table bets when hovered*/
     Interpolator m_interpolatorFadeInTableBets;
@@ -39,8 +54,6 @@ private:
 
     /*Button Bet Table, used just to use the Hover logic*/
     Button m_buttonTableBets;
-
-    Sector m_sectorTest;
 
 public:
     bool Init();

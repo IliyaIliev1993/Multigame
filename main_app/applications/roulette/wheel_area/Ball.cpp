@@ -14,7 +14,7 @@ constexpr unsigned int g_unTimerRotateWithWheelPeriod = 1;
 
 constexpr unsigned int g_unRotatationCycles = 3;
 constexpr unsigned int g_unRotationDuration = 8500;
-constexpr unsigned int g_unDecrementDistanceDuration = 6000;
+constexpr unsigned int g_unDecrementDistanceDuration = 6500;
 constexpr unsigned int g_unThrowBallDuration = 200;
 
 constexpr unsigned int g_unTotalRombusCollision = 8;
@@ -177,7 +177,7 @@ void Ball::StopRotationWithWheel()
     {
         return;
     }
-    
+
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotateWithWheel);
     LOG_INFO("Ball - Stop Rotation with Wheel");
 }
@@ -193,7 +193,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 
         /*Here starts decrementing the distance and going to sector*/
         if (m_eState == EBallStates::eRotateInTableOrbit &&
-            m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-180.0f, 0.0f)))
+            m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-350.0f, 0.0f)))
         {
             if (m_interpolatorDecrementDistance.GetState() == EInterpolatorStates::eInactive)
             {
