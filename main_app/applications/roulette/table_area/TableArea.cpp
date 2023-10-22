@@ -206,14 +206,9 @@ bool TableArea::HandleEvent()
     const auto &nYMouse = ImGui::GetMousePos().y;
     const auto &fAvalableCredit = MainApp::GetInstance().ptrPanel->GetAvailableCredit();
 
-    if (ImGui::IsMouseClicked(0))
+    for (unsigned int i = 0; i < GameDefs::eTotalCountChips; ++i)
     {
-        std::cout << "Coords Offset:" << std::endl;
-        std::cout << nXMouse - g_fXTableBets << " " << nYMouse - g_fYTableBets << std::endl;
-    }
-
-    for (auto &chip : m_arrBetChips)
-    {
+        auto &chip = m_arrBetChips[i];
         /*If credit available, unlock chips*/
         if (fAvalableCredit < chip.buttonChip.fValue)
         {
@@ -224,25 +219,48 @@ bool TableArea::HandleEvent()
 
         chip.buttonChip.bIsLocked = false;
 
-        /*Press Chip*/
-        if (chip.buttonChip.IsPressed(nXMouse, nYMouse))
+        /*Press / Release Chip*/
+        if (chip.buttonChip.IsReleased(nXMouse, nYMouse))
         {
-            chip.buttonChip.colorButton.a = 0.7f;
-            chip.bIsSelectedForBet = !chip.bIsSelectedForBet;
+            chip.bIsSelectedForBet = false;
+            m_bIsAnyChipSelected = false;
 
-            /*If selected, goes up else goes down*/
-            if (chip.bIsSelectedForBet)
-            {
-                chip.m_interpolatorChipUp.Start(chip.buttonChip.fY, chip.buttonChip.fY, g_fYMaxBetChips, Ease::SineIn, g_unDurationSelectionChips);
-                m_bIsAnyChipSelected = true;
-            }
-            else
-            {
-                chip.m_interpolatorChipDown.Start(chip.buttonChip.fY, chip.buttonChip.fY, g_fYMinBetChips, Ease::SineOut, g_unDurationSelectionChips);
-                m_bIsAnyChipSelected = false;
-            }
+            /*When released, create object chip and push it to the sector container*/
+            auto &tableSector = m_arrTableElements[m_eCurrentHoverTableElement];
 
-            return true;
+            /*Create and emplace here, due to later use the vector reference object*/
+            Chip chipToEmplace = chip;
+            tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
+
+            auto &emplacedChip = tableSector.vecOnSectorChips[tableSector.vecOnSectorChips.size() - 1];
+
+            const auto &fXMiddleSector = tableSector.buttonSector.fX + (tableSector.buttonSector.textureButton->GetWidth() / 2);
+            const auto &fYMiddleSector = tableSector.buttonSector.fY + (tableSector.buttonSector.textureButton->GetHeight() / 2);
+
+            float fXDest = fXMiddleSector - (GameDefs::g_fWidthBetChip / 2) + ((tableSector.vecOnSectorChips.size() - 1) * 5);
+            float fYDest = fYMiddleSector - (GameDefs::g_fHeightBetChip / 2) - ((tableSector.vecOnSectorChips.size() - 1) * 5);
+
+            /*Actual release effect of the chip*/
+            emplacedChip.m_interpolatorReleaseX.Start(emplacedChip.buttonChip.fX, chip.buttonChip.fX, fXDest, Ease::BounceOut, 200);
+            emplacedChip.m_interpolatorReleaseY.Start(emplacedChip.buttonChip.fY, chip.buttonChip.fY, fYDest, Ease::BounceOut, 200);
+
+            /*When released, reset position to the dragged chip from table*/
+            chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
+            chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
+
+            LOG_INFO("Table Area - Released chip with value \"{0}\" at Sector \"{1}\", total elements on Sector \"{2}\"",
+                     chipToEmplace.buttonChip.fValue,
+                     m_eCurrentHoverTableElement,
+                     tableSector.vecOnSectorChips.size());
+        }
+        else if (chip.bIsSelectedForBet || chip.buttonChip.IsPressed(nXMouse, nYMouse))
+        {
+            chip.bIsSelectedForBet = true;
+            m_bIsAnyChipSelected = true;
+
+            chip.buttonChip.colorButton.a = 0.5f;
+            chip.buttonChip.fX = nXMouse - (chip.buttonChip.textureButton->GetWidth() / 2);
+            chip.buttonChip.fY = nYMouse - (chip.buttonChip.textureButton->GetHeight() / 2);
         }
         /*Hover on Chip*/
         else if (chip.buttonChip.IsHovered(nXMouse, nYMouse))
@@ -251,25 +269,19 @@ bool TableArea::HandleEvent()
         }
         else
         {
-            /*If up, increment alpha*/
-            if (chip.bIsSelectedForBet)
-            {
-                chip.buttonChip.colorButton.a = 1.0f;
-            }
-            else
-            {
-                chip.buttonChip.colorButton.a = 0.7f;
-            }
+            chip.buttonChip.colorButton.a = 0.7f;
         }
     }
 
     /*Table Elements*/
     if (m_bIsAnyChipSelected)
     {
-        for (auto &element : m_arrTableElements)
+        for (unsigned int i = GameDefs::eZero; i < GameDefs::eTotalTableElements; ++i)
         {
+            auto &element = m_arrTableElements[i];
             if (element.buttonSector.IsHovered(nXMouse, nYMouse))
             {
+                m_eCurrentHoverTableElement = (GameDefs::ETableElements)i;
                 element.buttonSector.colorButton.a = 0.0f;
             }
             else
@@ -289,7 +301,7 @@ bool TableArea::HandleEvent()
         }
 
         /*2nd12 Hovered*/
-        if (m_arrTableElements[GameDefs::e2nd12].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e2nd12].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eThirteen; i <= GameDefs::eTwentyFour; ++i)
             {
@@ -299,7 +311,7 @@ bool TableArea::HandleEvent()
         }
 
         /*3rd12 Hovered*/
-        if (m_arrTableElements[GameDefs::e3rd12].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e3rd12].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eTwentyFive; i <= GameDefs::eThirtySix; ++i)
             {
@@ -309,7 +321,7 @@ bool TableArea::HandleEvent()
         }
 
         /*1to18 Hovered*/
-        if (m_arrTableElements[GameDefs::e1to18].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e1to18].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eOne; i <= GameDefs::eEighteen; ++i)
             {
@@ -319,7 +331,7 @@ bool TableArea::HandleEvent()
         }
 
         /*Even Hovered*/
-        if (m_arrTableElements[GameDefs::eEven].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::eEven].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eOne; i <= GameDefs::eThirtySix; ++i)
             {
@@ -332,7 +344,7 @@ bool TableArea::HandleEvent()
         }
 
         /*Odd Hovered*/
-        if (m_arrTableElements[GameDefs::eOdd].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::eOdd].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eOne; i <= GameDefs::eThirtySix; ++i)
             {
@@ -345,7 +357,7 @@ bool TableArea::HandleEvent()
         }
 
         /*19to36 Hovered*/
-        if (m_arrTableElements[GameDefs::e19to36].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e19to36].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             for (unsigned int i = GameDefs::eNineteen; i <= GameDefs::eThirtySix; ++i)
             {
@@ -355,7 +367,7 @@ bool TableArea::HandleEvent()
         }
 
         /*Red Hovered*/
-        if (m_arrTableElements[GameDefs::eRed].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::eRed].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecRedSectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
@@ -374,7 +386,7 @@ bool TableArea::HandleEvent()
         }
 
         /*Black Hovered*/
-        if (m_arrTableElements[GameDefs::eBlack].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::eBlack].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecBlackSectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
@@ -393,7 +405,7 @@ bool TableArea::HandleEvent()
         }
 
         /*1by3 Hovered*/
-        if (m_arrTableElements[GameDefs::e1By3].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e1By3].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
@@ -412,7 +424,7 @@ bool TableArea::HandleEvent()
         }
 
         /*2by3 Hovered*/
-        if (m_arrTableElements[GameDefs::e2By3].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e2By3].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
@@ -431,7 +443,7 @@ bool TableArea::HandleEvent()
         }
 
         /*3by3 Hovered*/
-        if (m_arrTableElements[GameDefs::e3by3].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e3by3].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
@@ -464,6 +476,15 @@ void TableArea::Draw()
                    m_buttonTableBets.colorButton.a);
     rend->DrawPicture(m_buttonTableBets.textureButton, m_buttonTableBets.fX, m_buttonTableBets.fY);
     rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    /*Draw On Table Game Chips*/
+    for (auto &sectorElement : m_arrTableElements)
+    {
+        for (auto &chip : sectorElement.vecOnSectorChips)
+        {
+            rend->DrawPicture(chip.buttonChip.textureButton, chip.buttonChip.fX, chip.buttonChip.fY);
+        }
+    }
 
     /*Draw Patterns Table Elements*/
     if (m_bIsAnyChipSelected)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <main_app/applications/roulette/GameDefinitions.h>
 #include <main_app/interpolator/Interpolator.h>
 #include <main_app/texture/Texture.h>
@@ -8,13 +10,14 @@
 struct Chip
 {
     bool bIsSelectedForBet = false;
-    Interpolator m_interpolatorChipUp;
-    Interpolator m_interpolatorChipDown;
+    Interpolator m_interpolatorReleaseX;
+    Interpolator m_interpolatorReleaseY;
     Button buttonChip;
 };
 
 struct Sector
 {
+    std::vector<Chip>vecOnSectorChips;
     Button buttonSector;
 };
 
@@ -47,6 +50,9 @@ private:
 
     /*Container holding all the table elements*/
     std::array<Sector, GameDefs::eTotalTableElements> m_arrTableElements;
+
+    /*Change in base of currently hover element*/
+    GameDefs::ETableElements m_eCurrentHoverTableElement = GameDefs::eTotalTableElements;
 
     /*Fade effect table bets when hovered*/
     Interpolator m_interpolatorFadeInTableBets;

@@ -7,6 +7,9 @@ namespace GameDefs
     constexpr float g_fWidthBallRoulette = 26.0f;
     constexpr float g_fHeightBallRoulette = 26.0f;
 
+    constexpr float g_fWidthBetChip = 70.0f;
+    constexpr float g_fHeightBetChip = 70.0f;
+
     constexpr float g_fAnglePerSector = 9.73f;
 
     constexpr float g_fSlowSpeedWheel = 0.1f;
