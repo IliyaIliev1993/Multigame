@@ -62,7 +62,7 @@ void Wheel::StartSlowRotation()
 void Wheel::DecrementSlowRotationToZero()
 {
     m_eState = EWheelStates::eDecrementingToZero;
-    std::function<void()>endCallback = [this]()
+    std::function<void()> endCallback = [this]()
     {
         StopRotation();
     };
@@ -75,21 +75,24 @@ void Wheel::StopRotation()
     m_eState = EWheelStates::eStopped;
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotationWheel);
     m_fSpeedWheel = 0.0f;
-    m_wheelStoppedCallback();
+    if (m_wheelStoppedCallback)
+    {
+        m_wheelStoppedCallback();
+    }
     LOG_INFO("Wheel - Stopped Rotation");
 }
 
 void Wheel::StartFastRotation()
 {
     m_eState = EWheelStates::eRotatingFast;
-    //m_interpolatorAcceleration.Start(m_fSpeedWheel, m_fSpeedWheel, g_fFastSpeedWheel, Ease::SineIn, g_unAccelerationSlowSpeedDuration);
+    // m_interpolatorAcceleration.Start(m_fSpeedWheel, m_fSpeedWheel, g_fFastSpeedWheel, Ease::SineIn, g_unAccelerationSlowSpeedDuration);
     LOG_INFO("Wheel - Start Fast Rotation");
 }
 
 void Wheel::DecrementToSlowRotation()
 {
     m_eState = EWheelStates::eRotatingSlow;
-    //m_interpolatorAcceleration.Start(m_fSpeedWheel, g_fFastSpeedWheel, g_fSlowSpeedWheel, Ease::SineIn, g_unAccelerationDecrementSpeedDuration);
+    // m_interpolatorAcceleration.Start(m_fSpeedWheel, g_fFastSpeedWheel, g_fSlowSpeedWheel, Ease::SineIn, g_unAccelerationDecrementSpeedDuration);
     LOG_INFO("Wheel - Decrement from Fast to Slow Rotation");
 }
 
@@ -122,7 +125,7 @@ void Wheel::NormalizeAngle()
     }
 }
 
-const EWheelStates& Wheel::GetState()
+const EWheelStates &Wheel::GetState()
 {
     return m_eState;
 }

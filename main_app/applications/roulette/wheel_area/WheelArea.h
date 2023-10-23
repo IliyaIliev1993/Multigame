@@ -12,6 +12,9 @@ private:
     /*Wheel Object*/
     Wheel m_Wheel;
 
+    /*Method called when AfterSpinningStopped() gets called, due to notification in MainGame*/
+    std::function<void()>m_afterSpinningStoppedCallback;
+
     /*Callback, called after stop of the ball*/
     void AfterSpinningStopped();
 
@@ -28,4 +31,5 @@ public:
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     /*Method called when need to start new spin*/
     void StartNewSpin();
+    void SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback);
 };

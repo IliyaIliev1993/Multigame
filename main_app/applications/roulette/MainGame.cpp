@@ -11,6 +11,10 @@
 #include <main_app/applications/roulette/math_logic/RouletteMathLogic.h>
 #include <debug/Logger.h>
 
+constexpr unsigned int g_unTimerHoldWins = 1;
+constexpr unsigned int g_unTimerHoldWinsPeriod = 1000;
+constexpr unsigned int g_unDurationHoldWins = 10;
+
 Roulette::Roulette()
 {
 }
@@ -47,6 +51,13 @@ bool Roulette::Init()
         LOG_ERROR("Roulette - Unable to init wheel area !");
         return false;
     }
+
+    /*Set callback when finished spinning, invoke it*/
+    std::function<void()> afterSpinningStoppedCallback = [this]()
+    {
+        AfterSpinningStopped();
+    };
+    m_wheelArea.SetAfterSpinningStoppedCallback(afterSpinningStoppedCallback);
 
     LOG_INFO("Roulette - Initialized ...");
     return true;
@@ -102,6 +113,19 @@ void Roulette::StartNewGame()
     m_wheelArea.StartNewSpin();
 }
 
+void ::Roulette::AfterSpinningStopped()
+{
+    const auto &unWinFromGame = RouletteMathLogic::GetInstance().GetTotalWinFromGame();
+    if (unWinFromGame != 0)
+    {
+        MainApp::GetInstance().ptrPanel->StartWinCounting(unWinFromGame);
+    }
+
+    m_tableArea.StartWinAnimations();
+    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldWins, g_unTimerHoldWinsPeriod);
+    LOG_INFO("Roulette - Start Hold Timer");
+}
+
 void Roulette::OnEnter()
 {
     MainApp::GetInstance().ptrPanel->LockBetButtons();
@@ -113,7 +137,6 @@ void Roulette::OnExit()
     LOG_INFO("Roulette - Exit from Application");
     m_wheelArea.StopRotation();
 }
-
 
 void Roulette::OnDraw()
 {
@@ -134,4 +157,16 @@ void Roulette::OnDraw()
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
+    if (unID == g_unTimerHoldWins)
+    {
+        if (unTimes >= g_unDurationHoldWins)
+        {
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerHoldWins);
+            MainApp::GetInstance().ptrPanel->FastCollectCounting();
+            MainApp::GetInstance().ptrPanel->ResetWin();
+            m_tableArea.ResetTableElements();
+            RouletteMathLogic::GetInstance().ResetValuesToWinSector();
+            LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
+        }
+    }
 }

@@ -22,7 +22,14 @@ const float g_fAlphaElementsPattern = 0.6f;
 
 constexpr float g_fYMaxBetChips = g_fYTableBets + g_fYOffsetBetChips - 80.0f;
 constexpr float g_fYMinBetChips = g_fYTableBets + g_fYOffsetBetChips;
-constexpr unsigned int g_unDurationSelectionChips = 200;
+
+constexpr float g_fXWinningDest = 1400.0f;
+constexpr float g_fYWinningDest = 970.0f;
+
+constexpr float g_fXLoosingDest = 1400.0f;
+constexpr float g_fYLoosingDest = -100.0f;
+
+constexpr unsigned int g_unDurationCollectEffectChips = 2000;
 
 const std::array<glm::vec2, GameDefs::eTotalTableElements> g_arrTableElements =
     {
@@ -77,6 +84,17 @@ const std::array<glm::vec2, GameDefs::eTotalTableElements> g_arrTableElements =
             {619, 340}, /* Odd */
             {749, 340}  /* 19to36 */
         }};
+
+void Chip::StartCollectEffect(const float fXDest, const float fYDest, unsigned int unSpeedMultiplier)
+{
+    interpolatorAfterGameAnimX.Start(buttonChip.fX, buttonChip.fX, fXDest, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
+    interpolatorAfterGameAnimY.Start(buttonChip.fY, buttonChip.fY, fYDest, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
+}
+
+void Chip::StartFadeEffect(unsigned int unSpeedMultiplier)
+{
+    interpolatorFade.Start(buttonChip.colorButton.a, 1.0f, 0.0f, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
+}
 
 bool TableArea::Init()
 {
@@ -143,7 +161,7 @@ bool TableArea::Init()
     m_arrTableElements.at(GameDefs::eZero).buttonSector.fX = g_arrTableElements.at(GameDefs::eZero).x + g_fXTableBets;
     m_arrTableElements.at(GameDefs::eZero).buttonSector.fY = g_arrTableElements.at(GameDefs::eZero).y + g_fYTableBets;
 
-    for (unsigned int i = GameDefs::eOne; i <= GameDefs::e3by3; ++i)
+    for (unsigned int i = GameDefs::eOne; i <= GameDefs::e3By3; ++i)
     {
         m_arrTableElements.at(i).buttonSector.fValue = i;
         m_arrTableElements.at(i).buttonSector.textureButton = m_textureNumbersPattern;
@@ -230,9 +248,11 @@ bool TableArea::HandleEvent()
 
             /*Create and emplace here, due to later use the vector reference object*/
             Chip chipToEmplace = chip;
-            tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
+            chipToEmplace.buttonChip.colorButton.a = 1.0f;
 
-            auto &emplacedChip = tableSector.vecOnSectorChips[tableSector.vecOnSectorChips.size() - 1];
+            RouletteMathLogic::GetInstance().InsertInGameElement(m_eCurrentHoverTableElement, chipToEmplace.buttonChip.fValue);
+            MainApp::GetInstance().ptrPanel->RemoveCredit(chipToEmplace.buttonChip.fValue);
+            tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
 
             const auto &fXMiddleSector = tableSector.buttonSector.fX + (tableSector.buttonSector.textureButton->GetWidth() / 2);
             const auto &fYMiddleSector = tableSector.buttonSector.fY + (tableSector.buttonSector.textureButton->GetHeight() / 2);
@@ -241,8 +261,9 @@ bool TableArea::HandleEvent()
             float fYDest = fYMiddleSector - (GameDefs::g_fHeightBetChip / 2) - ((tableSector.vecOnSectorChips.size() - 1) * 5);
 
             /*Actual release effect of the chip*/
-            emplacedChip.m_interpolatorReleaseX.Start(emplacedChip.buttonChip.fX, chip.buttonChip.fX, fXDest, Ease::BounceOut, 200);
-            emplacedChip.m_interpolatorReleaseY.Start(emplacedChip.buttonChip.fY, chip.buttonChip.fY, fYDest, Ease::BounceOut, 200);
+            auto &emplacedChip = tableSector.vecOnSectorChips[tableSector.vecOnSectorChips.size() - 1];
+            emplacedChip.buttonChip.fX = fXDest;
+            emplacedChip.buttonChip.fY = fYDest;
 
             /*When released, reset position to the dragged chip from table*/
             chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
@@ -372,7 +393,7 @@ bool TableArea::HandleEvent()
             std::vector<unsigned int> vecRedSectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
             {
-                if (winSector.eColor == GameDefs::EColor::eRed)
+                if (winSector.eColor == GameDefs::ETableElements::eRed)
                 {
                     vecRedSectors.emplace_back(winSector.unWinningSectorNumber);
                 }
@@ -391,7 +412,7 @@ bool TableArea::HandleEvent()
             std::vector<unsigned int> vecBlackSectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
             {
-                if (winSector.eColor == GameDefs::EColor::eBlack)
+                if (winSector.eColor == GameDefs::ETableElements::eBlack)
                 {
                     vecBlackSectors.emplace_back(winSector.unWinningSectorNumber);
                 }
@@ -410,7 +431,7 @@ bool TableArea::HandleEvent()
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
             {
-                if (winSector.eByThree == GameDefs::EByThree::eIsOneByThree)
+                if (winSector.eByThree == GameDefs::ETableElements::e1By3)
                 {
                     vecBy3Sectors.emplace_back(winSector.unWinningSectorNumber);
                 }
@@ -429,7 +450,7 @@ bool TableArea::HandleEvent()
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
             {
-                if (winSector.eByThree == GameDefs::EByThree::eIsTwoByThree)
+                if (winSector.eByThree == GameDefs::ETableElements::e2By3)
                 {
                     vecBy3Sectors.emplace_back(winSector.unWinningSectorNumber);
                 }
@@ -443,12 +464,12 @@ bool TableArea::HandleEvent()
         }
 
         /*3by3 Hovered*/
-        else if (m_arrTableElements[GameDefs::e3by3].buttonSector.IsHovered(nXMouse, nYMouse))
+        else if (m_arrTableElements[GameDefs::e3By3].buttonSector.IsHovered(nXMouse, nYMouse))
         {
             std::vector<unsigned int> vecBy3Sectors;
             for (auto &winSector : RouletteMathLogic::GetInstance().GetContainerWinSectors())
             {
-                if (winSector.eByThree == GameDefs::EByThree::eIsThreeByThree)
+                if (winSector.eByThree == GameDefs::ETableElements::e3By3)
                 {
                     vecBy3Sectors.emplace_back(winSector.unWinningSectorNumber);
                 }
@@ -463,6 +484,59 @@ bool TableArea::HandleEvent()
     }
 
     return false;
+}
+
+void TableArea::StartWinAnimations()
+{
+    WinSector currentWinSector = RouletteMathLogic::GetInstance().GetCurrentWinningSector();
+
+    for (unsigned int i = GameDefs::ETableElements::eZero; i < GameDefs::ETableElements::eTotalTableElements; ++i)
+    {
+        auto &tableElement = m_arrTableElements[i];
+
+        /*If there is chips on sector, check sector if winning*/
+        if (tableElement.vecOnSectorChips.empty())
+        {
+            continue;
+        }
+        else
+        {
+            /*Check Wins*/
+            if (tableElement.buttonSector.fValue == currentWinSector.unWinningSectorNumber ||
+                tableElement.buttonSector.fValue == currentWinSector.eColor ||
+                tableElement.buttonSector.fValue == currentWinSector.eEvenOdd ||
+                tableElement.buttonSector.fValue == currentWinSector.eTwelfth ||
+                tableElement.buttonSector.fValue == currentWinSector.eByThree ||
+                tableElement.buttonSector.fValue == currentWinSector.eHalfTable)
+            {
+                unsigned int unSpeedMultiplier = 0;
+                for (auto &chips : tableElement.vecOnSectorChips)
+                {
+                    chips.StartCollectEffect(g_fXWinningDest, g_fYWinningDest, unSpeedMultiplier);
+                    unSpeedMultiplier += 200;
+                }
+            }
+            else
+            {
+                unsigned int unSpeedMultiplier = 0;
+                for (auto &chips : tableElement.vecOnSectorChips)
+                {
+                    chips.StartFadeEffect(unSpeedMultiplier);
+                    unSpeedMultiplier += 200;
+                }
+            }
+        }
+    }
+}
+
+void TableArea::ResetTableElements()
+{
+    for (auto &element : m_arrTableElements)
+    {
+        element.vecOnSectorChips.clear();
+    }
+
+    LOG_INFO("Table Area - Reset Table Elements");
 }
 
 void TableArea::Draw()
@@ -482,7 +556,12 @@ void TableArea::Draw()
     {
         for (auto &chip : sectorElement.vecOnSectorChips)
         {
+            rend->SetColor(chip.buttonChip.colorButton.r,
+                           chip.buttonChip.colorButton.g,
+                           chip.buttonChip.colorButton.b,
+                           chip.buttonChip.colorButton.a);
             rend->DrawPicture(chip.buttonChip.textureButton, chip.buttonChip.fX, chip.buttonChip.fY);
+            rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 

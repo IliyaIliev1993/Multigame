@@ -4,6 +4,13 @@
 
 namespace GameDefs
 {
+    constexpr unsigned int g_unCoeffRedBlack = 2;
+    constexpr unsigned int g_unCoeffEvenOdd = 2;
+    constexpr unsigned int g_unCoeffHalfTable = 2;
+    constexpr unsigned int g_unCoeffTwelfth = 3;
+    constexpr unsigned int g_unCoeffByThree = 3;
+    constexpr unsigned int g_unCoeffNumber = 36;
+
     constexpr float g_fWidthBallRoulette = 26.0f;
     constexpr float g_fHeightBallRoulette = 26.0f;
 
@@ -17,43 +24,6 @@ namespace GameDefs
 
     constexpr unsigned int g_unAccelerationSlowSpeedDuration = 1000;
     constexpr unsigned int g_unDecelerationSlowSpeedDuration = 200;
-
-    enum class EColor
-    {
-        eRed,
-        eBlack,
-        eIsZero
-    };
-
-    enum class EEvenOdd
-    {
-        eEven,
-        eOdd,
-        eIsZero
-    };
-
-    enum class ETwelfth
-    {
-        eFirstTwelfth,
-        eSecondTwelfth,
-        eThirdTwelfth,
-        eIsZero
-    };
-
-    enum class EByThree
-    {
-        eIsOneByThree,
-        eIsTwoByThree,
-        eIsThreeByThree,
-        eIsZero
-    };
-
-    enum class EHalfTable
-    {
-        e1to18,
-        e19to36,
-        eIsZero
-    };
 
     enum EChips
     {
@@ -198,7 +168,7 @@ namespace GameDefs
         eThirtySix,
         e1By3,
         e2By3,
-        e3by3,
+        e3By3,
         e1st12,
         e2nd12,
         e3rd12,

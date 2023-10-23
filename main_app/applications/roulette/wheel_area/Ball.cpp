@@ -145,7 +145,10 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
         MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerRotateWithWheel, g_unTimerRotateWithWheelPeriod);
 
         m_eState = EBallStates::eStoppedAndRotateWithWheel;
-        m_afterSpinningStoppedCallback();
+        if (m_afterSpinningStoppedCallback)
+        {
+            m_afterSpinningStoppedCallback();
+        }
         LOG_INFO("Ball - State: eStoppedAndRotateWithWheel");
     };
 

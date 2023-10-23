@@ -10,14 +10,21 @@
 struct Chip
 {
     bool bIsSelectedForBet = false;
-    Interpolator m_interpolatorReleaseX;
-    Interpolator m_interpolatorReleaseY;
+    Interpolator interpolatorAfterGameAnimX;
+    Interpolator interpolatorAfterGameAnimY;
+    Interpolator interpolatorFade;
     Button buttonChip;
+
+    /*Win Effect*/
+    void StartCollectEffect(const float fXDest, const float fYDest, unsigned int unSpeedMultiplier = 0);
+
+    /*Fade Effect, lose*/
+    void StartFadeEffect( unsigned int unSpeedMultiplier = 0);
 };
 
 struct Sector
 {
-    std::vector<Chip>vecOnSectorChips;
+    std::vector<Chip> vecOnSectorChips;
     Button buttonSector;
 };
 
@@ -65,5 +72,7 @@ public:
     bool Init();
     bool Deinit();
     bool HandleEvent();
+    void StartWinAnimations();
+    void ResetTableElements();
     void Draw();
 };
