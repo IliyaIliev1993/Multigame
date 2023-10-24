@@ -7,8 +7,20 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/button/Button.h>
 
+enum class EChipState
+{
+    eInactive,
+    eLocked,
+    eReadyForSelection,
+    eSelected,
+    eReleasedToSector,
+    eAnimatingEndGame,
+    eTotalChipStates
+};
+
 struct Chip
 {
+    EChipState eState = EChipState::eInactive;
     bool bIsSelectedForBet = false;
     Interpolator interpolatorAfterGameAnimX;
     Interpolator interpolatorAfterGameAnimY;
@@ -72,6 +84,7 @@ public:
     bool Init();
     bool Deinit();
     bool HandleEvent();
+    bool IsEndGameScenarioFinished();
     void StartWinAnimations();
     void ResetTableElements();
     void Draw();

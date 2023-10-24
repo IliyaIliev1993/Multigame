@@ -87,12 +87,29 @@ const std::array<glm::vec2, GameDefs::eTotalTableElements> g_arrTableElements =
 
 void Chip::StartCollectEffect(const float fXDest, const float fYDest, unsigned int unSpeedMultiplier)
 {
+    eState = EChipState::eAnimatingEndGame;
+
+    std::function<void()>endCallback = [this]()
+    {
+        eState = EChipState::eInactive;
+    };
+
+    interpolatorAfterGameAnimX.SetEndCallback(endCallback);
+
     interpolatorAfterGameAnimX.Start(buttonChip.fX, buttonChip.fX, fXDest, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
     interpolatorAfterGameAnimY.Start(buttonChip.fY, buttonChip.fY, fYDest, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
 }
 
 void Chip::StartFadeEffect(unsigned int unSpeedMultiplier)
 {
+    eState = EChipState::eAnimatingEndGame;
+
+    std::function<void()>endCallback = [this]()
+    {
+        eState = EChipState::eInactive;
+    };
+
+    interpolatorFade.SetEndCallback(endCallback);
     interpolatorFade.Start(buttonChip.colorButton.a, 1.0f, 0.0f, Ease::CircularIn, g_unDurationCollectEffectChips + unSpeedMultiplier);
 }
 
@@ -232,14 +249,17 @@ bool TableArea::HandleEvent()
         {
             chip.buttonChip.colorButton.a = 0.3f;
             chip.buttonChip.bIsLocked = true;
+            chip.eState = EChipState::eLocked;
             continue;
         }
 
         chip.buttonChip.bIsLocked = false;
+        chip.eState = EChipState::eReadyForSelection;
 
         /*Press / Release Chip*/
         if (chip.buttonChip.IsReleased(nXMouse, nYMouse))
         {
+            chip.eState = EChipState::eReleasedToSector;
             chip.bIsSelectedForBet = false;
             m_bIsAnyChipSelected = false;
 
@@ -276,6 +296,7 @@ bool TableArea::HandleEvent()
         }
         else if (chip.bIsSelectedForBet || chip.buttonChip.IsPressed(nXMouse, nYMouse))
         {
+            chip.eState = EChipState::eSelected;
             chip.bIsSelectedForBet = true;
             m_bIsAnyChipSelected = true;
 
@@ -486,6 +507,22 @@ bool TableArea::HandleEvent()
     return false;
 }
 
+bool TableArea::IsEndGameScenarioFinished()
+{
+    for(const auto& element : m_arrTableElements)
+    {
+        for(const auto& chip : element.vecOnSectorChips)
+        {
+            if(chip.eState != EChipState::eInactive)
+            {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
 void TableArea::StartWinAnimations()
 {
     WinSector currentWinSector = RouletteMathLogic::GetInstance().GetCurrentWinningSector();
@@ -501,6 +538,7 @@ void TableArea::StartWinAnimations()
         }
         else
         {
+
             /*Check Wins*/
             if (tableElement.buttonSector.fValue == currentWinSector.unWinningSectorNumber ||
                 tableElement.buttonSector.fValue == currentWinSector.eColor ||

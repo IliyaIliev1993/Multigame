@@ -13,7 +13,11 @@
 
 constexpr unsigned int g_unTimerHoldWins = 1;
 constexpr unsigned int g_unTimerHoldWinsPeriod = 1000;
-constexpr unsigned int g_unDurationHoldWins = 10;
+constexpr unsigned int g_unDurationHoldWins = 7;
+
+constexpr unsigned int g_unTimerHoldLoses = 2;
+constexpr unsigned int g_unTimerHoldLosesPeriod = 1000;
+constexpr unsigned int g_unDurationHoldLoses = 3;
 
 Roulette::Roulette()
 {
@@ -116,13 +120,18 @@ void Roulette::StartNewGame()
 void ::Roulette::AfterSpinningStopped()
 {
     const auto &unWinFromGame = RouletteMathLogic::GetInstance().GetTotalWinFromGame();
+    /*If there is a win, start holding timer*/
     if (unWinFromGame != 0)
     {
         MainApp::GetInstance().ptrPanel->StartWinCounting(unWinFromGame);
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldWins, g_unTimerHoldWinsPeriod);
+    }
+    else /*If there is NO win, reset game elements after timer expires*/
+    {
+        MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldLoses, g_unTimerHoldLosesPeriod);
     }
 
     m_tableArea.StartWinAnimations();
-    MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldWins, g_unTimerHoldWinsPeriod);
     LOG_INFO("Roulette - Start Hold Timer");
 }
 
@@ -159,14 +168,32 @@ void Roulette::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if (unID == g_unTimerHoldWins)
     {
-        if (unTimes >= g_unDurationHoldWins)
+        if (unTimes >= g_unDurationHoldWins && m_tableArea.IsEndGameScenarioFinished())
         {
             MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerHoldWins);
-            MainApp::GetInstance().ptrPanel->FastCollectCounting();
-            MainApp::GetInstance().ptrPanel->ResetWin();
-            m_tableArea.ResetTableElements();
-            RouletteMathLogic::GetInstance().ResetValuesToWinSector();
-            LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
+            ResetGameElements();
         }
     }
+
+    if (unID == g_unTimerHoldLoses)
+    {
+        if (unTimes >= g_unDurationHoldLoses && m_tableArea.IsEndGameScenarioFinished())
+        {
+            MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerHoldLoses);
+            ResetGameElements();
+        }
+    }
+}
+
+void Roulette::ResetGameElements()
+{
+    const auto &unWinFromGame = RouletteMathLogic::GetInstance().GetTotalWinFromGame();
+    if (unWinFromGame != 0)
+    {
+        MainApp::GetInstance().ptrPanel->FastCollectCounting();
+        MainApp::GetInstance().ptrPanel->ResetWin();
+    }
+    m_tableArea.ResetTableElements();
+    RouletteMathLogic::GetInstance().ResetValuesToWinSector();
+    LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
 }

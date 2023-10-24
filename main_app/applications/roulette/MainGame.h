@@ -29,6 +29,9 @@ private:
     /*Method called when after spinning stopped has beed invoked*/
     void AfterSpinningStopped();
 
+    /*When game finished, reset to start new game*/
+    void ResetGameElements();
+
 public:
     Roulette();
 
