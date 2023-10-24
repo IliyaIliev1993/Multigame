@@ -38,13 +38,13 @@ constexpr float g_fYLineFigureTextureOffset = 45.0f;
 
 constexpr float g_fYStatusLine = 900.0f;
 
-bool StatusLine::Init()
+bool StatusLineKidsFantasy::Init()
 {
     m_fontStatusLine = Font::CreateFont("../src/fonts/Nasa.ttf", 40);
 
     if (!m_fontStatusLine->LoadFont())
     {
-        LOG_ERROR("StatusLine - Unable to load font status line !");
+        LOG_ERROR("StatusLineKidsFantasy - Unable to load font status line !");
         return false;
     }
 
@@ -55,24 +55,24 @@ bool StatusLine::Init()
 
         if (!m_arrSmallFigureTextures[i]->Load())
         {
-            LOG_ERROR("StatusLine - Unable to load font status line texture \"{0}\"", strPath);
+            LOG_ERROR("StatusLineKidsFantasy - Unable to load font status line texture \"{0}\"", strPath);
             return false;
         }
     }
 
-    m_eCurrentScenario = eInsertCredit;
+    m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eInsertCredit;
 
-    LOG_INFO("StatusLine - Initialized ...");
+    LOG_INFO("StatusLineKidsFantasy - Initialized ...");
     return true;
 }
 
-bool StatusLine::Deinit()
+bool StatusLineKidsFantasy::Deinit()
 {
-    LOG_WARN("StatusLine - Deinitialized ...");
+    LOG_WARN("StatusLineKidsFantasy - Deinitialized ...");
     return true;
 }
 
-void StatusLine::Draw()
+void StatusLineKidsFantasy::Draw()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
@@ -80,37 +80,37 @@ void StatusLine::Draw()
 
     switch (m_eCurrentScenario)
     {
-    case eInsertCredit:
+    case EStatusLineScenariosKidsFantasy::eInsertCredit:
     {
         rend->DrawText(g_strInsertCredit, m_fontStatusLine, g_fXInsetCredit, g_fYStatusLine);
     }
     break;
 
-    case ePressStartToRunNewGame:
+    case EStatusLineScenariosKidsFantasy::ePressStartToRunNewGame:
     {
         rend->DrawText(g_strPressStart, m_fontStatusLine, g_fXPressStart, g_fYStatusLine);
     }
     break;
 
-    case ePlayAtMaxBet:
+    case EStatusLineScenariosKidsFantasy::ePlayAtMaxBet:
     {
         rend->DrawText(g_strPlayAtMaxBet, m_fontStatusLine, g_fXPlayAtMaxBet, g_fYStatusLine);
     }
     break;
 
-    case eWinTheMaxAmout:
+    case EStatusLineScenariosKidsFantasy::eWinTheMaxAmout:
     {
         rend->DrawText(g_strWinTheMaxAmout, m_fontStatusLine, g_fXWinTheMaxAmount, g_fYStatusLine);
     }
     break;
 
-    case eGoodLuck:
+    case EStatusLineScenariosKidsFantasy::eGoodLuck:
     {
         rend->DrawText(g_strGoodLuck, m_fontStatusLine, g_fXGoodLuck, g_fYStatusLine);
     }
     break;
 
-    case eWinFromLines:
+    case EStatusLineScenariosKidsFantasy::eWinFromLines:
     {
         if (m_bShowWinScenario)
         {
@@ -146,7 +146,7 @@ void StatusLine::Draw()
     break;
 
     default:
-        LOG_ERROR("StatusLine - Invalid StatusLine Scenario !");
+        LOG_ERROR("StatusLineKidsFantasy - Invalid StatusLine Scenario !");
 
         break;
     }
@@ -154,93 +154,93 @@ void StatusLine::Draw()
     rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void StatusLine::StartNormalScenario()
+void StatusLineKidsFantasy::StartNormalScenario()
 {
     m_fAlphaScenario = 1.0f;
-    m_eCurrentScenario = eInsertCredit;
+    m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eInsertCredit;
     NextNormalScenario();
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unNormalScenarioTimer, g_unNormalScenarioTimerPeriod);
-    LOG_INFO("StatusLine - Normal Scenario Started");
+    LOG_INFO("StatusLineKidsFantasy - Normal Scenario Started");
 }
 
-void StatusLine::StopNormalScenario()
+void StatusLineKidsFantasy::StopNormalScenario()
 {
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unNormalScenarioTimer);
-    LOG_INFO("StatusLine - Normal Scenario Stopped");
+    LOG_INFO("StatusLineKidsFantasy - Normal Scenario Stopped");
 }
 
-void StatusLine::StartWinScenario()
+void StatusLineKidsFantasy::StartWinScenario()
 {
     m_unIndexWinElement = 0;
     m_currentWinElement = MathLogic::GetInstance().GetWinElements().at(m_unIndexWinElement);
-    m_eCurrentScenario = eWinFromLines;
+    m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eWinFromLines;
     m_fAlphaScenario = 1.0f;
     MainApp::GetInstance().ptrTimer->StartTimer(this, g_unWinScenarioTimerFast, g_unWinScenarioTimerFastPeriod);
 
-    LOG_INFO("StatusLine - Win Scenario Started");
+    LOG_INFO("StatusLineKidsFantasy - Win Scenario Started");
 }
 
-void StatusLine::StopWinScenario()
+void StatusLineKidsFantasy::StopWinScenario()
 {
     m_unIndexWinElement = 0;
     m_fAlphaScenario = 1.0f;
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unWinScenarioTimerFast);
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unWinScenarioTimerSlow);
-    LOG_INFO("StatusLine - Win Scenario Stopped");
+    LOG_INFO("StatusLineKidsFantasy - Win Scenario Stopped");
 }
 
-void StatusLine::NextNormalScenario()
+void StatusLineKidsFantasy::NextNormalScenario()
 {
     if (!MainApp::GetInstance().ptrPanel->CanStartNewGame())
     {
-        m_eCurrentScenario = eInsertCredit;
+        m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eInsertCredit;
         return;
     }
 
     switch (m_eCurrentScenario)
     {
-    case eInsertCredit:
+    case EStatusLineScenariosKidsFantasy::eInsertCredit:
     {
-        m_eCurrentScenario = ePressStartToRunNewGame;
+        m_eCurrentScenario = EStatusLineScenariosKidsFantasy::ePressStartToRunNewGame;
     }
     break;
 
-    case ePressStartToRunNewGame:
+    case EStatusLineScenariosKidsFantasy::ePressStartToRunNewGame:
     {
-        m_eCurrentScenario = ePlayAtMaxBet;
+        m_eCurrentScenario = EStatusLineScenariosKidsFantasy::ePlayAtMaxBet;
     }
     break;
 
-    case ePlayAtMaxBet:
+    case EStatusLineScenariosKidsFantasy::ePlayAtMaxBet:
     {
-        m_eCurrentScenario = eWinTheMaxAmout;
+        m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eWinTheMaxAmout;
     }
     break;
 
-    case eWinTheMaxAmout:
+    case EStatusLineScenariosKidsFantasy::eWinTheMaxAmout:
     {
-        m_eCurrentScenario = ePressStartToRunNewGame;
+        m_eCurrentScenario = EStatusLineScenariosKidsFantasy::ePressStartToRunNewGame;
     }
     break;
 
     default:
-        LOG_ERROR("StatusLine - Invalid StatusLine Scenario !");
+        LOG_ERROR("StatusLineKidsFantasy - Invalid StatusLine Scenario !");
 
         break;
     }
 }
 
-void StatusLine::NeedToShowGoodLuckScenario()
+void StatusLineKidsFantasy::NeedToShowGoodLuckScenario()
 {
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unNormalScenarioTimer);
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unFadeNormalScenario);
-    m_eCurrentScenario = eGoodLuck;
+    m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eGoodLuck;
     m_fAlphaScenario = 1.0f;
     m_bShowWinScenario = true;
-    LOG_INFO("StatusLine - Need To Show GOOD LUCK");
+    LOG_INFO("StatusLineKidsFantasy - Need To Show GOOD LUCK");
 }
 
-void StatusLine::OnTick(unsigned int unID, unsigned int unTimes)
+void StatusLineKidsFantasy::OnTick(unsigned int unID, unsigned int unTimes)
 {
     if (unID == g_unNormalScenarioTimer)
     {

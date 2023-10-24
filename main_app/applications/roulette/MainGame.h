@@ -3,6 +3,7 @@
 #include <string>
 
 #include <main_app/applications/IApp.h>
+#include <main_app/applications/roulette/status_line/StatusLine.h>
 #include <main_app/applications/roulette/table_area/TableArea.h>
 #include <main_app/applications/roulette/wheel_area/WheelArea.h>
 #include <main_app/texture/Texture.h>
@@ -36,6 +37,9 @@ private:
 
     /*Table Area Objet*/
     TableArea m_tableArea;
+
+    /*StatusLine object*/
+    StatusLineRoulette m_statusLine;
 
     /*Game State Request*/
     void RequestState(ERouletteStates eStateToRequest);

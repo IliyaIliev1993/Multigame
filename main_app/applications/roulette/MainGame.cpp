@@ -56,6 +56,13 @@ bool Roulette::Init()
         return false;
     }
 
+    /*Initialize status line*/
+    if (!m_statusLine.Init())
+    {
+        LOG_ERROR("Roulette - Unable to Init StatusLine !");
+        return false;
+    }
+
     /*Set callback when finished spinning, invoke it*/
     std::function<void()> afterSpinningStoppedCallback = [this]()
     {
@@ -75,6 +82,9 @@ bool Roulette::Deinit()
     /*Deinit table area*/
     m_tableArea.Deinit();
 
+    /*Deinit status line*/
+    m_statusLine.Deinit();
+
     /*Deinitialize math logic*/
     RouletteMathLogic::GetInstance().Deinit();
 
@@ -90,7 +100,7 @@ bool Roulette::HandleEvent()
     /*Panel Handle Event*/
     if (m_eState == ERouletteStates::eReadyForGame)
     {
-        if(MainApp::GetInstance().ptrPanel->HandleEvent())
+        if (MainApp::GetInstance().ptrPanel->HandleEvent())
         {
             return true;
         }
@@ -285,6 +295,7 @@ void Roulette::StartNewGame()
     {
         RequestState(ERouletteStates::eSpinning);
         m_tableArea.LockBetTable();
+        m_statusLine.NeedToShowGoodLuckScenario();
     }
 }
 
@@ -299,11 +310,13 @@ void ::Roulette::AfterSpinningStopped()
         RequestState(ERouletteStates::eWinFromGame);
         MainApp::GetInstance().ptrPanel->StartWinCounting(unWinFromGame);
         MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldWins, g_unTimerHoldWinsPeriod);
+        m_statusLine.StartWinScenario();
     }
     else /*If there is NO win, reset game elements after timer expires*/
     {
         RequestState(ERouletteStates::eNoWinFromGame);
         MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldLoses, g_unTimerHoldLosesPeriod);
+        m_statusLine.StartNormalScenario();
     }
 
     m_tableArea.StartWinAnimations();
@@ -314,6 +327,7 @@ void Roulette::OnEnter()
 {
     RequestState(ERouletteStates::eReadyForGame);
     MainApp::GetInstance().ptrPanel->LockBetButtons();
+    m_statusLine.StartNormalScenario();
     LOG_INFO("Roulette - Transition to Application succeed");
 }
 
@@ -322,6 +336,7 @@ void Roulette::OnExit()
     RequestState(ERouletteStates::eInactive);
     LOG_INFO("Roulette - Exit from Application");
     m_wheelArea.StopRotation();
+    m_statusLine.StopNormalScenario();
 }
 
 void Roulette::OnDraw()
@@ -330,6 +345,9 @@ void Roulette::OnDraw()
 
     /*Draw Background*/
     rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
+
+    /*Draw StatusLine*/
+    m_statusLine.Draw();
 
     /*Table Area Draw*/
     m_tableArea.Draw();
@@ -374,5 +392,7 @@ void Roulette::ResetGameElements()
     RouletteMathLogic::GetInstance().ResetValuesToWinSector();
     RequestState(ERouletteStates::eReadyForGame);
     m_tableArea.UnlockBetTable();
+    m_statusLine.StopWinScenario();
+    m_statusLine.StartNormalScenario();
     LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
 }

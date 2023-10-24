@@ -45,7 +45,7 @@ private:
     ReelsArea m_reelsArea;
 
     /*StatusLine object*/
-    StatusLine m_statusLine;
+    StatusLineKidsFantasy m_statusLine;
 
     /*LinesMgr object*/
     LinesMgr m_lines;

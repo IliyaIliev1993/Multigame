@@ -3,20 +3,20 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/font/Font.h>
 #include <main_app/timer/TimerMgr.h>
-#include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 
-enum class EStatusLineScenariosKidsFantasy
+enum class EStatusLineScenariosRoulette
 {
     eInsertCredit,
+    ePlaceYourBets,
     ePressStartToRunNewGame,
     ePlayAtMaxBet,
     eWinTheMaxAmout,
     eGoodLuck,
-    eWinFromLines,
+    eWinScenario,
     eTotalScenarioCount
 };
 
-class StatusLineKidsFantasy : public ITimer
+class StatusLineRoulette : public ITimer
 {
 
 private:
@@ -31,16 +31,10 @@ private:
     bool m_bShowWinScenario = true;
 
     /*StatusLine current scenario*/
-    EStatusLineScenariosKidsFantasy m_eCurrentScenario = EStatusLineScenariosKidsFantasy::eInsertCredit;
-
-    /*When there is a win, this will be the current win element in different moments*/
-    WinElement m_currentWinElement;
+    EStatusLineScenariosRoulette m_eCurrentScenario = EStatusLineScenariosRoulette::eInsertCredit;
 
     /*Font StatusLine*/
     std::shared_ptr<Font> m_fontStatusLine;
-
-    /*Array holding all small textures*/
-    std::array<std::shared_ptr<Texture>, GameDefs::eTotalGameFiguresCount>m_arrSmallFigureTextures;
 
     /*Method that changed the StatusLine scenario*/
     void NextNormalScenario();
