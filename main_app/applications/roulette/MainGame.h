@@ -8,11 +8,25 @@
 #include <main_app/texture/Texture.h>
 #include <main_app/timer/TimerMgr.h>
 
+enum class ERouletteStates
+{
+    eInactive,
+    eReadyForGame,
+    eSpinning,
+    eAfterSpinningStopped,
+    eWinFromGame,
+    eNoWinFromGame,
+    eTotalStatesCount
+};
+
 class Roulette : public IApp, public ITimer
 {
 
 private:
     std::string m_strAppName = "Roulette";
+
+    /*Roulette States*/
+    ERouletteStates m_eState = ERouletteStates::eInactive;
 
     /*Texture main background*/
     std::shared_ptr<Texture> m_textureBackground;
@@ -22,7 +36,10 @@ private:
 
     /*Table Area Objet*/
     TableArea m_tableArea;
-    
+
+    /*Game State Request*/
+    void RequestState(ERouletteStates eStateToRequest);
+
     /*Method called when need to start new game*/
     void StartNewGame();
 

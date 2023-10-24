@@ -121,6 +121,12 @@ bool KidsFantasy::HandleEvent()
         MainApp::GetInstance().ptrPanel->HandleEvent();
     }
 
+    /*If calculator or volume scene active, no handle event for MainGame*/
+    if (MainApp::GetInstance().ptrPanel->GetPanelInfoScene() != EPanelInfoScenes::eNoInfoScene)
+    {
+        return false;
+    }
+
     /*Enter Button*/
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
     {

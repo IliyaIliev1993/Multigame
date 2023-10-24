@@ -655,6 +655,11 @@ const float &Panel::GetAvailableCredit()
     return m_fCreditAvailable;
 }
 
+const EPanelInfoScenes& Panel::GetPanelInfoScene()
+{
+    return m_eInfoScene;
+}
+
 void Panel::DrawCreditPanelButton()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;

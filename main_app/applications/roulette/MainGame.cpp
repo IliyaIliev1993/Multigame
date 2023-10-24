@@ -87,6 +87,21 @@ bool Roulette::HandleEvent()
     const auto &nXMouse = ImGui::GetMousePos().x;
     const auto &nYMouse = ImGui::GetMousePos().y;
 
+    /*Panel Handle Event*/
+    if (m_eState == ERouletteStates::eReadyForGame)
+    {
+        if(MainApp::GetInstance().ptrPanel->HandleEvent())
+        {
+            return true;
+        }
+    }
+
+    /*If calculator or volume scene active, no handle event for MainGame*/
+    if (MainApp::GetInstance().ptrPanel->GetPanelInfoScene() != EPanelInfoScenes::eNoInfoScene)
+    {
+        return false;
+    }
+
     /*ENTER button*/
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter), false))
     {
@@ -101,9 +116,6 @@ bool Roulette::HandleEvent()
     /*Wheel Area Handle Event*/
     m_wheelArea.HandleEvent();
 
-    /*Panel Handle Event*/
-    MainApp::GetInstance().ptrPanel->HandleEvent();
-
     return false;
 }
 
@@ -112,22 +124,185 @@ const std::string &Roulette::GetAppName()
     return m_strAppName;
 }
 
+void Roulette::RequestState(ERouletteStates eStateToRequest)
+{
+    std::string strStateToRequest = "N/A";
+    std::string strCurrentState = "N/A";
+
+    /*Current State*/
+    switch (m_eState)
+    {
+    case ERouletteStates::eInactive:
+    {
+        strCurrentState = "eInactive";
+    }
+    break;
+
+    case ERouletteStates::eReadyForGame:
+    {
+        strCurrentState = "eReadyForGame";
+    }
+    break;
+
+    case ERouletteStates::eSpinning:
+    {
+        strCurrentState = "eSpinning";
+    }
+    break;
+
+    case ERouletteStates::eAfterSpinningStopped:
+    {
+        strCurrentState = "eAfterSpinningStopped";
+    }
+    break;
+
+    case ERouletteStates::eWinFromGame:
+    {
+        strCurrentState = "eWinFromGame";
+    }
+    break;
+
+    case ERouletteStates::eNoWinFromGame:
+    {
+        strCurrentState = "eNoWinFromGame";
+    }
+    break;
+
+    default:
+        break;
+    }
+
+    /*State to Request*/
+    switch (eStateToRequest)
+    {
+    case ERouletteStates::eInactive:
+    {
+        strStateToRequest = "eInactive";
+
+        if (m_eState == ERouletteStates::eReadyForGame)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case ERouletteStates::eReadyForGame:
+    {
+        strStateToRequest = "eReadyForGame";
+
+        if (m_eState == ERouletteStates::eInactive ||
+            m_eState == ERouletteStates::eAfterSpinningStopped ||
+            m_eState == ERouletteStates::eWinFromGame ||
+            m_eState == ERouletteStates::eNoWinFromGame)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case ERouletteStates::eSpinning:
+    {
+        strStateToRequest = "eSpinning";
+
+        if (m_eState == ERouletteStates::eReadyForGame)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case ERouletteStates::eAfterSpinningStopped:
+    {
+        strStateToRequest = "eAfterSpinningStopped";
+
+        if (m_eState == ERouletteStates::eSpinning)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case ERouletteStates::eWinFromGame:
+    {
+        strStateToRequest = "eWinFromGame";
+
+        if (m_eState == ERouletteStates::eAfterSpinningStopped)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    case ERouletteStates::eNoWinFromGame:
+    {
+        strStateToRequest = "eNoWinFromGame";
+
+        if (m_eState == ERouletteStates::eAfterSpinningStopped)
+        {
+            LOG_INFO("Roulette - Possible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+            m_eState = eStateToRequest;
+        }
+        else
+        {
+            LOG_ERROR("Roulette - Impossible request state: \"{0}\" -> \"{1}\"", strCurrentState, strStateToRequest);
+        }
+    }
+    break;
+
+    default:
+        break;
+    }
+}
+
 void Roulette::StartNewGame()
 {
-    m_wheelArea.StartNewSpin();
+    if (m_wheelArea.StartNewSpin())
+    {
+        RequestState(ERouletteStates::eSpinning);
+        m_tableArea.LockBetTable();
+    }
 }
 
 void ::Roulette::AfterSpinningStopped()
 {
+    RequestState(ERouletteStates::eAfterSpinningStopped);
+
     const auto &unWinFromGame = RouletteMathLogic::GetInstance().GetTotalWinFromGame();
     /*If there is a win, start holding timer*/
     if (unWinFromGame != 0)
     {
+        RequestState(ERouletteStates::eWinFromGame);
         MainApp::GetInstance().ptrPanel->StartWinCounting(unWinFromGame);
         MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldWins, g_unTimerHoldWinsPeriod);
     }
     else /*If there is NO win, reset game elements after timer expires*/
     {
+        RequestState(ERouletteStates::eNoWinFromGame);
         MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerHoldLoses, g_unTimerHoldLosesPeriod);
     }
 
@@ -137,12 +312,14 @@ void ::Roulette::AfterSpinningStopped()
 
 void Roulette::OnEnter()
 {
+    RequestState(ERouletteStates::eReadyForGame);
     MainApp::GetInstance().ptrPanel->LockBetButtons();
     LOG_INFO("Roulette - Transition to Application succeed");
 }
 
 void Roulette::OnExit()
 {
+    RequestState(ERouletteStates::eInactive);
     LOG_INFO("Roulette - Exit from Application");
     m_wheelArea.StopRotation();
 }
@@ -195,5 +372,7 @@ void Roulette::ResetGameElements()
     }
     m_tableArea.ResetTableElements();
     RouletteMathLogic::GetInstance().ResetValuesToWinSector();
+    RequestState(ERouletteStates::eReadyForGame);
+    m_tableArea.UnlockBetTable();
     LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
 }

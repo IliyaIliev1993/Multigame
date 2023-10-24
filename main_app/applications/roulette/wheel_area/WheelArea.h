@@ -30,6 +30,6 @@ public:
     void StopRotation();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     /*Method called when need to start new spin*/
-    void StartNewSpin();
+    bool StartNewSpin();
     void SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback);
 };

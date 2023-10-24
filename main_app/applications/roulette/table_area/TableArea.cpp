@@ -29,7 +29,7 @@ constexpr float g_fYWinningDest = 970.0f;
 constexpr float g_fXLoosingDest = 1400.0f;
 constexpr float g_fYLoosingDest = -100.0f;
 
-constexpr unsigned int g_unDurationCollectEffectChips = 2000;
+constexpr unsigned int g_unDurationCollectEffectChips = 1000;
 
 const std::array<glm::vec2, GameDefs::eTotalTableElements> g_arrTableElements =
     {
@@ -245,7 +245,7 @@ bool TableArea::HandleEvent()
     {
         auto &chip = m_arrBetChips[i];
         /*If credit available, unlock chips*/
-        if (fAvalableCredit < chip.buttonChip.fValue)
+        if ((fAvalableCredit < chip.buttonChip.fValue) || m_bLockBetTable)
         {
             chip.buttonChip.colorButton.a = 0.3f;
             chip.buttonChip.bIsLocked = true;
@@ -519,8 +519,18 @@ bool TableArea::IsEndGameScenarioFinished()
             }
         }
     }
-    
+
     return true;
+}
+
+void TableArea::LockBetTable()
+{
+    m_bLockBetTable = true;
+}
+
+void TableArea::UnlockBetTable()
+{
+    m_bLockBetTable = false;
 }
 
 void TableArea::StartWinAnimations()

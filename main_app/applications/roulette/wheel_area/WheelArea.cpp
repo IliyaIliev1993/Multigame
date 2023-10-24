@@ -89,19 +89,19 @@ void WheelArea::Draw()
     m_Ball.Draw();
 }
 
-void WheelArea::StartNewSpin()
+bool WheelArea::StartNewSpin()
 {
     if (!MainApp::GetInstance().ptrPanel->CanStartNewGame() && 
         !RouletteMathLogic::GetInstance().IsAnyInGameElement())
     {
         LOG_ERROR("WheelArea - Add Credit to Start New Game !");
-        return;
+        return false;
     }
 
     if (m_Ball.GetState() == EBallStates::eRotateInTableOrbit ||
         m_Ball.GetState() == EBallStates::eGoingToSector)
     {
-        return;
+        return false;
     }
 
     /*Generate new results*/
@@ -109,6 +109,8 @@ void WheelArea::StartNewSpin()
 
     m_Ball.StartSpinning(RouletteMathLogic::GetInstance().GetWinningSector());
     m_Wheel.StartFastRotation();
+
+    return true;
 }
 
 void WheelArea::StartSlowRotation()

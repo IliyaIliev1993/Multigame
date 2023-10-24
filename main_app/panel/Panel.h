@@ -174,15 +174,14 @@ private:
     /*String presicion*/
     std::string ToStringPrecision(const float fValue, const int nPrecision = 2);
 
-
 public:
-
     bool Init();
     bool Deinit();
     bool HandleEvent();
     bool CanStartNewGame();
-    const float& GetCurrentBet();
-    const float& GetAvailableCredit();
+    const float &GetCurrentBet();
+    const float &GetAvailableCredit();
+    const EPanelInfoScenes& GetPanelInfoScene();
     void OnDraw();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     void StartWinCounting(float fWinToReach);

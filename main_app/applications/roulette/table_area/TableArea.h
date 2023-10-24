@@ -46,6 +46,9 @@ private:
     /*True if any chip selected*/
     bool m_bIsAnyChipSelected = false;
 
+    /*Lock bet buttons for be selected*/
+    bool m_bLockBetTable = false;
+
     /*Texture Table Bets*/
     std::shared_ptr<Texture> m_textureTableBets;
 
@@ -85,6 +88,8 @@ public:
     bool Deinit();
     bool HandleEvent();
     bool IsEndGameScenarioFinished();
+    void LockBetTable();
+    void UnlockBetTable();
     void StartWinAnimations();
     void ResetTableElements();
     void Draw();
