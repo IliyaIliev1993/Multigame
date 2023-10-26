@@ -89,7 +89,7 @@ void Chip::StartCollectEffect(const float fXDest, const float fYDest, unsigned i
 {
     eState = EChipState::eAnimatingEndGame;
 
-    std::function<void()>endCallback = [this]()
+    std::function<void()> endCallback = [this]()
     {
         eState = EChipState::eInactive;
     };
@@ -104,7 +104,7 @@ void Chip::StartFadeEffect(unsigned int unSpeedMultiplier)
 {
     eState = EChipState::eAnimatingEndGame;
 
-    std::function<void()>endCallback = [this]()
+    std::function<void()> endCallback = [this]()
     {
         eState = EChipState::eInactive;
     };
@@ -259,6 +259,19 @@ bool TableArea::HandleEvent()
         /*Press / Release Chip*/
         if (chip.buttonChip.IsReleased(nXMouse, nYMouse))
         {
+            /*Hover on invalid sector*/
+            if (m_eCurrentHoverTableElement == GameDefs::ETableElements::eTotalTableElements)
+            {
+                /*When released, reset position to the dragged chip from table*/
+                chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
+                chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
+
+                chip.bIsSelectedForBet = false;
+                m_bIsAnyChipSelected = false;
+                chip.eState = EChipState::eReadyForSelection;
+                break;
+            }
+
             chip.eState = EChipState::eReleasedToSector;
             chip.bIsSelectedForBet = false;
             m_bIsAnyChipSelected = false;
@@ -270,20 +283,19 @@ bool TableArea::HandleEvent()
             Chip chipToEmplace = chip;
             chipToEmplace.buttonChip.colorButton.a = 1.0f;
 
-            RouletteMathLogic::GetInstance().InsertInGameElement(m_eCurrentHoverTableElement, chipToEmplace.buttonChip.fValue);
-            MainApp::GetInstance().ptrPanel->RemoveCredit(chipToEmplace.buttonChip.fValue);
-            tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
-
             const auto &fXMiddleSector = tableSector.buttonSector.fX + (tableSector.buttonSector.textureButton->GetWidth() / 2);
             const auto &fYMiddleSector = tableSector.buttonSector.fY + (tableSector.buttonSector.textureButton->GetHeight() / 2);
 
-            float fXDest = fXMiddleSector - (GameDefs::g_fWidthBetChip / 2) + ((tableSector.vecOnSectorChips.size() - 1) * 5);
-            float fYDest = fYMiddleSector - (GameDefs::g_fHeightBetChip / 2) - ((tableSector.vecOnSectorChips.size() - 1) * 5);
+            float fXDest = fXMiddleSector - (GameDefs::g_fWidthBetChip / 2) + ((tableSector.vecOnSectorChips.size()) * 5);
+            float fYDest = fYMiddleSector - (GameDefs::g_fHeightBetChip / 2) - ((tableSector.vecOnSectorChips.size()) * 5);
 
             /*Actual release effect of the chip*/
-            auto &emplacedChip = tableSector.vecOnSectorChips[tableSector.vecOnSectorChips.size() - 1];
-            emplacedChip.buttonChip.fX = fXDest;
-            emplacedChip.buttonChip.fY = fYDest;
+            chipToEmplace.buttonChip.fX = fXDest;
+            chipToEmplace.buttonChip.fY = fYDest;
+
+            RouletteMathLogic::GetInstance().InsertInGameElement(m_eCurrentHoverTableElement, chipToEmplace.buttonChip.fValue);
+            MainApp::GetInstance().ptrPanel->RemoveCredit(chipToEmplace.buttonChip.fValue);
+            tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
 
             /*When released, reset position to the dragged chip from table*/
             chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
@@ -318,6 +330,7 @@ bool TableArea::HandleEvent()
     /*Table Elements*/
     if (m_bIsAnyChipSelected)
     {
+        m_eCurrentHoverTableElement = GameDefs::ETableElements::eTotalTableElements;
         for (unsigned int i = GameDefs::eZero; i < GameDefs::eTotalTableElements; ++i)
         {
             auto &element = m_arrTableElements[i];
@@ -509,11 +522,11 @@ bool TableArea::HandleEvent()
 
 bool TableArea::IsEndGameScenarioFinished()
 {
-    for(const auto& element : m_arrTableElements)
+    for (const auto &element : m_arrTableElements)
     {
-        for(const auto& chip : element.vecOnSectorChips)
+        for (const auto &chip : element.vecOnSectorChips)
         {
-            if(chip.eState != EChipState::eInactive)
+            if (chip.eState != EChipState::eInactive)
             {
                 return false;
             }
