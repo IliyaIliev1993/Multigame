@@ -69,6 +69,8 @@ file(GLOB SOURCES
     main_app/applications/kids_fantasy/reels_area/reels/*.cpp
     main_app/applications/kids_fantasy/status_line/*.h
     main_app/applications/kids_fantasy/status_line/*.cpp
+    main_app/applications/particle_builder/*.h
+    main_app/applications/particle_builder/*.cpp
     main_app/button/*.h
     main_app/button/*.cpp
     main_app/font/*.h
