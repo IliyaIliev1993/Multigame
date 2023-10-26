@@ -225,6 +225,12 @@ bool TableArea::Init()
         chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
     }
 
+    /*Reserve at every element at least 100 spaces, due to optimization*/
+    for (auto &element : m_arrTableElements)
+    {
+        element.vecOnSectorChips.reserve(100);
+    }
+
     LOG_INFO("Table Area - Initialized ...");
     return true;
 }
@@ -280,7 +286,11 @@ bool TableArea::HandleEvent()
             auto &tableSector = m_arrTableElements[m_eCurrentHoverTableElement];
 
             /*Create and emplace here, due to later use the vector reference object*/
-            Chip chipToEmplace = chip;
+            Chip chipToEmplace;
+            chipToEmplace.buttonChip.textureButton = chip.buttonChip.textureButton;
+            chipToEmplace.buttonChip.fValue = chip.buttonChip.fValue;
+            chipToEmplace.eState = EChipState::eReleasedToSector;
+            chipToEmplace.bIsSelectedForBet = false;
             chipToEmplace.buttonChip.colorButton.a = 1.0f;
 
             const auto &fXMiddleSector = tableSector.buttonSector.fX + (tableSector.buttonSector.textureButton->GetWidth() / 2);
@@ -298,6 +308,7 @@ bool TableArea::HandleEvent()
             tableSector.vecOnSectorChips.emplace_back(chipToEmplace);
 
             /*When released, reset position to the dragged chip from table*/
+            chip.eState = EChipState::eReleasedToSector;
             chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
             chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
 
@@ -594,6 +605,12 @@ void TableArea::ResetTableElements()
 {
     for (auto &element : m_arrTableElements)
     {
+        for(auto& chip : element.vecOnSectorChips)
+        {
+            chip.interpolatorAfterGameAnimX.Stop();
+            chip.interpolatorAfterGameAnimY.Stop();
+            chip.interpolatorFade.Stop();
+        }
         element.vecOnSectorChips.clear();
     }
 
