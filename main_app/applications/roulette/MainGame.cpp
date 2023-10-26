@@ -393,6 +393,5 @@ void Roulette::ResetGameElements()
     RequestState(ERouletteStates::eReadyForGame);
     m_tableArea.UnlockBetTable();
     m_statusLine.StopWinScenario();
-    m_statusLine.StartNormalScenario();
     LOG_INFO("Roulette - Stop Hold Timer, Reset Containers");
 }
