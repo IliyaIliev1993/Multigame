@@ -85,8 +85,8 @@ void ParticleSystem::StartCurrentParticle(Particle &particle)
     particle.bIsActive = true;
 
     /*Position*/
-    particle.vec2Position.x = m_vec2StartPosition.x + (Random::GetRandomNumber(-10.0f, 10.0f));
-    particle.vec2Position.y = m_vec2StartPosition.y + (Random::GetRandomNumber(-10.0f, 10.0f));
+    particle.vec2Position.x = m_vec2StartPosition.x;
+    particle.vec2Position.y = m_vec2StartPosition.y;
 
     /*Rotation*/
     particle.fRotation = 0.0f;

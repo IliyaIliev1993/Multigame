@@ -96,6 +96,8 @@ public:
     void StartEmitting();
     void StopEmitting();
     void DieImmediately();
+
+    /*Set Properties*/
     void SetPosition(glm::vec2 vec2Postion);
     void SetVelocity(glm::vec2 vec2Velocity);
     void SetVelocityVariation(glm::vec2 vec2VelocityVariation);
@@ -107,4 +109,9 @@ public:
     void SetSizeVariation(float fSizeVariation);
     void SetLifeTime(float fLifeTimeSteps);
     void SetDensity(unsigned int unDensity);
+
+    /*Get Properties*/
+    inline const glm::vec2 GetPosition(){ return m_vec2StartPosition; }
+    inline const glm::vec2 GetVelocity(){ return m_vec2Velocity; }
+    inline const glm::vec2 GetVelocityVariation(){ return m_vec2VelocityVariation; }
 };

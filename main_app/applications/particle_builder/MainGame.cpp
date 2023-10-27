@@ -106,19 +106,6 @@ void ParticleBuilder::DrawMainMenu()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
-    /*Main menu window flags*/
-    ImGuiWindowFlags mainMenuFlags = 0;
-    mainMenuFlags |= ImGuiWindowFlags_NoMove;
-    mainMenuFlags |= ImGuiWindowFlags_NoResize;
-    mainMenuFlags |= ImGuiWindowFlags_MenuBar;
-
-    /*Set position and size*/
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(520, 920), ImGuiCond_FirstUseEver);
-
-    /*Actual window*/
-    ImGui::Begin("Particle Builder", &m_bMainMenuFlag, mainMenuFlags);
-
     /*Actual Menu*/
     if (ImGui::BeginMenuBar())
     {
@@ -253,7 +240,7 @@ void ParticleBuilder::DrawMainMenu()
         if (ImGui::Button("OK", ImVec2(120, 0)))
         {
             auto itDelete = m_mapParticles.find(m_strIDParticleToBeDeleted);
-            if(itDelete != m_mapParticles.end())
+            if (itDelete != m_mapParticles.end())
             {
                 itDelete->second.DieImmediately();
                 m_mapParticles.erase(itDelete);
@@ -274,8 +261,83 @@ void ParticleBuilder::DrawMainMenu()
         }
         ImGui::EndPopup();
     }
+}
 
-    ImGui::End();
+void ParticleBuilder::DrawActiveListParticles()
+{
+    /*Traverse all objects to draw collapsing header*/
+    for (auto &particle : m_mapParticles)
+    {
+        auto &particleID = particle.first;
+        auto &particleObject = particle.second;
+
+        /*Collapsing Header*/
+        if (ImGui::CollapsingHeader(particleID.c_str()))
+        {
+            /*Drag with Mouse, Set Position*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Position:");
+            static bool bDragWithMouse = false;
+            static bool bOrientToMotion = false;
+            ImGui::Checkbox("Drag with Mouse", &bDragWithMouse);
+            ImGui::SameLine();
+            ImGui::Checkbox("Orient to Motion", &bOrientToMotion);
+
+            if (bDragWithMouse)
+            {
+                if (ImGui::IsMouseDragging(0))
+                {
+                    const float &fX = ImGui::GetMousePos().x;
+                    const float &fY = ImGui::GetMousePos().y;
+                    particleObject.SetPosition({fX, fY});
+                }
+            }
+
+            /*Velocity*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Velocity Variation:");
+
+            static float fXVelocityVariation = 1.0f;
+            static float fYVelocityVariation = 1.0f;
+            ImGui::SliderFloat("X Velocity Variation", &fXVelocityVariation, 0.0f, 20.0f, "ratio = %.2f");
+            ImGui::SliderFloat("Y Velocity Variation", &fYVelocityVariation, 0.0f, 20.0f, "ratio = %.2f");
+            if (ImGui::Button("Reset Variation"))
+            {
+                fXVelocityVariation = 1.0f;
+                fYVelocityVariation = 1.0f;
+            }
+
+            particleObject.SetVelocityVariation({fXVelocityVariation, fYVelocityVariation});
+
+            /*Velocity Variation (Wind)*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Velocity (Wind):");
+
+            ImGui::Button("Wind Force \n(Drag to Orient) \n(Click to Reset)", ImVec2(340.0f, 340.0f));
+            if (ImGui::IsItemActive())
+            {
+                ImGuiIO& io = ImGui::GetIO();
+
+                /*Draw a line between the button and the mouse cursor*/
+                ImDrawList *draw_list = ImGui::GetWindowDrawList();
+                draw_list->PushClipRectFullScreen();
+                draw_list->AddLine(io.MouseClickedPos[0], io.MousePos, ImGui::GetColorU32(ImGuiCol_PlotHistogram), 4.0f);
+                draw_list->PopClipRect();
+
+                ImVec2 value_raw = ImGui::GetMouseDragDelta(0, 0.0f);
+                value_raw.x= value_raw.x / 100.0f;
+                value_raw.y= value_raw.y / 100.0f;
+
+                ImGui::SameLine();
+                ImGui::Text("Force (%.1f, %.1f)", value_raw.x, value_raw.y);
+
+                particleObject.SetVelocity({value_raw.x, value_raw.y});
+            }
+            ImGui::Text("X: %.1f", particleObject.GetVelocity().x);
+            ImGui::SameLine();
+            ImGui::Text("Y: %.1f", particleObject.GetVelocity().y);
+        }
+    }
 }
 
 void ParticleBuilder::OnDraw()
@@ -288,8 +350,27 @@ void ParticleBuilder::OnDraw()
         particle.second.Draw();
     }
 
+    /*Main menu window flags*/
+    ImGuiWindowFlags mainMenuFlags = 0;
+    mainMenuFlags |= ImGuiWindowFlags_NoMove;
+    mainMenuFlags |= ImGuiWindowFlags_NoResize;
+    mainMenuFlags |= ImGuiWindowFlags_MenuBar;
+
+    /*Set position and size*/
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(520, 920), ImGuiCond_FirstUseEver);
+
+    /*Actual window*/
+    ImGui::Begin("Particle Builder", &m_bMainMenuFlag, mainMenuFlags);
+
     /*Draw Main Menu*/
     DrawMainMenu();
+
+    /*Draw List Particles*/
+    DrawActiveListParticles();
+
+    /*End Actual Window*/
+    ImGui::End();
 
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();

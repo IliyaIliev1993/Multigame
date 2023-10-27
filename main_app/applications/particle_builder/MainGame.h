@@ -40,6 +40,9 @@ private:
     /*Method draws main menu*/
     void DrawMainMenu();
 
+    /*Drawing collapsing list of particles*/
+    void DrawActiveListParticles();
+
 public:
     ParticleBuilder();
 
