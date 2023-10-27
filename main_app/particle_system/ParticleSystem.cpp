@@ -45,8 +45,10 @@ void ParticleSystem::Draw()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
 
-    for (auto &particle : m_vecParticles)
+    /*Traversing reverse, due to visibility issues when starting*/
+    for (auto it = m_vecParticles.rbegin(); it != m_vecParticles.rend(); ++it)
     {
+        auto& particle = *it;
         if (!particle.bIsActive)
         {
             continue;
@@ -83,7 +85,8 @@ void ParticleSystem::StartCurrentParticle(Particle &particle)
     particle.bIsActive = true;
 
     /*Position*/
-    particle.vec2Position = m_vec2StartPosition;
+    particle.vec2Position.x = m_vec2StartPosition.x + (Random::GetRandomNumber(-10.0f, 10.0f));
+    particle.vec2Position.y = m_vec2StartPosition.y + (Random::GetRandomNumber(-10.0f, 10.0f));
 
     /*Rotation*/
     particle.fRotation = 0.0f;
