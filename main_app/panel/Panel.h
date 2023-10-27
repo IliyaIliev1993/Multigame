@@ -64,6 +64,8 @@ private:
     /*Lock bet buttons, if needed*/
     bool m_bLockBetButtons = false;
 
+    bool m_bHideFields = false;
+
     /*String Credit Available*/
     std::string m_strCreditAvailable;
 
@@ -193,4 +195,6 @@ public:
     void ResetCredit();
     void LockBetButtons();
     void UnlockBetButtons();
+    void HideFields();
+    void ShowFields();
 };

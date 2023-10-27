@@ -655,7 +655,7 @@ const float &Panel::GetAvailableCredit()
     return m_fCreditAvailable;
 }
 
-const EPanelInfoScenes& Panel::GetPanelInfoScene()
+const EPanelInfoScenes &Panel::GetPanelInfoScene()
 {
     return m_eInfoScene;
 }
@@ -704,14 +704,17 @@ void Panel::OnDraw()
     rend->DrawPicture(m_textureVolumeButton, g_fXVolumeButton, g_fYVolumeButton);
     rend->DrawPictureRotated(m_volumeKnobButton.textureButton, m_volumeKnobButton.fX, m_volumeKnobButton.fY, m_fDegreesVolumeKnob);
 
-    /*Credit Button - Panel*/
-    DrawCreditPanelButton();
+    if (!m_bHideFields)
+    {
+        /*Credit Button - Panel*/
+        DrawCreditPanelButton();
 
-    /*Bet Panel*/
-    DrawBetPanel();
+        /*Bet Panel*/
+        DrawBetPanel();
 
-    /*Win Panel*/
-    DrawWinPanel();
+        /*Win Panel*/
+        DrawWinPanel();
+    }
 
     /*Info Calculator Window*/
     if (m_eInfoScene == EPanelInfoScenes::eCreditScene)
@@ -806,7 +809,7 @@ void Panel::OnTick(unsigned int unID, unsigned int unTimes)
         {
             MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
         }
-        
+
         m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
     }
 
@@ -933,4 +936,16 @@ void Panel::LockBetButtons()
 void Panel::UnlockBetButtons()
 {
     m_bLockBetButtons = false;
+}
+
+void Panel::HideFields()
+{
+    m_bHideFields = true;
+    LockBetButtons();
+}
+
+void Panel::ShowFields()
+{
+    m_bHideFields = false;
+    UnlockBetButtons();
 }
