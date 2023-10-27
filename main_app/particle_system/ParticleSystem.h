@@ -95,6 +95,7 @@ public:
     void Draw();
     void StartEmitting();
     void StopEmitting();
+    void DieImmediately();
     void SetPosition(glm::vec2 vec2Postion);
     void SetVelocity(glm::vec2 vec2Velocity);
     void SetVelocityVariation(glm::vec2 vec2VelocityVariation);

@@ -17,6 +17,7 @@ public:
     virtual ~TimerMgr() {};
     void StartTimer(ITimer* client, unsigned int unID, unsigned int unPeriod);
     void StopTimer(ITimer* client, unsigned int unID);
+    void EraseClient(ITimer* client);
 
     /*Method called every game cycle*/
     void Process();

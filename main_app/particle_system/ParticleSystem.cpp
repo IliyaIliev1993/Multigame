@@ -186,6 +186,14 @@ void ParticleSystem::StopEmitting()
     m_eState = EParticleStates::eEmittingStopped;
 }
 
+void ParticleSystem::DieImmediately()
+{
+    m_eState = EParticleStates::eInactive;
+    m_unParticleIndex = 0;
+    MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerUpdate);
+    MainApp::GetInstance().ptrTimer->EraseClient(this);
+}
+
 void ParticleSystem::SetPosition(glm::vec2 vec2Postion)
 {
     m_vec2StartPosition = vec2Postion;

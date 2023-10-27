@@ -25,11 +25,19 @@ bool ParticleBuilder::Init()
     auto textureStar = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_star.png");
     auto textureFlower = Texture::CreateTexture("../src/resources/particle_builder/particles/flower_particle.png");
     auto textureSmoke = Texture::CreateTexture("../src/resources/particle_builder/particles/smoke_particle.png");
+    auto textureBubble = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_bubble.png");
+    auto textureDust = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_dust.png");
+    auto textureFire = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_fire.png");
+    auto textureMultistar = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_multistar.png");
 
     m_vecTexturesParticle.emplace_back(textureSun);
     m_vecTexturesParticle.emplace_back(textureStar);
     m_vecTexturesParticle.emplace_back(textureFlower);
     m_vecTexturesParticle.emplace_back(textureSmoke);
+    m_vecTexturesParticle.emplace_back(textureBubble);
+    m_vecTexturesParticle.emplace_back(textureDust);
+    m_vecTexturesParticle.emplace_back(textureFire);
+    m_vecTexturesParticle.emplace_back(textureMultistar);
 
     for (auto &texture : m_vecTexturesParticle)
     {
@@ -116,11 +124,32 @@ void ParticleBuilder::DrawMainMenu()
     {
         if (ImGui::BeginMenu("File"))
         {
+            /*Create New*/
             if (ImGui::BeginMenu("Create New ..."))
             {
                 if (ImGui::MenuItem("Particle"))
                 {
                     m_bCreateNewParticle = true;
+                }
+
+                ImGui::EndMenu();
+            }
+
+            /*Delete Existing*/
+            if (ImGui::BeginMenu("Delete Existing ..."))
+            {
+                if (ImGui::BeginMenu("Particle"))
+                {
+                    for (auto &particle : m_mapParticles)
+                    {
+                        if (ImGui::MenuItem(particle.first.c_str()))
+                        {
+                            m_bDeleteExistingParticle = true;
+                            m_strIDParticleToBeDeleted = particle.first;
+                        }
+                    }
+
+                    ImGui::EndMenu();
                 }
 
                 ImGui::EndMenu();
@@ -170,7 +199,7 @@ void ParticleBuilder::DrawMainMenu()
             if (bButtonPressed)
             {
                 strName = arrText;
-                if (strName.empty())
+                if (strName.empty() || strName == "Particle_")
                 {
                     strName = "Particle_" + std::to_string(unCounterDefaultName);
                 }
@@ -179,7 +208,6 @@ void ParticleBuilder::DrawMainMenu()
                 particleObject.Init(texture, {rend->SCREEN_WIDTH / 2, rend->SCREEN_HEIGHT / 2});
 
                 m_mapParticles.insert(std::make_pair(strName, particleObject));
-
                 auto itLast = --m_mapParticles.end();
                 itLast->second.StartEmitting();
 
@@ -201,12 +229,49 @@ void ParticleBuilder::DrawMainMenu()
 
         ImGui::Separator();
 
-        if (ImGui::Button("Cancel", ImVec2(130, 0)))
+        if (ImGui::Button("Cancel", ImVec2(265, 0)))
         {
             m_bCreateNewParticle = false;
             ImGui::CloseCurrentPopup();
         }
 
+        ImGui::EndPopup();
+    }
+
+    /*Popup delete existing particle*/
+    if (m_bDeleteExistingParticle)
+    {
+        ImGui::OpenPopup("Delete Existing Particle");
+    }
+
+    if (ImGui::BeginPopupModal("Delete Existing Particle", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+
+        ImGui::Text("Are you sure to delete %s ?", m_strIDParticleToBeDeleted.c_str());
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            auto itDelete = m_mapParticles.find(m_strIDParticleToBeDeleted);
+            if(itDelete != m_mapParticles.end())
+            {
+                itDelete->second.DieImmediately();
+                m_mapParticles.erase(itDelete);
+            }
+
+            m_strIDParticleToBeDeleted.clear();
+            m_bDeleteExistingParticle = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SetItemDefaultFocus();
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+        {
+            m_bDeleteExistingParticle = false;
+            ImGui::CloseCurrentPopup();
+        }
         ImGui::EndPopup();
     }
 

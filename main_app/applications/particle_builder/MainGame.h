@@ -22,8 +22,14 @@ private:
     /*Create new particle flag modal popup*/
     bool m_bCreateNewParticle = false;
 
+    /*Delete existing particle flag modal popup*/
+    bool m_bDeleteExistingParticle = false;
+
     /*Max buff count*/
     const unsigned int m_unTextBuff = 64;
+
+    /*Particle to be deleted*/
+    std::string m_strIDParticleToBeDeleted  = "N/A";
 
     /*Container holding created particles*/
     std::map<std::string, ParticleSystem>m_mapParticles;
