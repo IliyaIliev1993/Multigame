@@ -48,7 +48,7 @@ void ParticleSystem::Draw()
     /*Traversing reverse, due to visibility issues when starting*/
     for (auto it = m_vecParticles.rbegin(); it != m_vecParticles.rend(); ++it)
     {
-        auto& particle = *it;
+        auto &particle = *it;
         if (!particle.bIsActive)
         {
             continue;
@@ -117,7 +117,15 @@ void ParticleSystem::ProcessCurrentParticle(Particle &particle)
     particle.vec2Position += particle.vec2Velocity * (Random::GetRandomNumber(1.0f, 1.5f));
 
     /*Set current rotation*/
-    particle.fRotation = 0.0f;
+    if (m_bOrientToMotion)
+    {
+        particle.fRotation = glm::degrees(atan2(particle.vec2Position.y - m_vec2StartPosition.y,
+                                                particle.vec2Position.x - m_vec2StartPosition.x));
+    }
+    else
+    {
+        particle.fRotation = 0.0f;
+    }
 
     /*Set current color*/
     particle.vec4Color = glm::lerp(m_vec4ColorEnd, m_vec4ColorStart, fLife);
@@ -220,6 +228,11 @@ void ParticleSystem::SetColorStart(glm::vec4 vec4ColorStart)
 void ParticleSystem::SetColorEnd(glm::vec4 vec4ColorEnd)
 {
     m_vec4ColorEnd = vec4ColorEnd;
+}
+
+void ParticleSystem::SetOrientToMotion(bool bOrientToMotion)
+{
+    m_bOrientToMotion = bOrientToMotion;
 }
 
 void ParticleSystem::SetRotation(float fRotation)

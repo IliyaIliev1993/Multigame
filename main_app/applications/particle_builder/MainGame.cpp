@@ -293,6 +293,8 @@ void ParticleBuilder::DrawActiveListParticles()
                 }
             }
 
+            particleObject.SetOrientToMotion(bOrientToMotion);
+
             /*Velocity*/
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Velocity Variation:");
@@ -316,7 +318,7 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Button("Wind Force \n(Drag to Orient) \n(Click to Reset)", ImVec2(340.0f, 340.0f));
             if (ImGui::IsItemActive())
             {
-                ImGuiIO& io = ImGui::GetIO();
+                ImGuiIO &io = ImGui::GetIO();
 
                 /*Draw a line between the button and the mouse cursor*/
                 ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -325,8 +327,8 @@ void ParticleBuilder::DrawActiveListParticles()
                 draw_list->PopClipRect();
 
                 ImVec2 value_raw = ImGui::GetMouseDragDelta(0, 0.0f);
-                value_raw.x= value_raw.x / 100.0f;
-                value_raw.y= value_raw.y / 100.0f;
+                value_raw.x = value_raw.x / 100.0f;
+                value_raw.y = value_raw.y / 100.0f;
 
                 ImGui::SameLine();
                 ImGui::Text("Force (%.1f, %.1f)", value_raw.x, value_raw.y);
@@ -336,6 +338,28 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Text("X: %.1f", particleObject.GetVelocity().x);
             ImGui::SameLine();
             ImGui::Text("Y: %.1f", particleObject.GetVelocity().y);
+
+            /*Color Start*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color Start:");
+
+            static ImVec4 vec4ColorStart = ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+            ImGui::ColorEdit4("Color Start",
+                              (float *)&vec4ColorStart,
+                              ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar);
+
+            particleObject.SetColorStart({vec4ColorStart.x, vec4ColorStart.y, vec4ColorStart.z, vec4ColorStart.w});
+
+            /*Color End*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color End:");
+
+            static ImVec4 vec4ColorEnd = ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+            ImGui::ColorEdit4("Color End",
+                              (float *)&vec4ColorEnd,
+                              ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar);
+
+            particleObject.SetColorEnd({vec4ColorEnd.x, vec4ColorEnd.y, vec4ColorEnd.z, vec4ColorEnd.w});
         }
     }
 }

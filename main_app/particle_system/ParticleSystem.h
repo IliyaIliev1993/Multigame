@@ -58,6 +58,9 @@ private:
     /*End color*/
     glm::vec4 m_vec4ColorEnd;
 
+    /*Orient to Motion - Rotates the particle in the going direction*/
+    bool m_bOrientToMotion = false;
+
     /*Start size*/
     float m_fRotation;
 
@@ -103,6 +106,7 @@ public:
     void SetVelocityVariation(glm::vec2 vec2VelocityVariation);
     void SetColorStart(glm::vec4 vec4ColorStart);
     void SetColorEnd(glm::vec4 vec4ColorEnd);
+    void SetOrientToMotion(bool bOrientToMotion);
     void SetRotation(float fRotation);
     void SetSizeBegin(float fSizeBegin);
     void SetSizeEnd(float fSizeEnd);
