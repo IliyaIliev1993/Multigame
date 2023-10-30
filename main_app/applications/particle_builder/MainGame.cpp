@@ -339,6 +339,20 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::SameLine();
             ImGui::Text("Y: %.1f", particleObject.GetVelocity().y);
 
+            /*Gravity*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Gravity:");
+
+            static float fGravity = 0.0f;
+            ImGui::DragFloat("Gravity", &fGravity, 0.01f, -100.0f, 100.0f);
+
+            if (ImGui::Button("Reset Gravity"))
+            {
+                fGravity = 0.0f;
+            }
+
+            particleObject.SetGravity(fGravity);
+
             /*Color Start*/
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color Start:");

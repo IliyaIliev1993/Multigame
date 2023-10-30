@@ -23,6 +23,7 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
     m_fRotationEnd = 0.0f;
     m_fSizeBegin = 1.0f;
     m_fSizeEnd = 1.0f;
+    m_fGravity = 0.0f;
     m_fLifeTime = 100.0f;
 
     for (auto &particle : m_vecParticles)
@@ -120,6 +121,9 @@ void ParticleSystem::ProcessCurrentParticle(Particle &particle)
 
     /*Set current position*/
     particle.vec2Position += particle.vec2Velocity * (Random::GetRandomNumber(1.0f, 1.5f));
+
+    /*Gravity*/
+    particle.vec2Position.y += glm::lerp(m_fGravity, 0.0f, fLife);
 
     /*Set current rotation*/
     if (m_bOrientToMotion)
@@ -278,6 +282,11 @@ void ParticleSystem::SetSizeBegin(float fSizeBegin)
 void ParticleSystem::SetSizeEnd(float fSizeEnd)
 {
     m_fSizeEnd = fSizeEnd;
+}
+
+void ParticleSystem::SetGravity(float fGravity)
+{
+    m_fGravity = fGravity;
 }
 
 void ParticleSystem::SetLifeTime(float fLifeTimeSteps)

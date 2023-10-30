@@ -77,6 +77,9 @@ private:
     /*End size*/
     float m_fSizeEnd;
 
+    /*Gravity*/
+    float m_fGravity;
+
     /*Life in steps*/
     float m_fLifeTime;
 
@@ -115,6 +118,7 @@ public:
     void SetRotationEnd(float fRotationEnd);
     void SetSizeBegin(float fSizeBegin);
     void SetSizeEnd(float fSizeEnd);
+    void SetGravity(float fGravity);
     void SetLifeTime(float fLifeTimeSteps);
     void SetDensity(unsigned int unDensity);
 
