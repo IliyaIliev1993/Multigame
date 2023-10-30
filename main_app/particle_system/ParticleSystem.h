@@ -10,6 +10,7 @@
 struct Particle
 {
     glm::vec2 vec2Position;
+    glm::vec2 vec2StartPosition;
     glm::vec2 vec2Velocity;
     glm::vec4 vec4Color;
     float fRotation = 0.0f;
@@ -45,6 +46,9 @@ private:
 
     /*Start position*/
     glm::vec2 m_vec2StartPosition;
+
+    /*Current Postion*/
+    glm::vec2 m_vec2CurrentPosition;
 
     /*Start velocity*/
     glm::vec2 m_vec2Velocity;
@@ -115,7 +119,7 @@ public:
     void SetDensity(unsigned int unDensity);
 
     /*Get Properties*/
-    inline const glm::vec2 GetPosition(){ return m_vec2StartPosition; }
+    inline const glm::vec2 GetPosition(){ return m_vec2CurrentPosition; }
     inline const glm::vec2 GetVelocity(){ return m_vec2Velocity; }
     inline const glm::vec2 GetVelocityVariation(){ return m_vec2VelocityVariation; }
 };

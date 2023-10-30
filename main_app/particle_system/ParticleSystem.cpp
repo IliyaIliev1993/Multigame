@@ -14,6 +14,7 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
     m_unParticleIndex = 0;
     m_unDensity = 200;
     m_vec2StartPosition = vec2Position;
+    m_vec2CurrentPosition = vec2Position;
     m_vec2Velocity = glm::vec2(0.0f, 0.0f);
     m_vec2VelocityVariation = glm::vec2(1.0f, 1.0f);
     m_vec4ColorStart = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -28,6 +29,7 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
     {
         particle.textureParticle = textureParticles;
         particle.vec2Position = vec2Position;
+        particle.vec2StartPosition = vec2Position;
     }
 
     return true;
@@ -70,10 +72,10 @@ void ParticleSystem::Draw()
         ProcessCurrentParticle(particle);
 
         rend->SetColor(particle.vec4Color.r, particle.vec4Color.g, particle.vec4Color.b, particle.vec4Color.a);
-        rend->DrawPictureScaled(particle.textureParticle,
+        rend->DrawPictureRotated(particle.textureParticle,
                                 particle.vec2Position.x - (particle.textureParticle->GetWidth() / 2.0f),
                                 particle.vec2Position.y - (particle.textureParticle->GetHeight() / 2.0f),
-                                particle.fSize);
+                                particle.fRotation);
     }
 
     rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -85,8 +87,9 @@ void ParticleSystem::StartCurrentParticle(Particle &particle)
     particle.bIsActive = true;
 
     /*Position*/
-    particle.vec2Position.x = m_vec2StartPosition.x;
-    particle.vec2Position.y = m_vec2StartPosition.y;
+    particle.vec2Position = m_vec2CurrentPosition;
+    particle.vec2StartPosition = m_vec2CurrentPosition;
+    m_vec2StartPosition = m_vec2CurrentPosition;
 
     /*Rotation*/
     particle.fRotation = 0.0f;
@@ -119,8 +122,8 @@ void ParticleSystem::ProcessCurrentParticle(Particle &particle)
     /*Set current rotation*/
     if (m_bOrientToMotion)
     {
-        particle.fRotation = glm::degrees(atan2(particle.vec2Position.y - m_vec2StartPosition.y,
-                                                particle.vec2Position.x - m_vec2StartPosition.x));
+        particle.fRotation = glm::degrees(atan2(particle.vec2Position.y - particle.vec2StartPosition.y,
+                                                particle.vec2Position.x - particle.vec2StartPosition.x));
     }
     else
     {
@@ -207,7 +210,7 @@ void ParticleSystem::DieImmediately()
 
 void ParticleSystem::SetPosition(glm::vec2 vec2Postion)
 {
-    m_vec2StartPosition = vec2Postion;
+    m_vec2CurrentPosition = vec2Postion;
 }
 
 void ParticleSystem::SetVelocity(glm::vec2 vec2Velocity)
