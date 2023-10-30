@@ -18,7 +18,7 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
     m_vec2Velocity = glm::vec2(0.0f, 0.0f);
     m_vec2VelocityVariation = glm::vec2(1.0f, 1.0f);
     m_vec4ColorStart = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    m_vec4ColorEnd = glm::vec4(1.0f, 1.0f, 1.0f, 0.3f);
+    m_vec4ColorEnd = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
     m_fRotationBegin = 0.0f;
     m_fRotationEnd = 0.0f;
     m_fSizeBegin = 1.0f;
@@ -291,6 +291,6 @@ void ParticleSystem::SetDensity(unsigned int unDensity)
     {
         return;
     }
-    
+
     m_unDensity = unDensity;
 }

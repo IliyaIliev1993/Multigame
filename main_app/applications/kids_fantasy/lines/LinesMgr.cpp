@@ -9,7 +9,7 @@ constexpr unsigned int g_unTimerProcessLine = 1;
 constexpr unsigned int g_unTimerProcessLinePeriod = 1;
 
 constexpr unsigned int g_unDurationProcessPointFastFirstLastSegment = 500;
-constexpr unsigned int g_unDurationProcessPointFast = 300;
+constexpr unsigned int g_unDurationProcessPointFast = 280;
 
 constexpr float g_fXBegin = -100;
 
@@ -33,7 +33,7 @@ bool LinesMgr::Init()
     m_particleHead.Init(m_textureParticle, {0.0f, 0.0f});
     m_particleHead.SetVelocityVariation({0.5f, 3.5f});
     m_particleHead.SetVelocity({-0.5f, 0.0f});
-    m_particleHead.SetLifeTime(50);
+    m_particleHead.SetLifeTime(20);
     m_particleHead.SetDensity(60);
     m_particleHead.SetColorStart({1.0f, 1.0f, 0.0f, 1.0f});
     m_particleHead.SetColorEnd({0.3f, 0.3f, 0.0f, 0.0f});

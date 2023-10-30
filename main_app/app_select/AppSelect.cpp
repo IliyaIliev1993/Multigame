@@ -78,6 +78,22 @@ bool AppSelect::Init()
 
     m_eState = EAppSelectStates::eReadyForSelection;
 
+    auto textureStar = Texture::CreateTexture("../src/resources/particle_sun.png");
+    if(!textureStar->Load())
+    {
+        LOG_ERROR("AppSelect - Unable to load texture particle !");
+        return false;
+    }
+
+    const auto &rend = MainApp::GetInstance().ptrRend;
+    m_particleStarEffect.Init(textureStar, {rend->SCREEN_WIDTH / 2, rend->SCREEN_HEIGHT / 2});
+    m_particleStarEffect.SetVelocityVariation({2.5f, 2.0f});
+    m_particleStarEffect.SetSizeBegin(0.001f);
+    m_particleStarEffect.SetSizeEnd(1.0f);
+    m_particleStarEffect.SetLifeTime(400.0f);
+    m_particleStarEffect.SetDensity(10.0f);
+    m_particleStarEffect.StartEmitting();
+
     LOG_INFO("AppSelect - Initialized ...");
     return true;
 }
@@ -169,6 +185,7 @@ bool AppSelect::RequestTransition(const EApps eAppToTransition)
         if (eAppToTransition == EApps::eKidsFantasy)
         {
             LOG_INFO("AppSelect - Requesting Transition to App Kids Fantasy");
+            OnExitFromAppSelect();
             m_eCurrentApp = EApps::eKidsFantasy;
             m_eState = EAppSelectStates::eBusyInGame;
             m_mapAppClients[m_eCurrentApp]->OnEnter();
@@ -180,6 +197,7 @@ bool AppSelect::RequestTransition(const EApps eAppToTransition)
         if (eAppToTransition == EApps::eParticleBuilder)
         {
             LOG_INFO("AppSelect - Requesting Transition to App Particle Builder");
+            OnExitFromAppSelect();
             m_eCurrentApp = EApps::eParticleBuilder;
             m_eState = EAppSelectStates::eBusyInGame;
             m_mapAppClients[m_eCurrentApp]->OnEnter();
@@ -190,6 +208,7 @@ bool AppSelect::RequestTransition(const EApps eAppToTransition)
         else if (eAppToTransition == EApps::eRoulette)
         {
             LOG_INFO("AppSelect - Requesting Transition to App Roulette");
+            OnExitFromAppSelect();
             m_eCurrentApp = EApps::eRoulette;
             m_eState = EAppSelectStates::eBusyInGame;
             m_mapAppClients[m_eCurrentApp]->OnEnter();
@@ -249,7 +268,12 @@ const EAppSelectStates &AppSelect::GetState()
 
 void AppSelect::OnEnterInAppSelect()
 {
-    LOG_INFO("AppSelect - Transition to App Select succeed");
+    LOG_INFO("AppSelect - Enter in App Select succeed");
+}
+
+void AppSelect::OnExitFromAppSelect()
+{
+    LOG_INFO("AppSelect - Exit from App Select succeed");
 }
 
 void AppSelect::RegisterClient(EApps eApp, IApp *client)
@@ -282,6 +306,9 @@ void AppSelect::OnDraw()
     {
         /*Draw Background*/
         rend->DrawPicture(m_textureBackground, 0.0f, 0.0f);
+
+        /*Draw Particle Star*/
+        m_particleStarEffect.Draw();
 
         /*Draw Button Kids Fantasy*/
         if (m_bIsKidsFantasyHovered)

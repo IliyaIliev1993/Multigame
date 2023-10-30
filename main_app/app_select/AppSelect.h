@@ -65,8 +65,14 @@ private:
     /*Roulette object;*/
     Roulette m_Roulette;
 
+    /*Particle System Star Effect*/
+    ParticleSystem m_particleStarEffect;
+
     /*Enter from App to AppSelect*/
     void OnEnterInAppSelect();
+
+    /*Exit from App Select, enter to App*/
+    void OnExitFromAppSelect();
 
 public:
     bool Init();
