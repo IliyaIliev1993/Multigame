@@ -83,7 +83,7 @@ public:
     void DrawText(std::string strText, std::shared_ptr<Font> ptrFont, float fX, float fY, float fScaleFactor = 1.0f);
     void DrawPicture(std::shared_ptr<Texture> ptrTexture, float fX, float fY);
     void DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fScaleFactor);
-    void DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees);
+    void DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fScaleFactor = 1.0f);
     void DrawPictureAroundPoint(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fVertPivotFromCenter);
 
 

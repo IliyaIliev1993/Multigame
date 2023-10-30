@@ -65,17 +65,17 @@ private:
     /*Orient to Motion - Rotates the particle in the going direction*/
     bool m_bOrientToMotion = false;
 
-    /*Start size*/
-    float m_fRotation;
+    /*Rotation Begin*/
+    float m_fRotationBegin;
+
+    /*Rotation End*/
+    float m_fRotationEnd;
 
     /*Start size*/
     float m_fSizeBegin;
 
     /*End size*/
     float m_fSizeEnd;
-
-    /*Size variation*/
-    float m_fSizeVariation;
 
     /*Life in steps*/
     float m_fLifeTime;
@@ -111,10 +111,10 @@ public:
     void SetColorStart(glm::vec4 vec4ColorStart);
     void SetColorEnd(glm::vec4 vec4ColorEnd);
     void SetOrientToMotion(bool bOrientToMotion);
-    void SetRotation(float fRotation);
+    void SetRotationBegin(float fRotationBegin);
+    void SetRotationEnd(float fRotationEnd);
     void SetSizeBegin(float fSizeBegin);
     void SetSizeEnd(float fSizeEnd);
-    void SetSizeVariation(float fSizeVariation);
     void SetLifeTime(float fLifeTimeSteps);
     void SetDensity(unsigned int unDensity);
 

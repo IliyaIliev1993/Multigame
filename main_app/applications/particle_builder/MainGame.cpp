@@ -301,8 +301,8 @@ void ParticleBuilder::DrawActiveListParticles()
 
             static float fXVelocityVariation = 1.0f;
             static float fYVelocityVariation = 1.0f;
-            ImGui::SliderFloat("X Velocity Variation", &fXVelocityVariation, 0.0f, 20.0f, "ratio = %.2f");
-            ImGui::SliderFloat("Y Velocity Variation", &fYVelocityVariation, 0.0f, 20.0f, "ratio = %.2f");
+            ImGui::DragFloat("X Velocity Variation", &fXVelocityVariation, 0.001f, 0.001f, 20.0f);
+            ImGui::DragFloat("Y Velocity Variation", &fYVelocityVariation, 0.001f, 0.001f, 20.0f);
             if (ImGui::Button("Reset Variation"))
             {
                 fXVelocityVariation = 1.0f;
@@ -354,12 +354,87 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color End:");
 
-            static ImVec4 vec4ColorEnd = ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+            static ImVec4 vec4ColorEnd = ImColor(1.0f, 1.0f, 1.0f, 0.0f);
             ImGui::ColorEdit4("Color End",
                               (float *)&vec4ColorEnd,
                               ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar);
 
             particleObject.SetColorEnd({vec4ColorEnd.x, vec4ColorEnd.y, vec4ColorEnd.z, vec4ColorEnd.w});
+
+            /*Rotation*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Rotation:");
+
+            static float fRotationBegin = 0.0f;
+            static float fRotationEnd = 0.0f;
+
+            ImGui::DragFloat("Rotation Begin", &fRotationBegin, 0.1f, -360.0f, 360.0f);
+            if (bOrientToMotion && ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Orient to Motion Active !");
+            }
+
+            ImGui::DragFloat("Rotation End", &fRotationEnd, 0.1f, -360.0f, 360.0f);
+            if (bOrientToMotion && ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Orient to Motion Active !");
+            }
+
+            if (ImGui::Button("Reset Rotation"))
+            {
+                fRotationBegin = 0.0f;
+                fRotationEnd = 0.0f;
+            }
+
+            particleObject.SetRotationBegin(fRotationBegin);
+            particleObject.SetRotationEnd(fRotationEnd);
+
+            /*Size*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Size:");
+
+            static float fSizeBegin = 1.0f;
+            static float fSizeEnd = 1.0f;
+
+            ImGui::DragFloat("Size Begin", &fSizeBegin, 0.001f, 0.001f, 10.0f);
+            ImGui::DragFloat("Size End", &fSizeEnd, 0.001f, 0.001f, 10.0f);
+
+            if (ImGui::Button("Reset Size"))
+            {
+                fSizeBegin = 1.0f;
+                fSizeEnd = 1.0f;
+            }
+
+            particleObject.SetSizeBegin(fSizeBegin);
+            particleObject.SetSizeEnd(fSizeEnd);
+
+            /*Lifetime in cycles*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Lifetime (cycles):");
+
+            static float fLifetime = 100.0f;
+            ImGui::DragFloat("Lifetime", &fLifetime, 1.0f, 1.00f, 1000.0f);
+
+            if (ImGui::Button("Reset Lifetime"))
+            {
+                fLifetime = 100.0f;
+            }
+
+            particleObject.SetLifeTime(fLifetime);
+
+            /*Density*/
+            ImGui::Separator();
+            ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Density (amount particles):");
+
+            static float fDensity = 200.0f;
+            ImGui::DragFloat("Density", &fDensity, 1.0f, 1.00f, 1000.0f);
+
+            if (ImGui::Button("Reset Density"))
+            {
+                fDensity = 200.0f;
+            }
+
+            particleObject.SetDensity(fDensity);
         }
     }
 }

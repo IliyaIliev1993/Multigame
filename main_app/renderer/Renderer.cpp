@@ -459,7 +459,7 @@ void Renderer::DrawPictureScaled(std::shared_ptr<Texture> ptrTexture, float fX, 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees)
+void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX, float fY, float fDegrees, float fScaleFactor)
 {
     /*Bind VertexArrayObject, texture and shader to use*/
     glBindVertexArray(VAO2D);
@@ -480,8 +480,8 @@ void Renderer::DrawPictureRotated(std::shared_ptr<Texture> ptrTexture, float fX,
     model = glm::translate(model, glm::vec3(-(float)ptrTexture->GetWidth() / 2,
                                             -(float)ptrTexture->GetHeight() / 2,
                                             0.0f));
-    model = glm::scale(model, glm::vec3((float)ptrTexture->GetWidth() / (float)SCREEN_WIDTH,
-                                        (float)ptrTexture->GetHeight() / (float)SCREEN_HEIGHT
+    model = glm::scale(model, glm::vec3(fScaleFactor * ((float)ptrTexture->GetWidth() / (float)SCREEN_WIDTH),
+                                        fScaleFactor * ((float)ptrTexture->GetHeight() / (float)SCREEN_HEIGHT)
                                         , 0.0f));
 
     /*Transformations of Projection, in this case is Orthographic projection*/

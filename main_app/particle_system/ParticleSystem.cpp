@@ -19,10 +19,10 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
     m_vec2VelocityVariation = glm::vec2(1.0f, 1.0f);
     m_vec4ColorStart = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     m_vec4ColorEnd = glm::vec4(1.0f, 1.0f, 1.0f, 0.3f);
-    m_fRotation = 0.0f;
+    m_fRotationBegin = 0.0f;
+    m_fRotationEnd = 0.0f;
     m_fSizeBegin = 1.0f;
     m_fSizeEnd = 1.0f;
-    m_fSizeVariation = 0.5f;
     m_fLifeTime = 100.0f;
 
     for (auto &particle : m_vecParticles)
@@ -30,6 +30,7 @@ bool ParticleSystem::Init(std::shared_ptr<Texture> textureParticles, glm::vec2 v
         particle.textureParticle = textureParticles;
         particle.vec2Position = vec2Position;
         particle.vec2StartPosition = vec2Position;
+        particle.fSize = m_fSizeBegin;
     }
 
     return true;
@@ -73,9 +74,10 @@ void ParticleSystem::Draw()
 
         rend->SetColor(particle.vec4Color.r, particle.vec4Color.g, particle.vec4Color.b, particle.vec4Color.a);
         rend->DrawPictureRotated(particle.textureParticle,
-                                particle.vec2Position.x - (particle.textureParticle->GetWidth() / 2.0f),
-                                particle.vec2Position.y - (particle.textureParticle->GetHeight() / 2.0f),
-                                particle.fRotation);
+                                 particle.vec2Position.x - (particle.fSize * (particle.textureParticle->GetWidth() / 2.0f)),
+                                 particle.vec2Position.y - (particle.fSize * (particle.textureParticle->GetHeight() / 2.0f)),
+                                 particle.fRotation,
+                                 particle.fSize);
     }
 
     rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -92,21 +94,21 @@ void ParticleSystem::StartCurrentParticle(Particle &particle)
     m_vec2StartPosition = m_vec2CurrentPosition;
 
     /*Rotation*/
-    particle.fRotation = 0.0f;
+    particle.fRotation = m_fRotationBegin;
 
     /*Velocity*/
     particle.vec2Velocity = m_vec2Velocity;
-    particle.vec2Velocity.x += m_vec2VelocityVariation.x * (Random::GetRandomNumber(-0.5f, 0.5f));
-    particle.vec2Velocity.y += m_vec2VelocityVariation.y * (Random::GetRandomNumber(-0.5f, 0.5f));
+    particle.vec2Velocity.x += m_vec2VelocityVariation.x * (Random::GetRandomNumber(-1.0f, 1.0f));
+    particle.vec2Velocity.y += m_vec2VelocityVariation.y * (Random::GetRandomNumber(-1.0f, 1.0f));
 
     /*Color*/
     particle.vec4Color = m_vec4ColorStart;
 
     /*Life*/
-    particle.fLifeRemaining = m_fLifeTime * Random::GetRandomNumber(1.0f, 2.0f);
+    particle.fLifeRemaining = m_fLifeTime * Random::GetRandomNumber(1.0f, 1.5f);
 
     /*Size*/
-    particle.fSize = m_fSizeBegin + m_fSizeVariation * (Random::GetRandomNumber(0.0f, 0.5f));
+    particle.fSize = m_fSizeBegin;
 }
 
 void ParticleSystem::ProcessCurrentParticle(Particle &particle)
@@ -127,14 +129,18 @@ void ParticleSystem::ProcessCurrentParticle(Particle &particle)
     }
     else
     {
-        particle.fRotation = 0.0f;
+        particle.fRotation = glm::lerp(m_fRotationEnd, m_fRotationBegin, fLife);
     }
 
     /*Set current color*/
     particle.vec4Color = glm::lerp(m_vec4ColorEnd, m_vec4ColorStart, fLife);
 
-    /*Set currenti size*/
+    /*Set current size*/
     particle.fSize = glm::lerp(m_fSizeEnd, m_fSizeBegin, fLife);
+    if (particle.fSize < 0.0f)
+    {
+        particle.fSize = 0.0f;
+    }
 }
 
 void ParticleSystem::StopCurrentParticle(Particle &particle)
@@ -147,15 +153,31 @@ void ParticleSystem::Update(unsigned int unTimes)
 {
 
     /*Start emitting*/
-    if (m_unParticleIndex < m_unDensity && m_eState == EParticleStates::eEmitting)
+    if (m_eState == EParticleStates::eEmitting)
     {
-        auto &particle = m_vecParticles[m_unParticleIndex];
-
-        StartCurrentParticle(particle);
-
-        if (++m_unParticleIndex >= m_unDensity)
+        /*Increment Density*/
+        if (m_unParticleIndex < m_unDensity)
         {
-            m_unParticleIndex = m_unDensity;
+            auto &particle = m_vecParticles[m_unParticleIndex];
+
+            StartCurrentParticle(particle);
+
+            if (++m_unParticleIndex >= m_unDensity)
+            {
+                m_unParticleIndex = m_unDensity;
+            }
+        }
+        /*Decrement Density*/
+        else if(m_unParticleIndex > m_unDensity)
+        {
+            auto &particle = m_vecParticles[m_unParticleIndex];
+
+            StopCurrentParticle(particle);
+
+            if (--m_unParticleIndex <= m_unDensity)
+            {
+                m_unParticleIndex = m_unDensity;
+            }
         }
     }
 
@@ -238,9 +260,14 @@ void ParticleSystem::SetOrientToMotion(bool bOrientToMotion)
     m_bOrientToMotion = bOrientToMotion;
 }
 
-void ParticleSystem::SetRotation(float fRotation)
+void ParticleSystem::SetRotationBegin(float fRotationBegin)
 {
-    m_fRotation = fRotation;
+    m_fRotationBegin = fRotationBegin;
+}
+
+void ParticleSystem::SetRotationEnd(float fRotationEnd)
+{
+    m_fRotationEnd = fRotationEnd;
 }
 
 void ParticleSystem::SetSizeBegin(float fSizeBegin)
@@ -253,11 +280,6 @@ void ParticleSystem::SetSizeEnd(float fSizeEnd)
     m_fSizeEnd = fSizeEnd;
 }
 
-void ParticleSystem::SetSizeVariation(float fSizeVariation)
-{
-    m_fSizeVariation = fSizeVariation;
-}
-
 void ParticleSystem::SetLifeTime(float fLifeTimeSteps)
 {
     m_fLifeTime = fLifeTimeSteps;
@@ -265,5 +287,10 @@ void ParticleSystem::SetLifeTime(float fLifeTimeSteps)
 
 void ParticleSystem::SetDensity(unsigned int unDensity)
 {
+    if (unDensity > m_unMaxParticlesAllowed)
+    {
+        return;
+    }
+    
     m_unDensity = unDensity;
 }
