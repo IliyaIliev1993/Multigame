@@ -29,6 +29,8 @@ bool ParticleBuilder::Init()
     auto textureDust = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_dust.png");
     auto textureFire = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_fire.png");
     auto textureMultistar = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_multistar.png");
+    auto textureFire1 = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_fire_1.png");
+    auto textureSmoke1 = Texture::CreateTexture("../src/resources/particle_builder/particles/particle_smoke_1.png");
 
     m_vecTexturesParticle.emplace_back(textureSun);
     m_vecTexturesParticle.emplace_back(textureStar);
@@ -38,6 +40,8 @@ bool ParticleBuilder::Init()
     m_vecTexturesParticle.emplace_back(textureDust);
     m_vecTexturesParticle.emplace_back(textureFire);
     m_vecTexturesParticle.emplace_back(textureMultistar);
+    m_vecTexturesParticle.emplace_back(textureFire1);
+    m_vecTexturesParticle.emplace_back(textureSmoke1);
 
     for (auto &texture : m_vecTexturesParticle)
     {
