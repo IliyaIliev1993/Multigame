@@ -493,7 +493,7 @@ bool Panel::HandleEvent()
     }
 
     /*Credit Button - Field*/
-    if (m_creditButton.IsPressAndHold(nXMouse, nYMouse))
+    if (!m_bHideFields && m_creditButton.IsPressAndHold(nXMouse, nYMouse))
     {
         m_creditButton.textureButton = m_textureCreditPanelPressed;
         return true;
