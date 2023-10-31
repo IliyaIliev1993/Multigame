@@ -160,6 +160,9 @@ private:
     /*Method Draw Credit in base of lenght of digits*/
     void DrawDynamicTextCredit();
 
+    /*Method Draw Win in base of lenght of digits*/
+    void DrawDynamicTextWin();
+
     /*Method Draw Credit Panel*/
     void DrawCreditPanelButton();
 

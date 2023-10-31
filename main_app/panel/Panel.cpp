@@ -51,7 +51,11 @@ constexpr float g_fYCreditPanelText = 1030.0f;
 
 constexpr float g_fXBetPanelTextOffset = 135.0f;
 
-constexpr float g_fXWinPanelTextOffset = 135.0f;
+constexpr float g_fXWinPanelTextOffsetTen = 135.0f;
+constexpr float g_fXWinPanelTextOffsetHundred = 125.0f;
+constexpr float g_fXWinPanelTextOffsetThousend = 110.0f;
+constexpr float g_fXWinPanelTextOffsetHundredThousend = 95.0f;
+constexpr float g_fXWinPanelTextOffsetMaxOffset = 85.0f;
 
 constexpr float g_fMaxTresholdVolumeDegrees = 335.0f;
 
@@ -690,7 +694,7 @@ void Panel::DrawWinPanel()
     m_particleStar.Draw();
 
     rend->DrawPicture(m_textureWinPanel, g_fXWinPanel, g_fYBetPanel);
-    rend->DrawText(m_strCurrentWin, m_fontVolume, g_fXWinPanel + g_fXWinPanelTextOffset, g_fYCreditPanelText, 1.5f);
+    DrawDynamicTextWin();
 }
 
 void Panel::OnDraw()
@@ -787,6 +791,39 @@ void Panel::DrawDynamicTextCredit()
         return;
     }
     rend->DrawText(m_strCreditAvailable, m_fontVolume, fXDynamic, g_fYCreditPanelText, 1.5f);
+}
+
+void Panel::DrawDynamicTextWin()
+{
+    const auto &rend = MainApp::GetInstance().ptrRend;
+    
+    const auto &nLenghtOfString = m_strCurrentWin.length();
+    float fXDynamic = g_fXWinPanelTextOffsetTen;
+    /*0 - 9*/
+    if (nLenghtOfString <= 4)
+    {
+        fXDynamic = g_fXWinPanelTextOffsetTen;
+    }
+    /*10 - 99*/
+    else if (nLenghtOfString == 5)
+    {
+        fXDynamic = g_fXWinPanelTextOffsetHundred;
+    }
+    /*100 - 999*/
+    else if (nLenghtOfString == 6)
+    {
+        fXDynamic = g_fXWinPanelTextOffsetThousend;
+    }
+    else if (nLenghtOfString == 7)
+    {
+        fXDynamic = g_fXWinPanelTextOffsetHundredThousend;
+    }
+    else if (nLenghtOfString >= 8)
+    {
+        fXDynamic = g_fXWinPanelTextOffsetMaxOffset;
+    }
+
+    rend->DrawText(m_strCurrentWin, m_fontVolume, g_fXWinPanel + fXDynamic, g_fYCreditPanelText, 1.5f);
 }
 
 void Panel::OnTick(unsigned int unID, unsigned int unTimes)
