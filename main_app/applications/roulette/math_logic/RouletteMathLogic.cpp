@@ -39,12 +39,26 @@ void RouletteMathLogic::FillContainerWinSectors()
     ResetValuesToWinSector();
 }
 
-void RouletteMathLogic::GenerateResults()
+void RouletteMathLogic::GenerateResults(int unDemoSectorNumber)
 {
     LOG_WARN("MathLogic - Roulette - Generated Results BEGIN ");
 
     /*Generate random number in range (0, 37]*/
-    const unsigned int unGeneratedNumber = GenerateRandomNumber(GameDefs::EWheelSectors::eSector32, GameDefs::EWheelSectors::eTotalWheelSectorsCount);
+    unsigned int unGeneratedNumber = GenerateRandomNumber(GameDefs::EWheelSectors::eSector32, GameDefs::EWheelSectors::eTotalWheelSectorsCount);
+
+    /*If there is number different from -1 (if there is demo sector number)*/
+    if (unDemoSectorNumber != -1)
+    {
+        if (unDemoSectorNumber < 0 || unDemoSectorNumber > 36)
+        {
+            LOG_CRITICAL("MathLogic - Roulette - Invalid Demo Sector Number : \"{0}\"", unDemoSectorNumber);
+        }
+        else
+        {
+            unGeneratedNumber = unDemoSectorNumber;
+            std::cout << "DEMO Sector Number : " << unGeneratedNumber << std::endl;
+        }
+    }
 
     /*Assing values*/
     AssingValuesToWinSector(unGeneratedNumber);
@@ -82,6 +96,9 @@ void RouletteMathLogic::CheckForWins()
     if (m_winSector.unWinningSectorNumber == 0)
     {
         std::cout << "IS ZERO !!!" << std::endl;
+        unsigned int unWinFromNumber = CheckSumSectorElements((GameDefs::ETableElements)m_winSector.unWinningSectorNumber);
+
+        m_unTotalWinFromGame += (unWinFromNumber * GameDefs::g_unCoeffNumber);
     }
     else
     {
@@ -630,9 +647,9 @@ const bool RouletteMathLogic::IsAnyInGameElement()
 {
     bool bIsAnyElement = false;
 
-    for(const auto& element : m_matrixInGameBetElements)
+    for (const auto &element : m_matrixInGameBetElements)
     {
-        if(!element.empty())
+        if (!element.empty())
         {
             bIsAnyElement = true;
             break;
@@ -661,7 +678,7 @@ const GameDefs::ETableElements &RouletteMathLogic::GetWinningSectorColor()
     return m_winSector.eColor;
 }
 
-const WinSector& RouletteMathLogic::GetCurrentWinningSector()
+const WinSector &RouletteMathLogic::GetCurrentWinningSector()
 {
     return m_winSector;
 }

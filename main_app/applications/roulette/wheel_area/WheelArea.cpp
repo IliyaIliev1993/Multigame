@@ -61,7 +61,7 @@ bool WheelArea::HandleEvent()
     const auto &nYMouse = ImGui::GetMousePos().y;
 
     /*If Credit available, start slow spinning*/
-    if (MainApp::GetInstance().ptrPanel->CanStartNewGame() || 
+    if (MainApp::GetInstance().ptrPanel->CanStartNewGame() ||
         RouletteMathLogic::GetInstance().IsAnyInGameElement())
     {
         if (m_Wheel.GetState() == EWheelStates::eStopped)
@@ -89,9 +89,9 @@ void WheelArea::Draw()
     m_Ball.Draw();
 }
 
-bool WheelArea::StartNewSpin()
+bool WheelArea::StartNewSpin(int nDemoSectorNumber)
 {
-    if (!MainApp::GetInstance().ptrPanel->CanStartNewGame() && 
+    if (!MainApp::GetInstance().ptrPanel->CanStartNewGame() &&
         !RouletteMathLogic::GetInstance().IsAnyInGameElement())
     {
         LOG_ERROR("WheelArea - Add Credit to Start New Game !");
@@ -105,7 +105,7 @@ bool WheelArea::StartNewSpin()
     }
 
     /*Generate new results*/
-    RouletteMathLogic::GetInstance().GenerateResults();
+    RouletteMathLogic::GetInstance().GenerateResults(nDemoSectorNumber);
 
     m_Ball.StartSpinning(RouletteMathLogic::GetInstance().GetWinningSector());
     m_Wheel.StartFastRotation();
@@ -140,8 +140,8 @@ void WheelArea::OnTick(unsigned int unID, unsigned int unTimes)
 void WheelArea::AfterSpinningStopped()
 {
     m_Wheel.DecrementToSlowRotation();
-    if(m_afterSpinningStoppedCallback)
-    {   
+    if (m_afterSpinningStoppedCallback)
+    {
         m_afterSpinningStoppedCallback();
     }
 }
@@ -152,7 +152,7 @@ void WheelArea::AfterWheelStopped()
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerLifeRoulette);
 }
 
-void WheelArea::SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback)
+void WheelArea::SetAfterSpinningStoppedCallback(std::function<void()> &afterSpinningStoppedCallback)
 {
     m_afterSpinningStoppedCallback = afterSpinningStoppedCallback;
 }

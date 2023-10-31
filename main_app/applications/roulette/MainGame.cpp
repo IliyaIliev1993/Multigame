@@ -289,9 +289,9 @@ void Roulette::RequestState(ERouletteStates eStateToRequest)
     }
 }
 
-void Roulette::StartNewGame()
+void Roulette::StartNewGame(int unDemoSectorNumber)
 {
-    if (m_wheelArea.StartNewSpin())
+    if (m_wheelArea.StartNewSpin(unDemoSectorNumber))
     {
         RequestState(ERouletteStates::eSpinning);
         m_tableArea.LockBetTable();
@@ -355,8 +355,34 @@ void Roulette::OnDraw()
     /*Wheel Area Draw*/
     m_wheelArea.Draw();
 
+    /*Draw Demo Menu*/
+    DrawDemoMenu();
+
     /*Draw Panel*/
     MainApp::GetInstance().ptrPanel->OnDraw();
+}
+
+void Roulette::DrawDemoMenu()
+{
+    ImGui::Begin("Roulette Demo", &m_bDemoMenu);
+
+    for (unsigned int i = GameDefs::eSector32; i <= GameDefs::eSector0; ++i)
+    {
+        if (i % 3)
+        {
+            ImGui::SameLine();
+        }
+
+        std::string strButtonName = "Sector Number: " + std::to_string(GameDefs::g_arrSectorNumbers[i]);
+        if (ImGui::Button(strButtonName.c_str()))
+        {
+            StartNewGame(i);
+            ImGui::SetWindowCollapsed(true);
+            break;
+        }
+    }
+
+    ImGui::End();
 }
 
 void Roulette::OnTick(unsigned int unID, unsigned int unTimes)

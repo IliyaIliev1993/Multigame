@@ -6,6 +6,7 @@
 class WheelArea : public ITimer
 {
 private:
+
     /*Ball Object*/
     Ball m_Ball;
 
@@ -30,6 +31,6 @@ public:
     void StopRotation();
     void OnTick(unsigned int unID, unsigned int unTimes) final;
     /*Method called when need to start new spin*/
-    bool StartNewSpin();
+    bool StartNewSpin(int nDemoSectorNumber = -1);
     void SetAfterSpinningStoppedCallback(std::function<void()>& afterSpinningStoppedCallback);
 };

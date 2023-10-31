@@ -59,7 +59,7 @@ public:
     bool Deinit();
 
     /*Method that generates results in the current game*/
-    void GenerateResults();
+    void GenerateResults(int unDemoSectorNumber = -1);
 
     /*Method that check for wins after generates results is called*/
     void CheckForWins();

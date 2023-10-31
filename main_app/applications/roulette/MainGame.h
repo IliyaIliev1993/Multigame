@@ -26,6 +26,9 @@ class Roulette : public IApp, public ITimer
 private:
     std::string m_strAppName = "Roulette";
 
+    /*Demo Menu Flag*/
+    bool m_bDemoMenu = false;
+
     /*Roulette States*/
     ERouletteStates m_eState = ERouletteStates::eInactive;
 
@@ -45,13 +48,16 @@ private:
     void RequestState(ERouletteStates eStateToRequest);
 
     /*Method called when need to start new game*/
-    void StartNewGame();
+    void StartNewGame(int unDemoSectorNumber = -1);
 
     /*Method called when after spinning stopped has beed invoked*/
     void AfterSpinningStopped();
 
     /*When game finished, reset to start new game*/
     void ResetGameElements();
+
+    /*Draw Demo Menu*/
+    void DrawDemoMenu();
 
 public:
     Roulette();
