@@ -121,6 +121,7 @@ bool TableArea::Init()
     m_textureNumbersPattern = Texture::CreateTexture("../src/resources/roulette/table_bets/numbers_pattern.png");
     m_textureTwelvePattern = Texture::CreateTexture("../src/resources/roulette/table_bets/twelve_pattern.png");
     m_textureDownerPattern = Texture::CreateTexture("../src/resources/roulette/table_bets/down_pattern.png");
+    m_textureChipShadow = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_shadow.png");
 
     m_arrBetChips.at(GameDefs::eChip_1).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_1.png");
     m_arrBetChips.at(GameDefs::eChip_5).buttonChip.textureButton = Texture::CreateTexture("../src/resources/roulette/table_bets/chip_5.png");
@@ -168,7 +169,13 @@ bool TableArea::Init()
 
     if (!m_textureDownerPattern->Load())
     {
-        LOG_ERROR("TableArea - Unable to load texture dpwn pattern !");
+        LOG_ERROR("TableArea - Unable to load texture down pattern !");
+        return false;
+    }
+
+    if (!m_textureChipShadow->Load())
+    {
+        LOG_ERROR("TableArea - Unable to load texture chip shadow!");
         return false;
     }
 
@@ -605,7 +612,7 @@ void TableArea::ResetTableElements()
 {
     for (auto &element : m_arrTableElements)
     {
-        for(auto& chip : element.vecOnSectorChips)
+        for (auto &chip : element.vecOnSectorChips)
         {
             chip.interpolatorAfterGameAnimX.Stop();
             chip.interpolatorAfterGameAnimY.Stop();
@@ -632,14 +639,24 @@ void TableArea::Draw()
     /*Draw On Table Game Chips*/
     for (auto &sectorElement : m_arrTableElements)
     {
+        unsigned int unChipCount = 1;
+        const float fOffsetShadow = 8.0f;
+        const float fDegreesShadow = -40.0f;
         for (auto &chip : sectorElement.vecOnSectorChips)
         {
+            float fAlphShadow = chip.buttonChip.colorButton.a  - (0.6 + (0.04f * unChipCount));
+            rend->SetColor(1.0f,
+                           1.0f,
+                           1.0f,
+                           fAlphShadow);
+            rend->DrawPictureRotated(m_textureChipShadow, chip.buttonChip.fX - (fOffsetShadow * unChipCount), chip.buttonChip.fY - (fOffsetShadow * unChipCount), fDegreesShadow);
             rend->SetColor(chip.buttonChip.colorButton.r,
                            chip.buttonChip.colorButton.g,
                            chip.buttonChip.colorButton.b,
                            chip.buttonChip.colorButton.a);
             rend->DrawPicture(chip.buttonChip.textureButton, chip.buttonChip.fX, chip.buttonChip.fY);
             rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+            ++unChipCount;
         }
     }
 

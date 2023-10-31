@@ -91,7 +91,7 @@ bool AppSelect::Init()
     m_particleStarEffect.SetSizeBegin(0.001f);
     m_particleStarEffect.SetSizeEnd(1.0f);
     m_particleStarEffect.SetLifeTime(400.0f);
-    m_particleStarEffect.SetDensity(10.0f);
+    m_particleStarEffect.SetDensity(30.0f);
     m_particleStarEffect.StartEmitting();
 
     LOG_INFO("AppSelect - Initialized ...");

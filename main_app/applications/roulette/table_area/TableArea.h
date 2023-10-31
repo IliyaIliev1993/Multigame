@@ -67,6 +67,9 @@ private:
     /*Texture Downer Pattern*/
     std::shared_ptr<Texture> m_textureDownerPattern;
 
+    /*Texture Chip Shadow*/
+    std::shared_ptr<Texture> m_textureChipShadow;
+
     /*Container holding textures buttons of bet chips*/
     std::array<Chip, GameDefs::eTotalCountChips> m_arrBetChips;
 

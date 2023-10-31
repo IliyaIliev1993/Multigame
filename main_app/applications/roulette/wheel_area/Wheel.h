@@ -34,6 +34,9 @@ private:
     /*Texture Wheel*/
     std::shared_ptr<Texture> m_textureWheel;
 
+    /*Texture Wheel Shadow*/
+    std::shared_ptr<Texture> m_textureWheelShadow;
+
     /*Interpolator acceleration*/
     Interpolator m_interpolatorAcceleration;
 

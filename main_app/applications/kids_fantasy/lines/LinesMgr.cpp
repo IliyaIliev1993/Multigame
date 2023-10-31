@@ -24,11 +24,11 @@ bool LinesMgr::Init()
     }
 
     m_particleLine.Init(m_textureParticle, {0.0f, 0.0f});
-    m_particleLine.SetVelocityVariation({0.3f, 0.20f});
-    m_particleLine.SetLifeTime(175);
+    m_particleLine.SetVelocityVariation({0.15f, 0.07f});
+    m_particleLine.SetLifeTime(200);
     m_particleLine.SetDensity(300);
     m_particleLine.SetColorStart({1.0f, 1.0f, 0.8f, 1.0f});
-    m_particleLine.SetColorEnd({0.8f, 1.0f, 0.0f, 0.3f});
+    m_particleLine.SetColorEnd({0.9f, 1.0f, 0.0f, 0.3f});
 
     m_particleHead.Init(m_textureParticle, {0.0f, 0.0f});
     m_particleHead.SetVelocityVariation({0.5f, 3.5f});

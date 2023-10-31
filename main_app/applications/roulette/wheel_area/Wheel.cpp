@@ -11,6 +11,9 @@ constexpr float g_fYWheelTable = 0.0f;
 constexpr float g_fXWheelOffset = 134.0f;
 constexpr float g_fYWheelOffset = 134.0f;
 
+constexpr float g_fXShadowOffset = 8.0f;
+constexpr float g_fYShadowOffset = 15.0f;
+
 constexpr unsigned int g_unAccelerationDecrementSpeedDuration = 3000;
 
 constexpr unsigned int g_unTimerRotationWheel = 1;
@@ -20,6 +23,7 @@ bool Wheel::Init()
 {
     m_textureWheelTable = Texture::CreateTexture("../src/resources/roulette/wheel/table_wheel.png");
     m_textureWheel = Texture::CreateTexture("../src/resources/roulette/wheel/wheel.png");
+    m_textureWheelShadow = Texture::CreateTexture("../src/resources/roulette/wheel/wheel_shadow.png");
 
     if (!m_textureWheelTable->Load())
     {
@@ -30,6 +34,12 @@ bool Wheel::Init()
     if (!m_textureWheel->Load())
     {
         LOG_ERROR("Wheel - Unable to load texture wheel !");
+        return false;
+    }
+
+    if (!m_textureWheelShadow->Load())
+    {
+        LOG_ERROR("Wheel - Unable to load texture wheel shadow !");
         return false;
     }
 
@@ -48,6 +58,9 @@ void Wheel::Draw()
     const auto &rend = MainApp::GetInstance().ptrRend;
 
     rend->DrawPicture(m_textureWheelTable, g_fXWheelTable, g_fYWheelTable);
+    rend->SetColor(1.0f, 1.0f, 1.0f, 0.4f);
+    rend->DrawPictureRotated(m_textureWheelShadow, g_fXWheelTable + g_fXWheelOffset - g_fXShadowOffset, g_fYWheelTable + g_fYWheelOffset - g_fYShadowOffset, m_fDegreesWheel);
+    rend->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     rend->DrawPictureRotated(m_textureWheel, g_fXWheelTable + g_fXWheelOffset, g_fYWheelTable + g_fYWheelOffset, m_fDegreesWheel);
 }
 
