@@ -282,7 +282,7 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Position:");
             static bool bDragWithMouse = false;
-            static bool bOrientToMotion = false;
+            bool bOrientToMotion = particleObject.GetOrientToMotion();
             ImGui::Checkbox("Drag with Mouse", &bDragWithMouse);
             ImGui::SameLine();
             ImGui::Checkbox("Orient to Motion", &bOrientToMotion);
@@ -303,8 +303,8 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Velocity Variation:");
 
-            static float fXVelocityVariation = 1.0f;
-            static float fYVelocityVariation = 1.0f;
+            float fXVelocityVariation = particleObject.GetVelocityVariation().x;
+            float fYVelocityVariation = particleObject.GetVelocityVariation().y;
             ImGui::DragFloat("X Velocity Variation", &fXVelocityVariation, 0.001f, 0.001f, 20.0f);
             ImGui::DragFloat("Y Velocity Variation", &fYVelocityVariation, 0.001f, 0.001f, 20.0f);
             if (ImGui::Button("Reset Variation"))
@@ -347,7 +347,7 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Gravity:");
 
-            static float fGravity = 0.0f;
+            float fGravity = particleObject.GetGravity();
             ImGui::DragFloat("Gravity", &fGravity, 0.01f, -100.0f, 100.0f);
 
             if (ImGui::Button("Reset Gravity"))
@@ -361,7 +361,10 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color Start:");
 
-            static ImVec4 vec4ColorStart = ImColor(1.0f, 1.0f, 1.0f, 1.0f);
+            ImVec4 vec4ColorStart = ImColor(particleObject.GetColorStart().r,
+                                            particleObject.GetColorStart().g,
+                                            particleObject.GetColorStart().b,
+                                            particleObject.GetColorStart().a);
             ImGui::ColorEdit4("Color Start",
                               (float *)&vec4ColorStart,
                               ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar);
@@ -372,7 +375,10 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Color End:");
 
-            static ImVec4 vec4ColorEnd = ImColor(1.0f, 1.0f, 1.0f, 0.0f);
+            ImVec4 vec4ColorEnd = ImColor(particleObject.GetColorEnd().r,
+                                          particleObject.GetColorEnd().g,
+                                          particleObject.GetColorEnd().b,
+                                          particleObject.GetColorEnd().a);
             ImGui::ColorEdit4("Color End",
                               (float *)&vec4ColorEnd,
                               ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_AlphaBar);
@@ -383,8 +389,8 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Rotation:");
 
-            static float fRotationBegin = 0.0f;
-            static float fRotationEnd = 0.0f;
+            float fRotationBegin = particleObject.GetRotationBegin();
+            float fRotationEnd = particleObject.GetRotationEnd();
 
             ImGui::DragFloat("Rotation Begin", &fRotationBegin, 0.1f, -360.0f, 360.0f);
             if (bOrientToMotion && ImGui::IsItemHovered())
@@ -411,8 +417,8 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Size:");
 
-            static float fSizeBegin = 1.0f;
-            static float fSizeEnd = 1.0f;
+            float fSizeBegin = particleObject.GetSizeBegin();
+            float fSizeEnd = particleObject.GetSizeEnd();
 
             ImGui::DragFloat("Size Begin", &fSizeBegin, 0.001f, 0.001f, 10.0f);
             ImGui::DragFloat("Size End", &fSizeEnd, 0.001f, 0.001f, 10.0f);
@@ -430,7 +436,7 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Lifetime (cycles):");
 
-            static float fLifetime = 100.0f;
+            float fLifetime = particleObject.GetLifeTime();
             ImGui::DragFloat("Lifetime", &fLifetime, 1.0f, 1.00f, 1000.0f);
 
             if (ImGui::Button("Reset Lifetime"))
@@ -444,7 +450,7 @@ void ParticleBuilder::DrawActiveListParticles()
             ImGui::Separator();
             ImGui::TextColored({1.0f, 1.0f, 1.0f, 0.3f}, "Density (amount particles):");
 
-            static float fDensity = 200.0f;
+            float fDensity = particleObject.GetDensity();
             ImGui::DragFloat("Density", &fDensity, 1.0f, 1.00f, 1000.0f);
 
             if (ImGui::Button("Reset Density"))

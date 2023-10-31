@@ -123,7 +123,17 @@ public:
     void SetDensity(unsigned int unDensity);
 
     /*Get Properties*/
-    inline const glm::vec2 GetPosition(){ return m_vec2CurrentPosition; }
-    inline const glm::vec2 GetVelocity(){ return m_vec2Velocity; }
-    inline const glm::vec2 GetVelocityVariation(){ return m_vec2VelocityVariation; }
+    inline const glm::vec2& GetPosition(){ return m_vec2CurrentPosition; }
+    inline const glm::vec2& GetVelocity(){ return m_vec2Velocity; }
+    inline const glm::vec2& GetVelocityVariation(){ return m_vec2VelocityVariation; }
+    inline const glm::vec4& GetColorStart(){ return m_vec4ColorStart; }
+    inline const glm::vec4& GetColorEnd(){ return m_vec4ColorEnd; }
+    inline const bool& GetOrientToMotion(){ return m_bOrientToMotion; }
+    inline const float& GetRotationBegin(){ return m_fRotationBegin; }
+    inline const float& GetRotationEnd(){ return m_fRotationEnd; }
+    inline const float& GetSizeBegin(){ return m_fSizeBegin; }
+    inline const float& GetSizeEnd(){ return m_fSizeEnd; }
+    inline const float& GetGravity(){ return m_fGravity; }
+    inline const float& GetLifeTime(){ return m_fLifeTime; }
+    inline const unsigned int& GetDensity(){ return m_unDensity; }
 };
