@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <main_app/panel/Panel.h>
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
@@ -198,12 +199,21 @@ void ReelsArea::StartAnimationsIfAny()
         return;
     }
 
+    bool bSoundStarted = false;
     for (const auto &win : containerWins)
     {
         for (unsigned int i = 0; i < win.unFigureCount; ++i)
         {
             const auto &unFigurePositionToStartAnim = GameDefs::g_arrLines.at(win.eLine).at(i);
             m_arrReels.at(i).StartAnimation(unFigurePositionToStartAnim, win.eGameFigure);
+
+            /*If first figure, play sound*/
+            if(!bSoundStarted && i == 0)
+            {
+                std::string strFigureSound = "../src/resources/kids_fantasy/sounds/fig_" + std::to_string(win.eGameFigure + 1) + "_sound.wav";
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound(strFigureSound);
+                bSoundStarted = true;
+            }
         }
     }
 }

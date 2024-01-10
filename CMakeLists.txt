@@ -45,6 +45,8 @@ file(GLOB SOURCES
     main_app/anim_player/*.cpp
     main_app/app_select/*.h
     main_app/app_select/*.cpp
+    main_app/audio_player/*.h
+    main_app/audio_player/*.cpp
     main_app/applications/*.h
     main_app/applications/*.cpp
     main_app/applications/roulette/*.h
@@ -106,6 +108,7 @@ set(INTERNAL_DIRS
     ${MULTIGAME_ROOT_DIR}/main_app
     ${MULTIGAME_ROOT_DIR}/main_app/anim_player
     ${MULTIGAME_ROOT_DIR}/main_app/app_select
+    ${MULTIGAME_ROOT_DIR}/main_app/audio_player
     ${MULTIGAME_ROOT_DIR}/main_app/applications
     ${MULTIGAME_ROOT_DIR}/main_app/applications/kids_fantasy
     ${MULTIGAME_ROOT_DIR}/main_app/applications/roulette
@@ -123,6 +126,7 @@ set(LIBS_INCLUDE_DIRS
     ${LIBS}/glad
     ${LIBS}/glm
     ${LIBS}/imgui
+    ${LIBS}/irrKlang/include
     ${LIBS}/KHR
     ${LIBS}/rapidjson
     ${LIBS}/shader
@@ -144,6 +148,11 @@ add_library(Glad ${LIBS}/glad/glad.h ${LIBS}/glad.c)
 file(GLOB IMGUI_SOURCES ${LIBS}/imgui/*.h ${LIBS}/imgui/*.cpp)
 add_library(ImGui ${IMGUI_SOURCES})
 
+#add library irrKlang
+add_library(IrrKlang SHARED IMPORTED)
+set_property(TARGET IrrKlang PROPERTY IMPORTED_LOCATION ${LIBS}/irrKlang/bin/linux-gcc-64/libIrrKlang.so)
+
+
 #link all libraries to executable
-target_link_libraries(${PROJECT_NAME} glfw GL Glad freetype ImGui X11 pthread Xrandr
+target_link_libraries(${PROJECT_NAME} glfw GL Glad freetype ImGui IrrKlang X11 pthread Xrandr
                         Xi ${CMAKE_DL_LIBS} stdc++fs)

@@ -6,6 +6,7 @@
 #include <imgui/imgui_impl_glfw_gl3.h>
 #include <debug/Logger.h>
 #include <app_select/AppSelect.h>
+#include <audio_player/AudioPlayer.h>
 #include <renderer/Renderer.h>
 #include <timer/TimerMgr.h>
 #include <panel/Panel.h>
@@ -14,6 +15,7 @@
 MainApp::MainApp() : ptrLogger(new Debug::Logger),
                      ptrRend(new Renderer),
                      ptrAppSelect(new AppSelect),
+                     ptrAudioPlayer(new AudioPlayer),
                      ptrTimer(new TimerMgr),
                      ptrPanel(new Panel)
 {
@@ -45,6 +47,12 @@ bool MainApp::Init()
     ptrRend->CreateAndFill3DBuffers();
 
     InitImgui();
+
+    if(!ptrAudioPlayer->Init())
+    {
+        LOG_ERROR("MainApp - Failed to init AudioPlayer");
+        return false;
+    }
 
     if(!ptrAppSelect->Init())
     {
@@ -119,6 +127,7 @@ bool MainApp::Deinit()
     ptrAppSelect->Deinit();
     ptrPanel->Deinit();
     ptrRend->Deinit();
+    ptrAudioPlayer->Deinit();
 
     LOG_WARN("MainApp - Deinitialzied ...");
     return true;

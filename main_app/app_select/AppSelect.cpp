@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <debug/Logger.h>
 
 constexpr float g_fXKidsFantasyButton = 0.0f;
@@ -131,6 +132,7 @@ bool AppSelect::HandleEvent()
             if (m_buttonKidsFantasy.IsPressed(nXMouse, nYMouse))
             {
                 RequestTransition(EApps::eKidsFantasy);
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/enter.wav");
                 return true;
             }
 
@@ -157,6 +159,7 @@ bool AppSelect::HandleEvent()
             if (m_buttonRoulette.IsPressed(nXMouse, nYMouse))
             {
                 RequestTransition(EApps::eRoulette);
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/enter.wav");
                 return true;
             }
             return true;

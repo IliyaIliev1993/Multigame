@@ -7,6 +7,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <main_app/panel/Panel.h>
 #include <main_app/applications/roulette/math_logic/RouletteMathLogic.h>
 #include <debug/Logger.h>
@@ -337,6 +338,7 @@ void Roulette::OnExit()
     LOG_INFO("Roulette - Exit from Application");
     m_wheelArea.StopRotation();
     m_statusLine.StopNormalScenario();
+    MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/exit.wav");
 }
 
 void Roulette::OnDraw()

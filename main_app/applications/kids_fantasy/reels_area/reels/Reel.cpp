@@ -5,6 +5,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
 
@@ -87,6 +88,7 @@ void Reel::ProcessReeling()
             if (m_fYFirstVisibleFigure >= m_fYOrgPos)
             {
                 m_eState = EReelState::eBouncing;
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/kids_fantasy/sounds/stop_reeling.wav");
             }
         }
     }

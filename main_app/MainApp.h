@@ -7,6 +7,7 @@ namespace Debug
     class Logger;
 }
 class AppSelect;
+class AudioPlayer;
 class Renderer;
 class TimerMgr;
 class Panel;
@@ -47,6 +48,7 @@ public:
     /*Unique pointers global objects to main classes*/
     std::unique_ptr<Debug::Logger> ptrLogger;
     std::unique_ptr<AppSelect> ptrAppSelect;
+    std::unique_ptr<AudioPlayer> ptrAudioPlayer;
     std::unique_ptr<Renderer>ptrRend;
     std::unique_ptr<TimerMgr>ptrTimer;
     std::unique_ptr<Panel>ptrPanel;

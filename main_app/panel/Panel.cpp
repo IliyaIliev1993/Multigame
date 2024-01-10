@@ -6,6 +6,7 @@
 #include <main_app/MainApp.h>
 #include <main_app/app_select/AppSelect.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <debug/Logger.h>
 
 constexpr unsigned int g_unTimerFadeMainWindow = 1;
@@ -291,6 +292,8 @@ bool Panel::Init()
     m_strCurrentBet = ToStringPrecision(m_fCurrentBet);
     m_strCurrentWin = ToStringPrecision(m_fCurrentWin);
 
+    MainApp::GetInstance().ptrAudioPlayer->SetVolume(m_fVolumeValue);
+
     LOG_INFO("Panel - Initialized ...");
     return true;
 }
@@ -450,6 +453,7 @@ bool Panel::HandleEvent()
                 LOG_INFO("Panel - Pressed \"{0}\" credit", button.fValue);
 
                 AddCredit(button.fValue);
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/click.wav");
                 return true;
             }
             else if (button.IsReleased(nXMouse, nYMouse))
@@ -462,6 +466,12 @@ bool Panel::HandleEvent()
         if (m_resetCreditButton.IsPressAndHold(nXMouse, nYMouse))
         {
             m_resetCreditButton.textureButton = m_textureResetButtonPressed;
+
+            if (m_resetCreditButton.IsPressed(nXMouse, nYMouse))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/reset_credit.wav");
+            }
+
             return true;
         }
         else
@@ -478,6 +488,12 @@ bool Panel::HandleEvent()
         if (m_exitCalculatorButton.IsPressAndHold(nXMouse, nYMouse))
         {
             m_exitCalculatorButton.textureButton = m_textureExitCalculatorPressed;
+
+            if (m_exitCalculatorButton.IsPressed(nXMouse, nYMouse))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/reset_credit.wav");
+            }
+
             return true;
         }
         else
@@ -500,6 +516,11 @@ bool Panel::HandleEvent()
     if (!m_bHideFields && m_creditButton.IsPressAndHold(nXMouse, nYMouse))
     {
         m_creditButton.textureButton = m_textureCreditPanelPressed;
+
+        if (m_creditButton.IsPressed(nXMouse, nYMouse))
+        {
+            MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/open_calculator.wav");
+        }
         return true;
     }
     else
@@ -536,6 +557,12 @@ bool Panel::HandleEvent()
         if (m_decrementBetButton.IsPressAndHold(nXMouse, nYMouse))
         {
             m_decrementBetButton.textureButton = m_textureBetPanelDecrementPressed;
+
+            if (m_decrementBetButton.IsPressed(nXMouse, nYMouse))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/click.wav");
+            }
+
             return true;
         }
         else
@@ -561,6 +588,12 @@ bool Panel::HandleEvent()
         if (m_incrementBetButton.IsPressAndHold(nXMouse, nYMouse))
         {
             m_incrementBetButton.textureButton = m_textureBetPanelIncrementPressed;
+
+            if (m_incrementBetButton.IsPressed(nXMouse, nYMouse))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/click.wav");
+            }
+
             return true;
         }
         else
@@ -611,6 +644,8 @@ bool Panel::HandleEvent()
             {
                 m_fDegreesVolumeKnob = g_fMaxTresholdVolumeDegrees;
             }
+
+            MainApp::GetInstance().ptrAudioPlayer->SetVolume(m_fVolumeValue);
 
             return true;
         }
@@ -796,7 +831,7 @@ void Panel::DrawDynamicTextCredit()
 void Panel::DrawDynamicTextWin()
 {
     const auto &rend = MainApp::GetInstance().ptrRend;
-    
+
     const auto &nLenghtOfString = m_strCurrentWin.length();
     float fXDynamic = g_fXWinPanelTextOffsetTen;
     /*0 - 9*/
@@ -892,6 +927,8 @@ void Panel::FastCollectCounting()
     m_interpolatorCounting.Stop();
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerWinCounting);
     StopEffectParticleWinPanel();
+    MainApp::GetInstance().ptrAudioPlayer->StopAllSounds();
+    MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/kids_fantasy/sounds/end_collect.wav");
 }
 
 void Panel::AddCredit(float fCreditToAdd)

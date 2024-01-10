@@ -7,6 +7,7 @@
 
 #include <main_app/MainApp.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <main_app/panel/Panel.h>
 #include <main_app/applications/kids_fantasy/math_logic/MathLogic.h>
 #include <debug/Logger.h>
@@ -159,6 +160,7 @@ void KidsFantasy::InvokeStartButton(bool bDemoMode)
     {
         RequestState(EKidsFantasyStates::eReeling);
         m_statusLine.NeedToShowGoodLuckScenario();
+        MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/kids_fantasy/sounds/press_start.wav");
     }
 }
 
@@ -336,6 +338,7 @@ void KidsFantasy::OnExit()
     }
 
     m_reelsArea.UnloadResources();
+    MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/panel/sounds/exit.wav");
 
     LOG_INFO("Kids Fantasy - Exit from Application");
 }
