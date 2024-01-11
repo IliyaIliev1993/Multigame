@@ -7,6 +7,7 @@
 #include <main_app/MainApp.h>
 #include <main_app/panel/Panel.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <debug/Logger.h>
 
 constexpr float g_fXTableBets = 920.0f;
@@ -319,6 +320,8 @@ bool TableArea::HandleEvent()
             chip.buttonChip.fX = g_fXTableBets + g_fXOffsetBetChips + (g_fXOffsetFromBetChips * i);
             chip.buttonChip.fY = g_fYTableBets + g_fYOffsetBetChips;
 
+            MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/release_chip.wav");
+
             LOG_INFO("Table Area - Released chip with value \"{0}\" at Sector \"{1}\", total elements on Sector \"{2}\"",
                      chipToEmplace.buttonChip.fValue,
                      m_eCurrentHoverTableElement,
@@ -333,6 +336,11 @@ bool TableArea::HandleEvent()
             chip.buttonChip.colorButton.a = 0.5f;
             chip.buttonChip.fX = nXMouse - (chip.buttonChip.textureButton->GetWidth() / 2);
             chip.buttonChip.fY = nYMouse - (chip.buttonChip.textureButton->GetHeight() / 2);
+
+            if (chip.buttonChip.IsPressed(nXMouse, nYMouse))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/take_chip.wav");
+            }
         }
         /*Hover on Chip*/
         else if (chip.buttonChip.IsHovered(nXMouse, nYMouse))
@@ -594,6 +602,8 @@ void TableArea::StartWinAnimations()
                     chips.StartCollectEffect(g_fXWinningDest, g_fYWinningDest, unSpeedMultiplier);
                     unSpeedMultiplier += 200;
                 }
+
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/applause_short.wav");
             }
             else
             {
@@ -644,7 +654,7 @@ void TableArea::Draw()
         const float fDegreesShadow = -40.0f;
         for (auto &chip : sectorElement.vecOnSectorChips)
         {
-            float fAlphShadow = chip.buttonChip.colorButton.a  - (0.6 + (0.04f * unChipCount));
+            float fAlphShadow = chip.buttonChip.colorButton.a - (0.6 + (0.04f * unChipCount));
             rend->SetColor(1.0f,
                            1.0f,
                            1.0f,

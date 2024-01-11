@@ -24,6 +24,11 @@ bool AudioPlayer::Deinit()
     return true;
 }
 
+bool AudioPlayer::IsPlaying(const std::string& strFile)
+{
+    return m_ptrSoundEngine->isCurrentlyPlaying(strFile.c_str());
+}
+
 void AudioPlayer::PlaySound(const std::string& strFile, bool bLoop)
 {
     m_ptrSoundEngine->play2D(strFile.c_str(), bLoop);

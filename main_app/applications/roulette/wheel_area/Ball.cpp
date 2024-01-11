@@ -4,6 +4,7 @@
 #include <main_app/MainApp.h>
 #include <main_app/particle_system/Random.h>
 #include <main_app/renderer/Renderer.h>
+#include <main_app/audio_player/AudioPlayer.h>
 #include <debug/Logger.h>
 
 constexpr unsigned int g_unTimerSpinning = 1;
@@ -12,10 +13,13 @@ constexpr unsigned int g_unTimerSpinningPeriod = 1;
 constexpr unsigned int g_unTimerRotateWithWheel = 2;
 constexpr unsigned int g_unTimerRotateWithWheelPeriod = 1;
 
-constexpr unsigned int g_unRotatationCycles = 3;
-constexpr unsigned int g_unRotationDuration = 8500;
-constexpr unsigned int g_unDecrementDistanceDuration = 6500;
-constexpr unsigned int g_unThrowBallDuration = 200;
+constexpr unsigned int g_unTimerBounceSound = 3;
+constexpr unsigned int g_unTimerBounceSoundPeriod = 100;
+
+constexpr unsigned int g_unRotatationCycles = 2;
+constexpr unsigned int g_unRotationDuration = 9500;
+constexpr unsigned int g_unDecrementDistanceDuration = 7500;
+constexpr unsigned int g_unThrowBallDuration = 400;
 
 constexpr unsigned int g_unTotalRombusCollision = 8;
 constexpr unsigned int g_unRombusCollisionJumpUpDuration = 1000;
@@ -125,7 +129,7 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
     const float &fDeltaTime = MainApp::GetInstance().GetDeltaTime();
     const float fTargetSectorAngle = (eWheelSectorToStopAt * GameDefs::g_fAnglePerSector) + (m_fDegreesWheelRoulette - (90.0f - (GameDefs::g_fAnglePerSector / 2.0f)));
     const float fTargetSectorFutureAngle = fTargetSectorAngle + ((unDurationRotation / fDeltaTime) * GameDefs::g_fSlowSpeedWheel);
-    const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 75.0f);
+    const float fStartPositionAnlge = g_fOriginStartPositionAngle - Random::GetRandomNumber(125.0f, 120.0f);
     const float fEndPositionAngle = (fTargetSectorFutureAngle - 360.0f) - 360.0f;
 
     LOG_INFO("Ball - StartPositionAngle: \"{0}\"", fStartPositionAnlge);
@@ -136,7 +140,7 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
     m_fDegreesBall = -90.0f;
 
     /*Start Throw the ball*/
-    const unsigned int unDurationThrowBall = g_unThrowBallDuration + Random::GetRandomNumber(-50.0f, 100.0f);
+    const unsigned int unDurationThrowBall = g_unThrowBallDuration;
     m_interpolatorThrowBall.Start(m_fDistanceFromWheelCenter, g_fHiddenDistanceFormCenter, g_fMaxDistanceFromCenter, Ease::SineOut, g_unThrowBallDuration);
 
     std::function<void()> endCallback = [this]()
@@ -148,6 +152,10 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
         if (m_afterSpinningStoppedCallback)
         {
             m_afterSpinningStoppedCallback();
+            if (MainApp::GetInstance().ptrAudioPlayer->IsPlaying("../src/resources/roulette/sounds/plastic_ball_rolling.wav"))
+            {
+                MainApp::GetInstance().ptrAudioPlayer->StopAllSounds();
+            }
         }
         LOG_INFO("Ball - State: eStoppedAndRotateWithWheel");
     };
@@ -160,6 +168,9 @@ void Ball::StartSpinning(const GameDefs::EWheelSectors &eWheelSectorToStopAt)
     MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerRotateWithWheel);
 
     m_eState = EBallStates::eRotateInTableOrbit;
+
+    MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/plastic_ball_rolling.wav");
+
     LOG_INFO("Ball - State: eRotateInTableOrbit");
 }
 
@@ -196,7 +207,7 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
 
         /*Here starts decrementing the distance and going to sector*/
         if (m_eState == EBallStates::eRotateInTableOrbit &&
-            m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-350.0f, 0.0f)))
+            m_fDegreesBall <= (g_fAngleBeforeStartDecrementDistance + Random::GetRandomNumber(-250.0f, -200.0f)))
         {
             if (m_interpolatorDecrementDistance.GetState() == EInterpolatorStates::eInactive)
             {
@@ -221,6 +232,13 @@ void Ball::OnTick(unsigned int unID, unsigned int unTimes)
         {
             m_fDegreesBall = 0.0f;
         }
+    }
+
+    if (unID == g_unTimerBounceSound)
+    {
+        MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/continue_ball_rolling.wav");
+        MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/ball_bounce.wav");
+        MainApp::GetInstance().ptrTimer->StopTimer(this, g_unTimerBounceSound);
     }
 }
 
@@ -292,10 +310,22 @@ void Ball::StartCollision(float fXForce, float fYForce, unsigned int unJumpDurat
         std::function<void()> endCallback = [this, unBounceDuration]()
         {
             m_interpolatorCollisionBounceY.Start(m_fYBall, m_fYBall, g_fYCenterWheelBall, Ease::BounceOut, unBounceDuration);
+
+            if (m_fDistanceFromWheelCenter >= g_fDownerSideMiddleRingRadius)
+            {
+                MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerBounceSound, g_unTimerBounceSoundPeriod);
+            }
+            else
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/ball_bounce.wav");
+            }
         };
 
         m_interpolatorCollisionJumpY.SetEndCallback(endCallback);
         m_interpolatorCollisionJumpY.Start(m_fYBall, m_fYBall, m_fYBall + fYForce, Ease::CircularOut, unJumpDuration);
+        MainApp::GetInstance().ptrAudioPlayer->StopAllSounds();
+        MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/ball_jump.wav");
+
         LOG_INFO("Ball - Collision with Forces (X): \"{0}\"", fXForce);
     }
 
@@ -305,10 +335,20 @@ void Ball::StartCollision(float fXForce, float fYForce, unsigned int unJumpDurat
         std::function<void()> endCallback = [this, unBounceDuration]()
         {
             m_interpolatorCollisionBounceX.Start(m_fXBall, m_fXBall, g_fXCenterWheelBall, Ease::BounceOut, unBounceDuration);
+            if (m_fDistanceFromWheelCenter >= g_fDownerSideMiddleRingRadius)
+            {
+                MainApp::GetInstance().ptrTimer->StartTimer(this, g_unTimerBounceSound, g_unTimerBounceSoundPeriod);
+            }
+            else
+            {
+                MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/ball_bounce.wav");
+            }
         };
 
         m_interpolatorCollisionJumpX.SetEndCallback(endCallback);
         m_interpolatorCollisionJumpX.Start(m_fXBall, m_fXBall, m_fXBall + fXForce, Ease::CircularOut, unJumpDuration);
+        MainApp::GetInstance().ptrAudioPlayer->PlaySound("../src/resources/roulette/sounds/ball_jump.wav");
+
         LOG_INFO("Ball - Collision with Forces (Y): \"{0}\"", fYForce);
     }
 }
